@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/singleMessageContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.40" 
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/Textoarticulo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+            
+            android:background="@drawable/container"
+            android:text=" Articulo:"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/articulo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+            
+            android:background="@drawable/container"
+            android:text="articulo"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/Textomarca1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+           
+            android:background="@drawable/container"
+            android:text=" Marca:"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/marca"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+            
+            android:background="@drawable/container"
+            android:text="marca"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+         <TextView
+             android:id="@+id/Textomodelo1"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dip"
+             
+             android:background="@drawable/container"
+             android:text=" Modelo:"
+             android:textColor="#000000"
+             android:textSize="20sp" />
+
+         <TextView
+             android:id="@+id/modelo"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dip"
+             
+             android:background="@drawable/container"
+             android:text="modelo"
+             android:textColor="#FFFFFF"
+             android:textSize="20sp" />
+
+		<RelativeLayout
+		    android:id="@+id/contImagen"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="center"
+		    android:background="@drawable/container" >
+"
+         <ImageView
+             android:id="@+id/imagen"
+             android:layout_width="wrap_content"
+             android:layout_height="300dp" />
+        </RelativeLayout>
+
+         <TextView
+             android:id="@+id/Textprecio1"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dip"
+             
+             android:background="@drawable/container"
+             android:text=" Precio:"
+             android:textColor="#000000"
+             android:textSize="20sp" />
+
+         <TextView
+             android:id="@+id/precio"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dip"
+            
+             android:background="@drawable/container"
+             android:text="precio"
+             android:textColor="#FFFFFF"
+             android:textSize="20sp" />
+
+         <TextView
+             android:id="@+id/TextDescripcion1"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dip"
+            
+             android:background="@drawable/container"
+             android:text=" Descripcion:"
+             android:textColor="#000000"
+             android:textSize="20sp" />
+
+         <TextView
+             android:id="@+id/descripcion"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dip"
+            
+             android:background="@drawable/container"
+             android:text="precio"
+             android:textColor="#FFFFFF"
+             android:textSize="20sp" />
+         
+    </LinearLayout>
+
+</LinearLayout>
