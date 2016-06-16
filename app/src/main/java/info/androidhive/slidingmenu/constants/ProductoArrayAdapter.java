@@ -25,16 +25,16 @@ public class ProductoArrayAdapter extends ArrayAdapter {
     TextView precio;
     TextView descripcion;
     ImageView imagen;
-    private List MessageList = new ArrayList();
     private LinearLayout singleMessageContainer;
     int layout;
     int textViewResourceId;
     private String codSubCat;
     Fragment fragment;
     HashMap<Integer, View> productViews;
+    private ArrayList<Producto> productos;
 
     public void add(Producto object) {
-        MessageList.add(object);
+        productos.add(object);
         super.add(object);
 
     }
@@ -42,18 +42,19 @@ public class ProductoArrayAdapter extends ArrayAdapter {
         this.layout = layout;
 	}*/
 
-    public ProductoArrayAdapter(Context context, int textViewResourceId, int layout) {
+    public ProductoArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> productos) {
         super(context, textViewResourceId);
         productViews = new HashMap<Integer, View>();
         this.layout = layout;
+        this.productos = productos;
     }
 
     public int getCount() {
-        return this.MessageList.size();
+        return this.productos.size();
     }
 
     public Producto getItem(int index) {
-        return (Producto) this.MessageList.get(index);
+        return (Producto) this.productos.get(index);
 
     }
 
@@ -97,7 +98,7 @@ public class ProductoArrayAdapter extends ArrayAdapter {
         holder.modelo.setText(" " + MessageObj.modelo);
         String price = Double.toString(MessageObj.precio);
         holder.precio.setText(" " + price + "€ (IVA incluido)");
-        holder.imagen.setBackgroundResource((MessageObj.directorio));
+//        holder.imagen.setBackgroundResource(-1);
         holder.descripcion.setText(" " + MessageObj.descripcion);
         return convertView;
     }

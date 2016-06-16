@@ -150,4 +150,53 @@ public class Controller {
         }
         return cont;
     }
+
+    public ArrayList<Producto> consulta(String codArticulo) {
+        ArrayList<Producto> productos = new ArrayList<Producto>();
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE codArticulo = '" + codArticulo + "'", null);
+            //txtResultado.setText("");
+
+            Producto producto = null;
+
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    producto= new Producto();
+                    i = i++;
+                    codArticulo = c.getString(0);
+                    final String codSubCat = c.getString(1);
+                    final String codCat = c.getString(2);
+                    final String articulo = c.getString(3);
+                    final String marca = c.getString(4);
+                    final String modelo = c.getString(5);
+                    final String descripcion = c.getString(6);
+                    final double precio = Double.parseDouble(c.getString(7));
+                    final double IVA = Double.parseDouble(c.getString(8));
+//                    final String direc = c.getString(9);
+//                    int id = getResources()
+//                            .getIdentifier(direc, "drawable", getActivity().getApplicationContext().getPackageName());
+//                    int bla = getResources().getIdentifier("proaudio", "drawable", getActivity().getApplicationContext().getPackageName());
+
+//                    final int directorio = id;
+
+
+                    producto.setCodArticulo(codArticulo);
+                    producto.setCodSubCat(codSubCat);
+                    producto.setCodCat(codCat);
+                    producto.setArticulo(articulo);
+                    producto.setMarca(marca);
+                    producto.setModelo(modelo);
+                    producto.setDescripcion(descripcion);
+                    producto.setPrecio(precio);
+                    producto.setIVA(IVA);
+                    producto.setDirectorio(-1);
+
+                    productos.add(producto);
+
+                } while (c.moveToNext());
+            }
+        }
+        return  productos;
+    }
 }

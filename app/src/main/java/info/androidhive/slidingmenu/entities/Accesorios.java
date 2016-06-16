@@ -53,7 +53,7 @@ public class Accesorios extends Fragment {
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         String query = "access11";
 
-        categoryArrayAdapter = new CategoryArrayAdapter(getActivity().getApplicationContext(), layout, layout,controller.consultaSubCategorias(query));
+        categoryArrayAdapter = new CategoryArrayAdapter(getActivity().getApplicationContext(), layout, layout, controller.consultaSubCategorias(query));
         listView.setAdapter(categoryArrayAdapter);
 
         return rootView;

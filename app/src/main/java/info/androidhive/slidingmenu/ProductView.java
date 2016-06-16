@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.constants.ProductoArrayAdapter;
+import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class ProductView extends Fragment {
@@ -48,66 +49,21 @@ public class ProductView extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Controller controller = new Controller();
         rootView = inflater.inflate(R.layout.fragment_product, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(productoArrayAdapter);
-        productoArrayAdapter = new ProductoArrayAdapter(getActivity().getApplicationContext(), R.layout.activity_products_main, R.layout.activity_products_main);
+        productoArrayAdapter = new ProductoArrayAdapter(getActivity().getApplicationContext(), R.layout.activity_products_main, R.layout.activity_products_main, controller.consulta(codSubCat));
         listView.setAdapter(productoArrayAdapter);
 
-        consulta(codSubCat);
         return rootView;
 
     }
 
 
-    public void consulta(String codArticulo) {
 
-        if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE codArticulo = '" + codArticulo + "'", null);
-            //txtResultado.setText("");
-
-            Producto producto = new Producto();
-
-            int i = 0;
-            if (c.moveToFirst()) {
-                do {
-                    i = i++;
-                    codArticulo = c.getString(0);
-                    final String codSubCat = c.getString(1);
-                    final String codCat = c.getString(2);
-                    final String articulo = c.getString(3);
-                    final String marca = c.getString(4);
-                    final String modelo = c.getString(5);
-                    final String descripcion = c.getString(6);
-                    final double precio = Double.parseDouble(c.getString(7));
-                    final double IVA = Double.parseDouble(c.getString(8));
-                    final String direc = c.getString(9);
-                    int id = getResources()
-                            .getIdentifier(direc, "drawable", getActivity().getApplicationContext().getPackageName());
-                    int bla = getResources().getIdentifier("proaudio", "drawable", getActivity().getApplicationContext().getPackageName());
-
-                    final int directorio = id;
-
-
-                    producto.setCodArticulo(codArticulo);
-                    producto.setCodSubCat(codSubCat);
-                    producto.setCodCat(codCat);
-                    producto.setArticulo(articulo);
-                    producto.setMarca(marca);
-                    producto.setModelo(modelo);
-                    producto.setDescripcion(descripcion);
-                    producto.setPrecio(precio);
-                    producto.setIVA(IVA);
-                    producto.setDirectorio(directorio);
-
-                    productoArrayAdapter.add(producto);
-
-                } while (c.moveToNext());
-            }
-        }
-    }
 
 
 }
