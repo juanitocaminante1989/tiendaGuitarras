@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu;
+package info.androidhive.slidingmenu.fragments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;

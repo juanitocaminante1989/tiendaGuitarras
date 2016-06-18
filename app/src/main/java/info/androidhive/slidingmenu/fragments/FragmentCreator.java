@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu.entities;
+package info.androidhive.slidingmenu.fragments;
 
 import android.app.Fragment;
 import android.app.NotificationManager;

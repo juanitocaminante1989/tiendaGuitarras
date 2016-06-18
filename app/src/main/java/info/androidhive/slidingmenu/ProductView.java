@@ -23,26 +23,15 @@ import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class ProductView extends Fragment {
-    private TextView txtResultado;
-    private RelativeLayout relLay;
     View rootView;
     public ProductoArrayAdapter productoArrayAdapter;
-    public LinearLayout opciones;
     public ListView listView;
-    public Animation animFadein1;
-    public Animation animFadein2;
-    public NotificationManager myNotificationManager;
-    public int numMessagesOne = 0;
-    public int notificationIdOne = 111;
-    List<String> mensajes = new ArrayList<String>();
-    String noti1;
-    String noti2;
-    String noti3;
     int layout;
     String codSubCat;
 
-    public ProductView(String codSubCat) {
+    public ProductView(String codSubCat, int layout) {
         this.codSubCat = codSubCat;
+        this.layout = layout;
     }
 
     @Override
@@ -50,7 +39,7 @@ public class ProductView extends Fragment {
                              Bundle savedInstanceState) {
 
         Controller controller = new Controller();
-        rootView = inflater.inflate(R.layout.fragment_product, container, false);
+        rootView = inflater.inflate(layout, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);

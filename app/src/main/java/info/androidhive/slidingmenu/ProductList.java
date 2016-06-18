@@ -76,7 +76,7 @@ public class ProductList extends Fragment {
         this.codSubCat = codSubCat;
         Context context = getActivity().getApplicationContext();
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat);
+        fragment = new ProductView(codSubCat,R.layout.fragment_product);
         Constants.createNewFragment(R.id.frame_container, fragment);
     }
 

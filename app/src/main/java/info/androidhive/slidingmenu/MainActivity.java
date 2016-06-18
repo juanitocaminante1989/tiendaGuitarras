@@ -5,7 +5,8 @@ import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
-import info.androidhive.slidingmenu.entities.FragmentCreator;
+import info.androidhive.slidingmenu.fragments.FragmentCreator;
+import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 
 import java.util.ArrayList;

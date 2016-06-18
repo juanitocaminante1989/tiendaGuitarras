@@ -93,7 +93,7 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         row = inflater.inflate(layout, parent, false);
         final Context context = parent.getContext();
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat);
+        fragment = new ProductView(codSubCat, R.layout.fragment_product);
         Constants.createNewFragment(R.id.frame_container, fragment);
 
     }

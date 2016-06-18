@@ -66,7 +66,7 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
     public void producto(String codSubCat, int layout) {
         this.layout = layout;
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat);
+        fragment = new ProductView(codSubCat, R.layout.fragment_product);
         if(Constants.manager!= null)
             Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }
