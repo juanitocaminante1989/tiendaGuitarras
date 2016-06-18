@@ -53,7 +53,7 @@ public class FragmentCreator extends Fragment{
                              Bundle savedInstanceState) {
 
         Controller controller = new Controller();
-        rootView = inflater.inflate(R.layout.fragment_accesorios, container, false);
+        rootView = inflater.inflate(R.layout.fragment_layout, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
