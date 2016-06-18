@@ -70,7 +70,7 @@ public class Controller {
         ArrayList<String> categoryMessages = new ArrayList<String>();
         categoryMessages.add("Principal");
         if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT categoria FROM Categoria order by codCat ASC", null);
+            Cursor c = Constants.database.rawQuery("SELECT category_name FROM Categoria order by codCat ASC", null);
             int i = 0;
             if (c.moveToFirst()) {
                 do {

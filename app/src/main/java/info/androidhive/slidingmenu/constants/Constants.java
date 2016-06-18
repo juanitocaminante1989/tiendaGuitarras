@@ -5,6 +5,10 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 import info.androidhive.slidingmenu.R;
 
 /**
@@ -19,4 +23,6 @@ public class Constants {
         if(Constants.manager!=null)
             Constants.manager.beginTransaction().replace(layoutId, fragment).commit();
     }
+    public static ArrayList<JSONObject> objects;
+    public static boolean hasExecuted = false;
 }

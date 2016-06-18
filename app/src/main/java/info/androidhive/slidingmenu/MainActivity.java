@@ -3,21 +3,28 @@ package info.androidhive.slidingmenu;
 import info.androidhive.slidingmenu.adapter.NavDrawerListAdapter;
 import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
 import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +35,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
@@ -48,8 +73,18 @@ public class MainActivity extends Activity {
     private NavDrawerListAdapter adapter;
     private EditText cuadroBusqueda;
     private Controller controller;
+    private Bundle savedInstanceState;
     private BusquedaArrayAdapter busquedaArrayAdapter;
+    private static String url = "http://192.168.1.108:80/CarritoCompra/conexion.php";
 
+    //JSON Node Names
+    private static final String TAG_USER = "user";
+    private static final String TAG_ID = "id";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_EMAIL = "email";
+    private Context context;
+
+    JSONArray user = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,68 +95,15 @@ public class MainActivity extends Activity {
         Constants.database = usdbh.getWritableDatabase();
         Constants.manager = getFragmentManager();
         mTitle = mDrawerTitle = getTitle();
-        controller = new Controller();
-        // load slide menu items
-        navMenuTitles = controller.getCategoryNames();
-
-        // nav drawer icons from resources
-        navMenuIcons = getResources()
-                .obtainTypedArray(R.array.nav_drawer_icons);
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
 
-        navDrawerItems = new ArrayList<NavDrawerItem>();
-
-        // adding nav drawer items to array
-        //navMenuIcons.
-
-
-
-        for(int i = 0;i<controller.getCantidadCategorias();i++){
-            NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
-            navDrawerItems.add(navDrawerItem);
-        }
+        controller = new Controller();
+        // load slide menu items
+        this.savedInstanceState = savedInstanceState;
+        recieveData();
 
 
-        //navDrawerItems.get(0).;
-        // Recycle the typed array
-        navMenuIcons.recycle();
-
-        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
-
-        // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(),
-                navDrawerItems);
-        mDrawerList.setAdapter(adapter);
-
-        // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, //nav menu toggle icon
-                R.string.app_name, // nav drawer open - description for accessibility
-                R.string.app_name // nav drawer close - description for accessibility
-        ) {
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
-                // calling onPrepareOptionsMenu() to show action bar icons
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
-                // calling onPrepareOptionsMenu() to hide action bar icons
-                invalidateOptionsMenu();
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        this.deleteDatabase("CarritoCompra");
-        if (savedInstanceState == null) {
-            // on first time display view for first nav item
-            displayView(0);
-        }
     }
 
     /**
@@ -215,6 +197,7 @@ public class MainActivity extends Activity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
+        if(mDrawerToggle!=null)
         mDrawerToggle.syncState();
     }
 
@@ -222,6 +205,7 @@ public class MainActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
+        if(mDrawerToggle!=null)
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
@@ -249,5 +233,120 @@ public class MainActivity extends Activity {
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+
+    public void recieveData(){
+        new JSONParse().execute();
+    }
+
+    private class JSONParse extends AsyncTask<String, String, JSONArray> {
+//        private ProgressDialog pDialog;
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+//            pDialog = new ProgressDialog(context);
+//            pDialog.setMessage("Getting Data ...");
+//            pDialog.setIndeterminate(false);
+//            pDialog.setCancelable(true);
+//            pDialog.show();
+//
+//        }
+
+        @Override
+        protected JSONArray doInBackground(String... args) {
+            JSONParser jParser = new JSONParser();
+
+            // Getting JSON from URL
+            JSONArray json = jParser.getJSONFromUrl(url);
+            return json;
+        }
+        @Override
+        protected void onPostExecute(JSONArray json) {
+            try {
+                // Getting JSON Array
+                Constants.objects = new ArrayList<JSONObject>();
+                if(json!=null) {
+                    JSONObject jsonObject = null;
+                    for(int i = 0; i<json.length();i++){
+                        jsonObject = json.getJSONObject(i);
+                        jsonObject.getJSONObject("categoria");
+                        String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
+                        String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
+                        String description = jsonObject.getJSONObject("categoria").get("descripcion").toString();
+                        String query = "INSERT INTO categoria VALUES ('"+codCat+"', '"+category_name+"', '"+description+"')";
+                        Constants.database.execSQL(query);
+                    }
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            initialize();
+        }
+    }
+
+    public void initialize(){
+        navMenuTitles = controller.getCategoryNames();
+
+        // nav drawer icons from resources
+        navMenuIcons = getResources()
+                .obtainTypedArray(R.array.nav_drawer_icons);
+
+
+
+        navDrawerItems = new ArrayList<NavDrawerItem>();
+        context = this.getApplicationContext();
+        // adding nav drawer items to array
+        //navMenuIcons.
+
+
+
+        for(int i = 0;i<controller.getCantidadCategorias();i++){
+            NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
+            navDrawerItems.add(navDrawerItem);
+        }
+
+
+        //navDrawerItems.get(0).;
+        // Recycle the typed array
+        navMenuIcons.recycle();
+
+        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
+
+        // setting the nav drawer list adapter
+        adapter = new NavDrawerListAdapter(getApplicationContext(),
+                navDrawerItems);
+        mDrawerList.setAdapter(adapter);
+
+        // enabling action bar app icon and behaving it as toggle button
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.drawable.ic_drawer, //nav menu toggle icon
+                R.string.app_name, // nav drawer open - description for accessibility
+                R.string.app_name // nav drawer close - description for accessibility
+        ) {
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(mTitle);
+                // calling onPrepareOptionsMenu() to show action bar icons
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(mDrawerTitle);
+                // calling onPrepareOptionsMenu() to hide action bar icons
+                invalidateOptionsMenu();
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        this.deleteDatabase("CarritoCompra");
+        if (savedInstanceState == null) {
+            // on first time display view for first nav item
+            displayView(0);
+        }
     }
 }

@@ -12,7 +12,7 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
 
     private ArrayList<String> inserts = new ArrayList<String>();
 
-    String sqlCreateCategoria = "CREATE TABLE categoria(codCat VARCHAR(30),categoria VARCHAR(30), descripcion VARCHAR(100), PRIMARY KEY (codCat))";
+    String sqlCreateCategoria = "CREATE TABLE categoria(codCat VARCHAR(30),category_name VARCHAR(30), descripcion VARCHAR(100), PRIMARY KEY (codCat))";
     String sqlCreateSubCategoria = "CREATE TABLE subCategoria(codSubCat VARCHAR(30),codCat VARCHAR(30),subCategoria VARCHAR(100),	descripcion VARCHAR(100),PRIMARY KEY (codSubCat),FOREIGN KEY (codCat) REFERENCES categoria(codCat))";
     String sqlCreateArticulo = "CREATE TABLE articulo(codArticulo VARCHAR(30),codSubCat VARCHAR(30),codCat VARCHAR(30),articulo VARCHAR(100), marca VARCHAR(30), modelo VARCHAR(50), descripcion VARCHAR(100), precio DECIMAL(7,2),IVA DECIMAL(5,2),	directorio VARCHAR(100),PRIMARY KEY (codArticulo),FOREIGN KEY (codCat) REFERENCES categoria(codCat),FOREIGN KEY (codSubCat) REFERENCES subCategoria(codSubCat))";
     String sqlCreateClientes = "CREATE TABLE clientes(NIF VARCHAR (9) NOT NULL, nombre VARCHAR(20) NOT NULL, apellidos VARCHAR(30) NOT NULL, direccion VARCHAR(40) NOT NULL,codPost INTEGER(6) NOT NULL,correo VARCHAR(40) NOT NULL,telefono VARCHAR(9) NOT NULL,clave VARCHAR(20) NOT NULL,CONSTRAINT correoE UNIQUE (correo),PRIMARY KEY (NIF))";
@@ -205,9 +205,15 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         fillData();
 
-        for(String string: inserts){
-            db.execSQL(string);
-        }
+//        for(String string: inserts){
+//            db.execSQL(string);
+//        }
+        db.execSQL(sqlCreateCategoria);
+        db.execSQL(sqlCreateSubCategoria);
+        db.execSQL(sqlCreateArticulo);
+        db.execSQL(sqlCreateClientes);
+        db.execSQL(sqlCreateCarrito);
+        db.execSQL( sqlCreateLineaCarrito);
     }
 
     @Override
