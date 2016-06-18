@@ -1,9 +1,7 @@
 package info.androidhive.slidingmenu.fragments;
 
-import android.app.Fragment;
 import android.app.NotificationManager;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +22,11 @@ import info.androidhive.slidingmenu.database.Controller;
 /**
  * Created by Juan on 18/06/2016.
  */
-public class FragmentCreator extends Fragment{
+public class ProductFragment extends FragmentCreator{
 
     private TextView txtResultado;
     private RelativeLayout relLay;
+    View rootView;
     public CategoryArrayAdapter categoryArrayAdapter;
     public LinearLayout opciones;
     public ListView listView;
@@ -43,24 +42,17 @@ public class FragmentCreator extends Fragment{
     String query;
     int layout;
 
-    public View FragmentCreator(int layout, String query) {
-        View view = null;
+    public ProductFragment(int layout, String query) {
         this.query=query;
         this.layout = layout;
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        view = layoutInflater.inflate(layout, null);
-        return view;
     }
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View FragmentCreator(int layout, String query) {
 
-        View rootView = null;
-//       rootView = FragmentCreator()
+        View view = super.FragmentCreator(layout, query);
 
-        return rootView;
-
+        return view;
     }
-
-
 }

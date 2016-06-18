@@ -26,7 +26,7 @@ import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends FragmentCreator {
 
     private TextView txtResultado;
     private RelativeLayout relLay;
@@ -60,10 +60,24 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Controller controller= new Controller();
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+
+
+
+        return null;
+    }
+
+
+
+    public void buscar() {
+
+    }
+
+    @Override
+    public View FragmentCreator(int layout, String query) {
+        View view = super.FragmentCreator(layout, query);
+                Controller controller= new Controller();
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
-        listView = (ListView) rootView.findViewById(R.id.listView1);
+        listView = (ListView) view.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
         if (busqueda == null || busqueda == "") {
@@ -75,15 +89,9 @@ public class HomeFragment extends Fragment {
             listView.setAdapter(busquedaArrayAdapter);
 
         }
-
-
-        return rootView;
-    }
-
-
-
-    public void buscar() {
+        return view;
 
     }
+
 
 }

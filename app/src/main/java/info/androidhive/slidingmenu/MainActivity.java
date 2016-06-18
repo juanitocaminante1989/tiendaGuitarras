@@ -7,6 +7,7 @@ import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
 import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
+import info.androidhive.slidingmenu.fragments.ProductFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 
 import java.util.ArrayList;
@@ -182,7 +183,7 @@ public class MainActivity extends Activity {
             if(position==0){
                 fragment = new HomeFragment(R.layout.activity_main,"");
             }else{
-                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position));
+                fragment = new ProductFragment(R.layout.fragment_layout, categoryId.get(position));
             }
         }
 
