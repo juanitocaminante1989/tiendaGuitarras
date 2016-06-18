@@ -260,7 +260,10 @@ public class MainActivity extends Activity {
 
             // Getting JSON from URL
             JSONArray json = jParser.getJSONFromUrl(url);
-            return json;
+            if(json != null)
+                return json;
+            else
+                return null;
         }
         @Override
         protected void onPostExecute(JSONArray json) {

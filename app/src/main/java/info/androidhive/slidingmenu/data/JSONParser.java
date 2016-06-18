@@ -70,8 +70,12 @@ public class JSONParser {
 
         // try parse the string to a JSON object
         try {
-            String newJson = json.substring(0,json.length()-1);
-            jObj = new JSONArray(newJson);
+            if(json != null) {
+                if(json.length()>0) {
+                    String newJson = json.substring(0, json.length() - 1);
+                    jObj = new JSONArray(newJson);
+                }
+            }
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
