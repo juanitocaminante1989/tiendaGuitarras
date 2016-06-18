@@ -1,8 +1,5 @@
 package info.androidhive.slidingmenu.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Fragment;
 import android.app.NotificationManager;
 import android.os.Bundle;
@@ -16,11 +13,18 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.CategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 
-public class Bajos extends Fragment {
+/**
+ * Created by Juan on 18/06/2016.
+ */
+public class FragmentCreator extends Fragment{
+
     private TextView txtResultado;
     private RelativeLayout relLay;
     View rootView;
@@ -36,9 +40,11 @@ public class Bajos extends Fragment {
     String noti1;
     String noti2;
     String noti3;
+    String query;
     int layout;
 
-    public Bajos(int layout) {
+    public FragmentCreator(int layout, String query) {
+        this.query=query;
         this.layout = layout;
     }
 
@@ -47,13 +53,12 @@ public class Bajos extends Fragment {
                              Bundle savedInstanceState) {
 
         Controller controller = new Controller();
-        rootView = inflater.inflate(R.layout.fragment_bajos, container, false);
+        rootView = inflater.inflate(R.layout.fragment_accesorios, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        String query = "bass2";
 
-        categoryArrayAdapter = new CategoryArrayAdapter(getActivity().getApplicationContext(), layout, layout,  controller.consultaSubCategorias(query));
+        categoryArrayAdapter = new CategoryArrayAdapter(getActivity().getApplicationContext(), layout, layout, controller.consultaSubCategorias(query));
         listView.setAdapter(categoryArrayAdapter);
 
         return rootView;

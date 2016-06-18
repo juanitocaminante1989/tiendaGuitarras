@@ -45,7 +45,8 @@ public class ProductList extends Fragment {
     int layout;
     String codSubCat;
 
-    public ProductList(String codSubCat) {
+    public ProductList(int layout,String codSubCat) {
+        this.layout = layout;
         this.codSubCat = codSubCat;
     }
 
@@ -53,7 +54,7 @@ public class ProductList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         Controller controller = new Controller();
-        rootView = inflater.inflate(R.layout.fragment_subcategory, container, false);
+        rootView = inflater.inflate(layout, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
@@ -63,7 +64,7 @@ public class ProductList extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CategoryMessage MessageObj = (CategoryMessage) adapterView.getItemAtPosition(i);
-                producto(MessageObj.message, R.layout.activity_subcategory);
+                producto(MessageObj.message);
             }
         });
 
@@ -71,14 +72,12 @@ public class ProductList extends Fragment {
 
     }
 
-    public void producto(String codSubCat, int layout){
+    public void producto(String codSubCat){
         this.codSubCat = codSubCat;
-        this.layout = layout;
         Context context = getActivity().getApplicationContext();
         Fragment fragment = null;
         fragment = new ProductView(codSubCat);
-        FragmentManager fragmentManager = ((Activity)context).getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        Constants.createNewFragment(R.id.frame_container, fragment);
     }
 
 

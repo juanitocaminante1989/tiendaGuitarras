@@ -46,13 +46,49 @@ public class Controller {
         return categoryMessages;
     }
 
+    public ArrayList<String> getCategoryId() {
+
+        ArrayList<String> categoryMessages = new ArrayList<String>();
+        categoryMessages.add("");
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT codCat FROM Categoria order by codCat ASC", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    i = i++;
+                    String codCat = c.getString(0);
+
+                    categoryMessages.add(codCat);
+                } while (c.moveToNext());
+            }
+        }
+        return categoryMessages;
+    }
+
+    public ArrayList<String> getCategoryNames() {
+
+        ArrayList<String> categoryMessages = new ArrayList<String>();
+        categoryMessages.add("Principal");
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT categoria FROM Categoria order by codCat ASC", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    i = i++;
+                    String codCat = c.getString(0);
+
+                    categoryMessages.add(codCat);
+                } while (c.moveToNext());
+            }
+        }
+        return categoryMessages;
+    }
+
     public ArrayList<CategoryMessage> consultaArticulos(String codSubCat) {
 
         ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT articulo, codArticulo FROM articulo WHERE codSubCat = '" + codSubCat + "'", null);
-            //txtResultado.setText("");
-
 
             CategoryMessage categoryMessage;
             int i = 0;
@@ -75,8 +111,6 @@ public class Controller {
 
     public ArrayList<Producto> busqueda(String buscar, Activity activity) {
         ArrayList<Producto> productos = new ArrayList<Producto>();
-        //cuadroBusqueda = (EditText)rootView.findViewById(R.id.search);
-        //String buscar= cuadroBusqueda.getText().toString();
         if ((buscar.equals("")) || (buscar == null) || (buscar.equals(" "))) {
             new AlertDialog.Builder(activity)
                     .setTitle("Campo vacío")
@@ -179,7 +213,6 @@ public class Controller {
 //                    int bla = getResources().getIdentifier("proaudio", "drawable", getActivity().getApplicationContext().getPackageName());
 
 //                    final int directorio = id;
-
 
                     producto.setCodArticulo(codArticulo);
                     producto.setCodSubCat(codSubCat);

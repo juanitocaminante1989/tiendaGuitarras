@@ -100,14 +100,9 @@ public class CategoryArrayAdapter extends ArrayAdapter {
         //ViewGroup parent;
         this.codSubCat = codSubCat;
         this.layout = layout;
-        //layout = R.layout.activity_proaudio_main;
-        LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        row = inflater.inflate(layout, parent, false);
-        final Context context = parent.getContext();
         Fragment fragment = null;
-        fragment = new ProductList(codSubCat);
-        FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        fragment = new ProductList(R.layout.fragment_subcategory,codSubCat);
+        Constants.createNewFragment(R.id.frame_container, fragment);
     }
 
 

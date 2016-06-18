@@ -5,17 +5,7 @@ import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
-import info.androidhive.slidingmenu.entities.Accesorios;
-import info.androidhive.slidingmenu.entities.Bajos;
-import info.androidhive.slidingmenu.entities.DJ;
-import info.androidhive.slidingmenu.entities.Guitarras;
-import info.androidhive.slidingmenu.entities.Ordenadores;
-import info.androidhive.slidingmenu.entities.Percusion;
-import info.androidhive.slidingmenu.entities.ProAudio;
-import info.androidhive.slidingmenu.entities.Software;
-import info.androidhive.slidingmenu.entities.Sonido;
-import info.androidhive.slidingmenu.entities.Teclados;
-import info.androidhive.slidingmenu.entities.Viento;
+import info.androidhive.slidingmenu.entities.FragmentCreator;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 
 import java.util.ArrayList;
@@ -24,7 +14,6 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -51,12 +40,13 @@ public class MainActivity extends Activity {
     private CharSequence mTitle;
 
     // slide menu items
-    private String[] navMenuTitles;
+    private ArrayList<String> navMenuTitles;
     private TypedArray navMenuIcons;
 
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
     private EditText cuadroBusqueda;
+    private Controller controller;
     private BusquedaArrayAdapter busquedaArrayAdapter;
 
     @Override
@@ -67,10 +57,11 @@ public class MainActivity extends Activity {
         SlideSQLHelper usdbh;
         usdbh = new SlideSQLHelper(this.getApplicationContext(), "CarritoCompra", null, 1);
         Constants.database = usdbh.getWritableDatabase();
+        Constants.manager = getFragmentManager();
         mTitle = mDrawerTitle = getTitle();
-
+        controller = new Controller();
         // load slide menu items
-        navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+        navMenuTitles = controller.getCategoryNames();
 
         // nav drawer icons from resources
         navMenuIcons = getResources()
@@ -84,10 +75,10 @@ public class MainActivity extends Activity {
         // adding nav drawer items to array
         //navMenuIcons.
 
-        Controller controller = new Controller();
+
 
         for(int i = 0;i<controller.getCantidadCategorias();i++){
-            NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles[i], navMenuIcons.getResourceId(i, -1));
+            NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
             navDrawerItems.add(navDrawerItem);
         }
 
@@ -184,69 +175,23 @@ public class MainActivity extends Activity {
         // update the main content by replacing fragments
         Fragment fragment = null;
         int layout;
-        switch (position) {
-            case 0:
-                layout = R.layout.activity_main;
-                fragment = new HomeFragment(layout, "");
-                break;
-            case 1:
-                layout = R.layout.activity_guitarras_main;
-                fragment = new Guitarras(layout);
-                break;
-            case 2:
-                layout = R.layout.activity_bajos_main;
-                fragment = new Bajos(layout);
-                break;
-            case 3:
-                layout = R.layout.activity_percusion_main;
-                fragment = new Percusion(layout);
-                break;
-            case 4:
-                layout = R.layout.activity_teclado_main;
-                fragment = new Teclados(layout);
-                break;
-            case 5:
-                layout = R.layout.activity_software_main;
-                fragment = new Software(layout);
-                break;
-            case 6:
-                layout = R.layout.activity_sonido_main;
-                fragment = new Sonido(layout);
-                break;
-            case 7:
-                layout = R.layout.activity_proaudio_main;
-                fragment = new ProAudio(layout);
-                break;
-            case 8:
-                layout = R.layout.activity_ordenadores_main;
-                fragment = new Ordenadores(layout);
-                break;
-            case 9:
-                layout = R.layout.activity_viento_main;
-                fragment = new Viento(layout);
-                break;
-            case 10:
-                layout = R.layout.activity_dj_main;
-                fragment = new DJ(layout);
-                break;
-            case 11:
-                layout = R.layout.activity_accesorios_main;
-                fragment = new Accesorios(layout);
-                break;
-
-            default:
-                break;
+        Controller controller = new Controller();
+        ArrayList<String> categoryId = controller.getCategoryId();
+        for(int i = 0;i<categoryId.size();i++){
+            if(position==0){
+                fragment = new HomeFragment(R.layout.activity_main,"");
+            }else{
+                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position));
+            }
         }
 
         if (fragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, fragment).commit();
+            Constants.createNewFragment(R.id.frame_container, fragment);
 
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            setTitle(navMenuTitles[position]);
+            setTitle(navMenuTitles.get(position));
             mDrawerLayout.closeDrawer(mDrawerList);
         } else {
             // error in creating fragment
@@ -286,10 +231,7 @@ public class MainActivity extends Activity {
         String busqueda = cuadroBusqueda.getText().toString();
         layout = R.layout.activity_main;
         fragment = new HomeFragment(layout, busqueda);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.frame_container, fragment).commit();
+        Constants.createNewFragment(R.id.frame_container, fragment);
     }
 
     public void onBackPressed() {

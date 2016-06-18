@@ -84,8 +84,8 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         final Context context = parent.getContext();
         Fragment fragment = null;
         fragment = new ProductView(codSubCat);
-        FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        if(Constants.manager!= null)
+            Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }
 
 
