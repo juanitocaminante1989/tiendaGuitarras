@@ -57,7 +57,7 @@ public class FragmentCreator extends Fragment{
 
         View rootView = null;
 //       rootView = FragmentCreator()
-
+        rootView = this.FragmentCreator(this.layout, this.query);
         return rootView;
 
     }
