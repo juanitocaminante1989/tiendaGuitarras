@@ -25,7 +25,7 @@ public class Controller {
 
         ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
         if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT codSubCat, subCategoria FROM subCategoria WHERE codCat = '" + query + "'", null);
+            Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codCat = '" + query + "'", null);
             //txtResultado.setText("");
             CategoryMessage categoryMessage = null;
             int i = 0;
@@ -88,7 +88,7 @@ public class Controller {
 
         ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
         if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT articulo, codArticulo FROM articulo WHERE codSubCat = '" + codSubCat + "'", null);
+            Cursor c = Constants.database.rawQuery("SELECT articulo_name, codArticulo FROM articulo WHERE codSubCat = '" + codSubCat + "'", null);
 
             CategoryMessage categoryMessage;
             int i = 0;
@@ -138,7 +138,7 @@ public class Controller {
 
         } else {
             if (Constants.database != null) {
-                Cursor c = Constants.database.rawQuery("SELECT codArticulo, articulo, marca, modelo, descripcion FROM articulo WHERE articulo LIKE '%" + buscar + "%' OR marca LIKE '%" + buscar + "%' OR modelo LIKE '%" + buscar + "%'OR descripcion LIKE '%" + buscar + "%' ORDER BY articulo DESC", null);
+                Cursor c = Constants.database.rawQuery("SELECT codArticulo, articulo_name, marca, modelo, descripcion FROM articulo WHERE articulo_name LIKE '%" + buscar + "%' OR marca LIKE '%" + buscar + "%' OR modelo LIKE '%" + buscar + "%'OR descripcion LIKE '%" + buscar + "%' ORDER BY articulo_name DESC", null);
                 int i = 0;
                 Producto producto = null;
                 if (c.moveToFirst()) {

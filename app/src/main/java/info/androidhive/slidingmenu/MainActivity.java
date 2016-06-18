@@ -271,18 +271,44 @@ public class MainActivity extends Activity {
                     JSONObject jsonObject = null;
                     for(int i = 0; i<json.length();i++){
                         jsonObject = json.getJSONObject(i);
-                        jsonObject.getJSONObject("categoria");
-                        String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
-                        String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
-                        String description = jsonObject.getJSONObject("categoria").get("descripcion").toString();
-                        String query = "INSERT INTO categoria VALUES ('"+codCat+"', '"+category_name+"', '"+description+"')";
-                        Constants.database.execSQL(query);
+                        if(jsonObject.has("categoria")) {
+                            jsonObject.getJSONObject("categoria");
+                            String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
+                            String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
+                            String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
+                            String queryCat = "INSERT INTO categoria VALUES ('"+codCat+"', '"+category_name+"', '"+description_cat+"')";
+                            Constants.database.execSQL(queryCat);
+                        }else if(jsonObject.has("subcategoria")){
+                            jsonObject.getJSONObject("subcategoria");
+                            String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
+                            String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
+                            String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
+                            String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
+                            String querysubCat = "INSERT INTO subCategoria VALUES ('"+codSubCat+"', '"+codCat+"', '"+subcategory_name+"', '"+description_subcat+"')";
+                            Constants.database.execSQL(querysubCat);
+
+                        }else if(jsonObject.has("articulo")){
+                            jsonObject.getJSONObject("articulo");
+                            String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
+                            String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
+                            String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
+                            String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
+                            String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
+                            String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
+                            String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
+                            String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
+                            String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
+                            String queryArt = "INSERT INTO articulo  VALUES('"+cotArt+"','"+codSubCat+"', '"+codCat+"', '"+articulo_name+"', '"+marca_art+"', '"+modelo_art+"', '"+description_art+"', "+precio_art+", "+iva_art+" , 'fenderstrdwh')";
+
+                            Constants.database.execSQL(queryArt);
+                        }
+
                     }
 
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d("", e.toString());
             }
             initialize();
         }
