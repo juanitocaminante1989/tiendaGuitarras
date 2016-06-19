@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.constants.CategoryArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.database.tables.ArticuloTable;
 import info.androidhive.slidingmenu.entities.Producto;
 
 /**
@@ -88,7 +89,7 @@ public class Controller {
 
         ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
         if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT articulo_name, codArticulo FROM articulo WHERE codSubCat = '" + codSubCat + "'", null);
+            Cursor c = Constants.database.rawQuery("SELECT " + ArticuloTable.ARTICULO_NAME + ", "+ArticuloTable.COD_ARTICULO+" FROM "+ArticuloTable.TABLE_NAME+" WHERE "+ArticuloTable.COD_SUB_CAT+" = '" + codSubCat + "'", null);
 
             CategoryMessage categoryMessage;
             int i = 0;

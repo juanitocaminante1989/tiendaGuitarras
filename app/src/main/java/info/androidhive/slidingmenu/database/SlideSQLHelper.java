@@ -8,6 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
+import info.androidhive.slidingmenu.database.tables.ArticuloTable;
+import info.androidhive.slidingmenu.database.tables.CategoriaTable;
+import info.androidhive.slidingmenu.database.tables.SubcategoriaTable;
+
 public class SlideSQLHelper extends SQLiteOpenHelper {
 
     private ArrayList<String> inserts = new ArrayList<String>();
@@ -203,14 +207,14 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // TODO Auto-generated method stub
-        fillData();
+//        fillData();
 
 //        for(String string: inserts){
 //            db.execSQL(string);
 //        }
-        db.execSQL(sqlCreateCategoria);
-        db.execSQL(sqlCreateSubCategoria);
-        db.execSQL(sqlCreateArticulo);
+        db.execSQL(CategoriaTable.CREATE_TABLE);
+        db.execSQL(SubcategoriaTable.CREATE_TABLE);
+        db.execSQL(ArticuloTable.CREATE_TABLE);
         db.execSQL(sqlCreateClientes);
         db.execSQL(sqlCreateCarrito);
         db.execSQL( sqlCreateLineaCarrito);

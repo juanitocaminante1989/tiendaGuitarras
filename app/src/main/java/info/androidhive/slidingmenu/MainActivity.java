@@ -93,7 +93,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.deleteDatabase("CarritoCompra");
         SlideSQLHelper usdbh;
         usdbh = new SlideSQLHelper(this.getApplicationContext(), "CarritoCompra", null, 1);
         Constants.database = usdbh.getWritableDatabase();
