@@ -3,9 +3,13 @@ package info.androidhive.slidingmenu;
 import info.androidhive.slidingmenu.adapter.NavDrawerListAdapter;
 import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.data.JSONInserter;
 import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
+import info.androidhive.slidingmenu.database.tables.ArticuloTable;
+import info.androidhive.slidingmenu.database.tables.CategoriaTable;
+import info.androidhive.slidingmenu.database.tables.SubcategoriaTable;
 import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
@@ -89,10 +93,12 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        this.deleteDatabase("CarritoCompra");
         SlideSQLHelper usdbh;
         usdbh = new SlideSQLHelper(this.getApplicationContext(), "CarritoCompra", null, 1);
         Constants.database = usdbh.getWritableDatabase();
+
+
         Constants.manager = getFragmentManager();
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -270,47 +276,18 @@ public class MainActivity extends Activity {
             try {
                 // Getting JSON Array
                 Constants.objects = new ArrayList<JSONObject>();
+                JSONInserter jsonInserter = new JSONInserter();
                 if(json!=null) {
                     JSONObject jsonObject = null;
                     for(int i = 0; i<json.length();i++){
                         jsonObject = json.getJSONObject(i);
-                        if(jsonObject.has("categoria")) {
-                            jsonObject.getJSONObject("categoria");
-                            String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
-                            String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
-                            String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
-                            String queryCat = "INSERT INTO categoria VALUES ('"+codCat+"', '"+category_name+"', '"+description_cat+"')";
-                            Constants.database.execSQL(queryCat);
-                        }else if(jsonObject.has("subcategoria")){
-                            jsonObject.getJSONObject("subcategoria");
-                            String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
-                            String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
-                            String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
-                            String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
-                            String querysubCat = "INSERT INTO subCategoria VALUES ('"+codSubCat+"', '"+codCat+"', '"+subcategory_name+"', '"+description_subcat+"')";
-                            Constants.database.execSQL(querysubCat);
-
-                        }else if(jsonObject.has("articulo")){
-                            jsonObject.getJSONObject("articulo");
-                            String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
-                            String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
-                            String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
-                            String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
-                            String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
-                            String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
-                            String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
-                            String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
-                            String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
-                            String queryArt = "INSERT INTO articulo  VALUES('"+cotArt+"','"+codSubCat+"', '"+codCat+"', '"+articulo_name+"', '"+marca_art+"', '"+modelo_art+"', '"+description_art+"', "+precio_art+", "+iva_art+" , 'fenderstrdwh')";
-
-                            Constants.database.execSQL(queryArt);
-                        }
+                        jsonInserter.insert(jsonObject);
 
                     }
 
                 }
 
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 Log.d("", e.toString());
             }
             initialize();
@@ -372,7 +349,7 @@ public class MainActivity extends Activity {
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        this.deleteDatabase("CarritoCompra");
+
         if (savedInstanceState == null) {
             // on first time display view for first nav item
             displayView(0);
