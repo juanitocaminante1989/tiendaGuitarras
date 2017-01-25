@@ -6,6 +6,7 @@ public class CategoryMessage {
 
 	public String title;
 	public String message;
+	static String blab = "";
 
 	public CategoryMessage(){
 		this.message = "";
@@ -35,4 +36,11 @@ public class CategoryMessage {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	public void bla(){
+		int i = 3;
+		float j = 23;
+
+		blab = null;
+	}
 }
+

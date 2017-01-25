@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu.constants;
+package info.androidhive.slidingmenu.adapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,6 @@
 package info.androidhive.slidingmenu;
 
 import info.androidhive.slidingmenu.adapter.NavDrawerListAdapter;
-import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
@@ -10,22 +9,27 @@ import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -35,30 +39,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private ListView listView;
     // nav drawer title
     private CharSequence mDrawerTitle;
 
@@ -74,26 +66,25 @@ public class MainActivity extends Activity {
     private EditText cuadroBusqueda;
     private Controller controller;
     private Bundle savedInstanceState;
-    private BusquedaArrayAdapter busquedaArrayAdapter;
-    private static String url = "http://192.168.1.108:80/CarritoCompra/conexion.php";
 
-    //JSON Node Names
-    private static final String TAG_USER = "user";
-    private static final String TAG_ID = "id";
-    private static final String TAG_NAME = "name";
-    private static final String TAG_EMAIL = "email";
-    private Context context;
-
-    JSONArray user = null;
+    public Context context;
+    private ProgressBar mProgressBar;
+    private File file;
+    private Handler mHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this.getApplicationContext();
         setContentView(R.layout.activity_main);
 
+
         SlideSQLHelper usdbh;
-        usdbh = new SlideSQLHelper(this.getApplicationContext(), "CarritoCompra", null, 1);
+        usdbh = new SlideSQLHelper(context, "CarritoCompra", null, 1);
         Constants.database = usdbh.getWritableDatabase();
+
         Constants.manager = getFragmentManager();
+        cuadroBusqueda = (EditText) findViewById(R.id.search);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
@@ -101,14 +92,43 @@ public class MainActivity extends Activity {
         controller = new Controller();
         // load slide menu items
         this.savedInstanceState = savedInstanceState;
-        recieveData();
 
+        new connectFTPServer().execute();
+
+        mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+
+                recieveData();
+            }
+        }, 5000);
+        //createFolder();
+        file = new File("/ftp/");
 
     }
 
     /**
      * Slide menu item click listener
      */
+
+    private void createFolder() {
+        File folder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + "TollCulator");
+// have the object build the directory structure, if needed.
+        if (!folder.exists())
+            folder.mkdirs();
+
+// create a File object for the output file
+        File outputFile = new File(folder.getPath(), "blablabla");
+        try {
+            outputFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+// now attach the OutputStream to the file object, instead of a String representation
+
+    }
+
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
         @Override
@@ -160,15 +180,21 @@ public class MainActivity extends Activity {
         int layout;
         Controller controller = new Controller();
         ArrayList<String> categoryId = controller.getCategoryId();
-        for(int i = 0;i<categoryId.size();i++){
-            if(position==0){
-                fragment = new HomeFragment(R.layout.activity_main,"");
-            }else{
+        for (int i = 0; i < categoryId.size(); i++) {
+            if (position == 0) {
+                fragment = new HomeFragment(R.layout.activity_main, "");
+                Constants.currentFragment = 0;
+            } else {
                 fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position));
+                Constants.currentFragment = 1;
+
+//                recieveData();
+                new connectFTPServer().execute();
             }
         }
 
         if (fragment != null) {
+            Constants.currentFrag = fragment;
             Constants.createNewFragment(R.id.frame_container, fragment);
 
             // update selected item and title, then close the drawer
@@ -197,30 +223,80 @@ public class MainActivity extends Activity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        if(mDrawerToggle!=null)
-        mDrawerToggle.syncState();
+        if (mDrawerToggle != null)
+            mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
-        if(mDrawerToggle!=null)
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null)
+            mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     public void busqueda(View v) {
         Fragment fragment = null;
         int layout;
-        cuadroBusqueda = (EditText) findViewById(R.id.search);
         String busqueda = cuadroBusqueda.getText().toString();
+
         layout = R.layout.activity_main;
         fragment = new HomeFragment(layout, busqueda);
         Constants.createNewFragment(R.id.frame_container, fragment);
     }
 
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
+
+        if (Constants.currentFragment == 0) {
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Saliendo de la Aplicacion")
+                    .setMessage("¿Quieres cerrar la Tienda de Musica?")
+                    .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        } else if (Constants.currentFragment == 1) {
+
+            Fragment fragment = new HomeFragment(R.layout.activity_main, "");
+
+            if (fragment != null) {
+                Constants.createNewFragment(R.id.frame_container, fragment);
+                mDrawerList.setItemChecked(0, true);
+                mDrawerList.setSelection(0);
+                setTitle(navMenuTitles.get(0));
+                mDrawerLayout.closeDrawer(mDrawerList);
+                cuadroBusqueda.setText("");
+            }
+            Constants.currentFragment = 0;
+
+        } else if (Constants.currentFragment == 2) {
+            if (Constants.currentFrag != null)
+                Constants.createNewFragment(R.id.frame_container, Constants.currentFrag);
+
+            Constants.currentFragment = 1;
+
+        } else if (Constants.currentFragment == 3) {
+            Fragment fragment = new ProductList(R.layout.fragment_subcategory, Constants.subCategoryPosition);
+            Constants.createNewFragment(R.id.frame_container, fragment);
+
+            Constants.currentFragment = 2;
+        }
+    }
+
+
+    public void recieveData() {
+        new JSONParse().execute();
+    }
+
+    public void dialog() {
+        new AlertDialog.Builder(context)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Saliendo de la Aplicacion")
                 .setMessage("¿Quieres cerrar la Tienda de Musica?")
@@ -235,89 +311,134 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    private class JSONParse extends AsyncTask<String, Integer, JSONArray> {
 
-    public void recieveData(){
-        new JSONParse().execute();
-    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-    private class JSONParse extends AsyncTask<String, String, JSONArray> {
-//        private ProgressDialog pDialog;
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//
-//            pDialog = new ProgressDialog(context);
-//            pDialog.setMessage("Getting Data ...");
-//            pDialog.setIndeterminate(false);
-//            pDialog.setCancelable(true);
-//            pDialog.show();
-//
-//        }
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected JSONArray doInBackground(String... args) {
             JSONParser jParser = new JSONParser();
 
             // Getting JSON from URL
-            JSONArray json = jParser.getJSONFromUrl(url);
-            if(json != null)
+
+            JSONArray json = jParser.getJSONFromUrl(Constants.url);
+            if (json != null)
                 return json;
-            else
+            else {
+                dialog();
                 return null;
+            }
         }
+
         @Override
         protected void onPostExecute(JSONArray json) {
             try {
                 // Getting JSON Array
                 Constants.objects = new ArrayList<JSONObject>();
-                if(json!=null) {
-                    JSONObject jsonObject = null;
-                    for(int i = 0; i<json.length();i++){
-                        jsonObject = json.getJSONObject(i);
-                        if(jsonObject.has("categoria")) {
-                            jsonObject.getJSONObject("categoria");
-                            String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
-                            String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
-                            String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
-                            String queryCat = "INSERT INTO categoria VALUES ('"+codCat+"', '"+category_name+"', '"+description_cat+"')";
-                            Constants.database.execSQL(queryCat);
-                        }else if(jsonObject.has("subcategoria")){
-                            jsonObject.getJSONObject("subcategoria");
-                            String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
-                            String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
-                            String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
-                            String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
-                            String querysubCat = "INSERT INTO subCategoria VALUES ('"+codSubCat+"', '"+codCat+"', '"+subcategory_name+"', '"+description_subcat+"')";
-                            Constants.database.execSQL(querysubCat);
+                if (json != null) {
 
-                        }else if(jsonObject.has("articulo")){
-                            jsonObject.getJSONObject("articulo");
-                            String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
-                            String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
-                            String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
-                            String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
-                            String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
-                            String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
-                            String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
-                            String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
-                            String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
-                            String queryArt = "INSERT INTO articulo  VALUES('"+cotArt+"','"+codSubCat+"', '"+codCat+"', '"+articulo_name+"', '"+marca_art+"', '"+modelo_art+"', '"+description_art+"', "+precio_art+", "+iva_art+" , 'fenderstrdwh')";
+                        JSONObject jsonObject = null;
+                        for (int i = 0; i < json.length(); i++) {
+                            jsonObject = json.getJSONObject(i);
+                            if (jsonObject.has("categoria")) {
+                                jsonObject.getJSONObject("categoria");
+                                String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
+                                String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
+                                String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
+                                String queryCat = "INSERT INTO categoria VALUES ('" + codCat + "', '" + category_name + "', '" + description_cat + "')";
+                                ContentValues initialValues= new ContentValues();
+                                initialValues.put("codCat", codCat);
+                                initialValues.put("category_name", category_name);
+                                initialValues.put("descripcion", description_cat);
+                                Controller.insertOrUpdateCategory(initialValues);
 
-                            Constants.database.execSQL(queryArt);
+                            } else if (jsonObject.has("subcategoria")) {
+                                jsonObject.getJSONObject("subcategoria");
+                                String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
+                                String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
+                                String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
+                                String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
+                                String deletedSub = jsonObject.getJSONObject("subcategoria").get("deleted").toString();
+                                String querysubCat = "INSERT INTO subCategoria VALUES ('" + codSubCat + "', '" + codCat + "', '" + subcategory_name + "', '" + description_subcat + "')";
+                                ContentValues initialValues= new ContentValues();
+                                initialValues.put("codSubCat", codSubCat);
+                                initialValues.put("codCat", codCat);
+                                initialValues.put("subcategory_name", subcategory_name);
+                                initialValues.put("descripcion", description_subcat);
+                                Controller.insertOrUpdateSubCategory(initialValues);
+                                if(deletedSub.equals("1")){
+                                    Constants.database.delete("subCategoria", "codSubCat=?", new String[]{(String)initialValues.get("codSubCat")});
+                                }
+
+                            } else if (jsonObject.has("articulo")) {
+                                jsonObject.getJSONObject("articulo");
+                                String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
+                                String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
+                                String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
+                                String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
+                                String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
+                                String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
+                                String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
+                                String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
+                                String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
+                                String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
+                                String queryArt = "INSERT INTO articulo  VALUES('" + cotArt + "','" + codSubCat + "', '" + codCat + "', '" + articulo_name + "', '" + marca_art + "', '" + modelo_art + "', '" + description_art + "', " + precio_art + ", " + iva_art + " , 'fenderstrdwh')";
+                                ContentValues initialValues= new ContentValues();
+                                initialValues.put("codArticulo", cotArt);
+                                initialValues.put("codSubCat", codSubCat);
+                                initialValues.put("codCat", codCat);
+                                initialValues.put("articulo_name", articulo_name);
+                                initialValues.put("marca", marca_art);
+                                initialValues.put("modelo", modelo_art);
+                                initialValues.put("descripcion", description_art);
+                                initialValues.put("precio", precio_art);
+                                initialValues.put("IVA", iva_art);
+                                initialValues.put("directorio", "fenderstrdwh");
+                                Controller.insertOrUpdateProduct(initialValues);
+                                if(deletedArt.equals("1")){
+                                    Constants.database.delete("articulo", "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
+                                }
+
+                            }
+                            Constants.database.beginTransaction();
+                            Constants.database.endTransaction();
                         }
 
-                    }
-
+                    Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
+                    mProgressBar.setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(context, "Download error", Toast.LENGTH_LONG).show();
+                    mProgressBar.setVisibility(View.GONE);
+                    dialog();
                 }
 
-            } catch (JSONException e) {
-                Log.d("", e.toString());
+            } catch (Exception e) {
+                mProgressBar.setVisibility(View.GONE);
+                Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
             }
             initialize();
         }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+
+            super.onProgressUpdate(values);
+            // if we get here, length is known, now set indeterminate to false
+            mProgressBar.setIndeterminate(false);
+            mProgressBar.setMax(100);
+            mProgressBar.setProgress(values[0]);
+
+
+        }
     }
 
-    public void initialize(){
+    public void initialize() {
         navMenuTitles = controller.getCategoryNames();
 
         // nav drawer icons from resources
@@ -325,15 +446,12 @@ public class MainActivity extends Activity {
                 .obtainTypedArray(R.array.nav_drawer_icons);
 
 
-
         navDrawerItems = new ArrayList<NavDrawerItem>();
-        context = this.getApplicationContext();
+
         // adding nav drawer items to array
         //navMenuIcons.
 
-
-
-        for(int i = 0;i<controller.getCantidadCategorias();i++){
+        for (int i = 0; i < controller.getCantidadCategorias(); i++) {
             NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
             navDrawerItems.add(navDrawerItem);
         }
@@ -372,10 +490,67 @@ public class MainActivity extends Activity {
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        this.deleteDatabase("CarritoCompra");
         if (savedInstanceState == null) {
             // on first time display view for first nav item
             displayView(0);
+        }
+
+
+    }
+
+
+    private class connectFTPServer extends AsyncTask{
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            try {
+                downloadAndSaveFile("ftp://192.168.1.104",21, "android","android","blabla.txt",file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+
+    private Boolean downloadAndSaveFile(String server, int portNumber,
+                                        String user, String password, String filename, File localFile)
+            throws IOException {
+        FTPClient ftp = null;
+
+        try {
+            ftp = new FTPClient();
+            ftp.connect(InetAddress.getByName(server));
+            ftp.connect(server);
+            ftp.connect(server,portNumber);
+            Log.d("", "Connected. Reply: " + ftp.getReplyString());
+
+            ftp.login(user, password);
+            Log.d("", "Logged in");
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
+            Log.d("", "Downloading");
+            ftp.enterLocalPassiveMode();
+
+            OutputStream outputStream = null;
+            boolean success = false;
+            try {
+                outputStream = new BufferedOutputStream(new FileOutputStream(
+                        localFile));
+                success = ftp.retrieveFile(filename, outputStream);
+            } finally {
+                if (outputStream != null) {
+
+                    outputStream.close();
+                }
+            }
+
+            return success;
+        } finally {
+            if (ftp != null) {
+                ftp.logout();
+                ftp.disconnect();
+            }
         }
     }
 }

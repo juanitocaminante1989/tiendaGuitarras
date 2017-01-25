@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu.constants;
+package info.androidhive.slidingmenu.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import info.androidhive.slidingmenu.ProductView;
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class BusquedaArrayAdapter extends ArrayAdapter {
@@ -77,6 +78,7 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
             public void onClick(View arg0) {
 
                 producto(MessageObj.codArticulo, R.layout.activity_main_main, parent);
+                Constants.currentFragment = 1;
 
             }
         });

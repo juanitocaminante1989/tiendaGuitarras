@@ -203,11 +203,11 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // TODO Auto-generated method stub
-        fillData();
-
-//        for(String string: inserts){
-//            db.execSQL(string);
-//        }
+//        fillData();
+//
+////        for(String string: inserts){
+////            db.execSQL(string);
+////        }
         db.execSQL(sqlCreateCategoria);
         db.execSQL(sqlCreateSubCategoria);
         db.execSQL(sqlCreateArticulo);

@@ -2,13 +2,14 @@ package info.androidhive.slidingmenu.database;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
 import info.androidhive.slidingmenu.CategoryMessage;
-import info.androidhive.slidingmenu.constants.CategoryArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Producto;
 
@@ -19,6 +20,30 @@ public class Controller {
 
     public Controller() {
 
+    }
+
+    public static void insertOrUpdateCategory(ContentValues initialValues){
+
+        int id = (int) Constants.database.insertWithOnConflict("categoria", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("categoria", initialValues, "codCat=?", new String[]{(String)initialValues.get("codCat")});
+        }
+    }
+
+    public static void insertOrUpdateSubCategory(ContentValues initialValues){
+
+        int id = (int) Constants.database.insertWithOnConflict("subCategoria", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("subCategoria", initialValues, "codSubCat=?", new String[]{(String)initialValues.get("codSubCat")});
+        }
+    }
+
+    public static void insertOrUpdateProduct(ContentValues initialValues){
+
+        int id = (int) Constants.database.insertWithOnConflict("articulo", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("articulo", initialValues, "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
+        }
     }
 
     public ArrayList<CategoryMessage> consultaSubCategorias(String query) {
@@ -232,4 +257,30 @@ public class Controller {
         }
         return  productos;
     }
+
+    public static ArrayList<CategoryMessage> consultaSubCat(String query) {
+
+        ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codSubCat = '" + query + "'", null);
+            //txtResultado.setText("");
+            CategoryMessage categoryMessage = null;
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    categoryMessage = new CategoryMessage();
+                    i = i++;
+                    String codSubCat = c.getString(0);
+                    String subCat = c.getString(1);
+
+                    categoryMessage.setTitle(codSubCat);
+                    categoryMessage.setMessage(subCat);
+
+                    categoryMessages.add(categoryMessage);
+                } while (c.moveToNext());
+            }
+        }
+        return categoryMessages;
+    }
+
 }

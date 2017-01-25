@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu.constants;
+package info.androidhive.slidingmenu.adapter;
 
 import java.util.ArrayList;
 import android.app.Fragment;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.ProductView;
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.constants.Constants;
 
 public class SubCategoryArrayAdapter extends ArrayAdapter {
 
@@ -41,7 +42,7 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
 
     }
 
-    public View getView(int position, View convertView, final ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
 
         View row = convertView;
         if (row == null) {
@@ -58,8 +59,10 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
 
                 producto(MessageObj.message, layout);
 
+                Constants.currentFragment = 3;
             }
         });
+
         return row;
     }
 

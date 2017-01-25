@@ -3,13 +3,9 @@ package info.androidhive.slidingmenu;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import info.androidhive.slidingmenu.constants.Constants;
-import info.androidhive.slidingmenu.constants.SubCategoryArrayAdapter;
+import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 
 public class ProductList extends Fragment {
@@ -65,9 +61,9 @@ public class ProductList extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CategoryMessage MessageObj = (CategoryMessage) adapterView.getItemAtPosition(i);
                 producto(MessageObj.message);
+//                Constants.currentFragment = 2;
             }
         });
-
         return rootView;
 
     }

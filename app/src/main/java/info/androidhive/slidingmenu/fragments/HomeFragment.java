@@ -3,10 +3,7 @@ package info.androidhive.slidingmenu.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import info.androidhive.slidingmenu.R;
-import info.androidhive.slidingmenu.constants.BusquedaArrayAdapter;
-import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.adapter.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
-import info.androidhive.slidingmenu.entities.Producto;
 
 public class HomeFragment extends Fragment {
 

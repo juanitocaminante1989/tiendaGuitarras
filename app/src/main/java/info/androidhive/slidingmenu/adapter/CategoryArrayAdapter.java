@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu.constants;
+package info.androidhive.slidingmenu.adapter;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.ProductList;
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.constants.Constants;
 
 
 public class CategoryArrayAdapter extends ArrayAdapter {
@@ -54,17 +55,19 @@ public class CategoryArrayAdapter extends ArrayAdapter {
             @Override
             public void onClick(View arg0) {
 
-                producto(MessageObj.title, layout);
+                subCategory(MessageObj.title, layout);
 
+                Constants.currentFragment = 2;
             }
         });
 
         return row;
     }
 
-    public void producto(String codSubCat, int layout) {
+    public void subCategory(String codSubCat, int layout) {
         this.layout = layout;
         Fragment fragment = null;
+        Constants.subCategoryPosition = codSubCat;
         fragment = new ProductList(R.layout.fragment_subcategory,codSubCat);
         Constants.createNewFragment(R.id.frame_container, fragment);
     }

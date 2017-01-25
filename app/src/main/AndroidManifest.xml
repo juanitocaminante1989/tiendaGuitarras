@@ -3,7 +3,10 @@
     package="info.androidhive.slidingmenu"
     android:versionCode="1"
     android:versionName="1.0" >
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="17" />
@@ -14,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.MyAppTheme" >
         <activity
-            android:name=".StarterActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -23,35 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
-            android:name=".entities.Sonido"
-            android:label="@string/title_activity_sonido" >
-        </activity>
-        <activity
-            android:name=".entities.ProAudio"
-            android:label="@string/title_activity_pro_audio" >
-        </activity>
-        <activity
-            android:name=".entities.Ordenadores"
-            android:label="@string/title_activity_ordenadores" >
-        </activity>
-        <activity
-            android:name=".entities.Viento"
-            android:label="@string/title_activity_viento" >
-        </activity>
-        <activity
-            android:name=".entities.DJ"
-            android:label="@string/title_activity_dj" >
-        </activity>
-        <activity
-            android:name=".entities.Accesorios"
-            android:label="@string/title_activity_accesorios" >
-        </activity>
+
     </application>
 
 </manifest>

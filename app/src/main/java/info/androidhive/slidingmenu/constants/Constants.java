@@ -20,9 +20,17 @@ public class Constants {
     public static FragmentManager manager = null;
 
     public static void createNewFragment(int layoutId, Fragment fragment){
-        if(Constants.manager!=null)
+        if(Constants.manager!=null) {
             Constants.manager.beginTransaction().replace(layoutId, fragment).commit();
+        }
     }
+
+    public final static String url = "http://192.168.1.104:80/CarritoCompra/conexion.php";
+
     public static ArrayList<JSONObject> objects;
     public static boolean hasExecuted = false;
+    public static int currentFragment = -1;
+    public static String subCategoryPosition = "";
+    public static Fragment currentFrag = null;
+
 }

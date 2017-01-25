@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.androidhive.slidingmenu.R;
-import info.androidhive.slidingmenu.constants.CategoryArrayAdapter;
+import info.androidhive.slidingmenu.adapter.CategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 
 /**

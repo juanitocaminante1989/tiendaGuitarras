@@ -42,12 +42,15 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="394dp"
 	    android:orientation="vertical"
-	    android:paddingTop="60dp" 
-	   
-	    >
+	    android:paddingTop="60dp"
 
-	    
-	    
+		android:weightSum="1">
+
+		<ProgressBar
+			style="?android:attr/progressBarStyleLarge"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/progressBar" />
 	</LinearLayout>
 
         </FrameLayout>
