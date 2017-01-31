@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
     private ProgressBar mProgressBar;
     private File file;
     private Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +95,6 @@ public class MainActivity extends Activity {
         controller = new Controller();
         // load slide menu items
         this.savedInstanceState = savedInstanceState;
-
 
 
         mHandler = new Handler();
@@ -165,13 +165,13 @@ public class MainActivity extends Activity {
             if (position == 0) {
                 fragment = new HomeFragment(R.layout.activity_main, "");
                 Constants.currentFragment = 0;
-            } else if(position == 1){
+            } else if (position == 1) {
                 fragment = new ProfileFragment(context);
                 Constants.currentFragment = 1;
 
 
-            }else {
-                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position-1),context);
+            } else {
+                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position - 1), context);
                 Constants.currentFragment = 1;
             }
         }
@@ -327,73 +327,73 @@ public class MainActivity extends Activity {
                 Constants.objects = new ArrayList<JSONObject>();
                 if (json != null) {
 
-                        JSONObject jsonObject = null;
-                        for (int i = 0; i < json.length(); i++) {
-                            jsonObject = json.getJSONObject(i);
-                            if (jsonObject.has("categoria")) {
-                                jsonObject.getJSONObject("categoria");
-                                String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
-                                String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
-                                String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
-                                String queryCat = "INSERT INTO categoria VALUES ('" + codCat + "', '" + category_name + "', '" + description_cat + "')";
-                                ContentValues initialValues= new ContentValues();
-                                initialValues.put("codCat", codCat);
-                                initialValues.put("category_name", category_name);
-                                initialValues.put("descripcion", description_cat);
-                                id = Controller.insertOrUpdateCategory(initialValues);
+                    JSONObject jsonObject = null;
+                    for (int i = 0; i < json.length(); i++) {
+                        jsonObject = json.getJSONObject(i);
+                        if (jsonObject.has("categoria")) {
+                            jsonObject.getJSONObject("categoria");
+                            String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
+                            String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
+                            String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
+                            String queryCat = "INSERT INTO categoria VALUES ('" + codCat + "', '" + category_name + "', '" + description_cat + "')";
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("codCat", codCat);
+                            initialValues.put("category_name", category_name);
+                            initialValues.put("descripcion", description_cat);
+                            id = Controller.insertOrUpdateCategory(initialValues);
 
-                            } else if (jsonObject.has("subcategoria")) {
-                                jsonObject.getJSONObject("subcategoria");
-                                String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
-                                String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
-                                String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
-                                String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
-                                String deletedSub = jsonObject.getJSONObject("subcategoria").get("deleted").toString();
-                                String querysubCat = "INSERT INTO subCategoria VALUES ('" + codSubCat + "', '" + codCat + "', '" + subcategory_name + "', '" + description_subcat + "')";
-                                ContentValues initialValues= new ContentValues();
-                                initialValues.put("codSubCat", codSubCat);
-                                initialValues.put("codCat", codCat);
-                                initialValues.put("subcategory_name", subcategory_name);
-                                initialValues.put("descripcion", description_subcat);
-                                id = Controller.insertOrUpdateSubCategory(initialValues);
-                                if(deletedSub.equals("1")){
-                                    Constants.database.delete("subCategoria", "codSubCat=?", new String[]{(String)initialValues.get("codSubCat")});
-                                }
-
-                            } else if (jsonObject.has("articulo")) {
-                                jsonObject.getJSONObject("articulo");
-                                String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
-                                String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
-                                String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
-                                String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
-                                String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
-                                String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
-                                String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
-                                String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
-                                String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
-                                String directory = jsonObject.getJSONObject("articulo").get("directory").toString();
-                                String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
-
-                                ContentValues initialValues= new ContentValues();
-                                initialValues.put("codArticulo", cotArt);
-                                initialValues.put("codSubCat", codSubCat);
-                                initialValues.put("codCat", codCat);
-                                initialValues.put("articulo_name", articulo_name);
-                                initialValues.put("marca", marca_art);
-                                initialValues.put("modelo", modelo_art);
-                                initialValues.put("descripcion", description_art);
-                                initialValues.put("precio", precio_art);
-                                initialValues.put("IVA", iva_art);
-                                initialValues.put("directorio", directory);
-                                id = Controller.insertOrUpdateProduct(initialValues);
-                                if(deletedArt.equals("1")){
-                                    Constants.database.delete("articulo", "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
-                                }
-
+                        } else if (jsonObject.has("subcategoria")) {
+                            jsonObject.getJSONObject("subcategoria");
+                            String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
+                            String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
+                            String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
+                            String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
+                            String deletedSub = jsonObject.getJSONObject("subcategoria").get("deleted").toString();
+                            String querysubCat = "INSERT INTO subCategoria VALUES ('" + codSubCat + "', '" + codCat + "', '" + subcategory_name + "', '" + description_subcat + "')";
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("codSubCat", codSubCat);
+                            initialValues.put("codCat", codCat);
+                            initialValues.put("subcategory_name", subcategory_name);
+                            initialValues.put("descripcion", description_subcat);
+                            id = Controller.insertOrUpdateSubCategory(initialValues);
+                            if (deletedSub.equals("1")) {
+                                Constants.database.delete("subCategoria", "codSubCat=?", new String[]{(String) initialValues.get("codSubCat")});
                             }
-                            Constants.database.beginTransaction();
-                            Constants.database.endTransaction();
+
+                        } else if (jsonObject.has("articulo")) {
+                            jsonObject.getJSONObject("articulo");
+                            String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
+                            String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
+                            String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
+                            String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
+                            String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
+                            String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
+                            String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
+                            String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
+                            String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
+                            String directory = jsonObject.getJSONObject("articulo").get("directory").toString();
+                            String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
+
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("codArticulo", cotArt);
+                            initialValues.put("codSubCat", codSubCat);
+                            initialValues.put("codCat", codCat);
+                            initialValues.put("articulo_name", articulo_name);
+                            initialValues.put("marca", marca_art);
+                            initialValues.put("modelo", modelo_art);
+                            initialValues.put("descripcion", description_art);
+                            initialValues.put("precio", precio_art);
+                            initialValues.put("IVA", iva_art);
+                            initialValues.put("directorio", directory);
+                            id = Controller.insertOrUpdateProduct(initialValues);
+                            if (deletedArt.equals("1")) {
+                                Constants.database.delete("articulo", "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
+                            }
+
                         }
+                        Constants.database.beginTransaction();
+                        Constants.database.endTransaction();
+                    }
 
                     Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
                     mProgressBar.setVisibility(View.GONE);
@@ -407,7 +407,7 @@ public class MainActivity extends Activity {
                 mProgressBar.setVisibility(View.GONE);
                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
             }
-            if(id != -1) {
+            if (id != -1) {
                 new connectFTPServer().execute();
             }
             initialize();
@@ -488,13 +488,13 @@ public class MainActivity extends Activity {
     }
 
 
-    private class connectFTPServer extends AsyncTask{
+    private class connectFTPServer extends AsyncTask {
 
         @Override
         protected Object doInBackground(Object[] objects) {
 
             try {
-                downloadAndSaveFile("192.168.1.104",21, "android","android","blabla.txt",file);
+                downloadAndSaveFile("192.168.1.104", 21, "android", "android");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -504,13 +504,13 @@ public class MainActivity extends Activity {
 
 
     private Boolean downloadAndSaveFile(String server, int portNumber,
-                                        String user, String password, String filename, File localFile)
+                                        String user, String password)
             throws IOException {
         FTPClient ftp = null;
 
         try {
             ftp = new FTPClient();
-            ftp.connect(server,portNumber);
+            ftp.connect(server, portNumber);
             Log.d("", "Connected. Reply: " + ftp.getReplyString());
 
             ftp.login(user, password);
@@ -526,16 +526,16 @@ public class MainActivity extends Activity {
 
 //            ftp.changeWorkingDirectory("");
             boolean success = false;
-            File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/"+"tiendamusica");
-            if(!filePath.exists()){
+            File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
+            if (!filePath.exists()) {
                 filePath.mkdirs();
             }
 //            boolean change = ftp.changeWorkingDirectory(filePath);
             try {
-                for(FTPFile file: files){
+                for (FTPFile file : files) {
                     file.getName();
 
-                    outputStream = new BufferedOutputStream(new FileOutputStream(filePath.getPath()+"/"+file.getName()));
+                    outputStream = new BufferedOutputStream(new FileOutputStream(filePath.getPath() + "/" + file.getName()));
                     success = ftp.retrieveFile(file.getName(), outputStream);
                 }
 
