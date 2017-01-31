@@ -94,6 +94,7 @@ public class Controller {
 
         ArrayList<String> categoryMessages = new ArrayList<String>();
         categoryMessages.add("Principal");
+        categoryMessages.add("Perfil");
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT category_name FROM Categoria order by codCat ASC", null);
             int i = 0;
@@ -232,6 +233,7 @@ public class Controller {
                     final String descripcion = c.getString(6);
                     final double precio = Double.parseDouble(c.getString(7));
                     final double IVA = Double.parseDouble(c.getString(8));
+                    final String directorio = c.getString(9);
 //                    final String direc = c.getString(9);
 //                    int id = getResources()
 //                            .getIdentifier(direc, "drawable", getActivity().getApplicationContext().getPackageName());
@@ -248,7 +250,7 @@ public class Controller {
                     producto.setDescripcion(descripcion);
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
-                    producto.setDirectorio(-1);
+                    producto.setDirectorio(directorio);
 
                     productos.add(producto);
 

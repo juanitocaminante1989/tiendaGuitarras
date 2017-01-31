@@ -26,16 +26,9 @@ import info.androidhive.slidingmenu.entities.Producto;
 public class BusquedaArrayAdapter extends ArrayAdapter {
 
     Button articulo;
-    TextView marca;
-    TextView modelo;
-    TextView precio;
-    ImageView imagen;
-    private LinearLayout singleMessageContainer;
     int layout;
-    int textViewResourceId;
-    private String codSubCat;
-    Fragment fragment;
     private ArrayList<Producto> productos;
+    Context context;
 
     public void add(Producto object) {
         productos.add(object);
@@ -48,6 +41,7 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
 
     public BusquedaArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> productos) {
         super(context, textViewResourceId);
+        this.context = context;
         this.layout = layout;
         this.productos = productos;
     }
@@ -68,7 +62,6 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
             LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(R.layout.activity_main_main, parent, false);
         }
-        singleMessageContainer = (LinearLayout) row.findViewById(R.id.searchCont);
         final Producto MessageObj = getItem(position);
         articulo = (Button) row.findViewById(R.id.singleMessage);
 
@@ -77,7 +70,7 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
             @Override
             public void onClick(View arg0) {
 
-                producto(MessageObj.codArticulo, R.layout.activity_main_main, parent);
+                producto(MessageObj.codArticulo, R.layout.activity_main_main, parent, context);
                 Constants.currentFragment = 1;
 
             }
@@ -85,17 +78,15 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         return row;
     }
 
-    public void producto(String codSubCat, int layout, ViewGroup parent) {
+    public void producto(String codSubCat, int layout, ViewGroup parent,Context context) {
         View row;
         //ViewGroup parent;
-        this.codSubCat = codSubCat;
         this.layout = layout;
         //layout = R.layout.activity_proaudio_main;
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(layout, parent, false);
-        final Context context = parent.getContext();
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat, R.layout.fragment_product);
+        fragment = new ProductView(codSubCat, R.layout.fragment_product, context);
         Constants.createNewFragment(R.id.frame_container, fragment);
 
     }

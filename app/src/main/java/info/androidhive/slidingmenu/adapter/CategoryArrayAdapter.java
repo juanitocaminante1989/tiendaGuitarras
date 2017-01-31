@@ -20,6 +20,7 @@ public class CategoryArrayAdapter extends ArrayAdapter {
     Button chatText;
     int layout;
     private ArrayList<CategoryMessage> categoryMessages;
+    Context context;
     public void add(CategoryMessage object) {
         categoryMessages.add(object);
         super.add(object);
@@ -28,6 +29,7 @@ public class CategoryArrayAdapter extends ArrayAdapter {
 
     public CategoryArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<CategoryMessage> categoryMessages) {
         super(context, textViewResourceId);
+        this.context = context;
         this.layout = layout;
         this.categoryMessages = categoryMessages;
     }
@@ -55,7 +57,7 @@ public class CategoryArrayAdapter extends ArrayAdapter {
             @Override
             public void onClick(View arg0) {
 
-                subCategory(MessageObj.title, layout);
+                subCategory(MessageObj.title, layout, context);
 
                 Constants.currentFragment = 2;
             }
@@ -64,11 +66,11 @@ public class CategoryArrayAdapter extends ArrayAdapter {
         return row;
     }
 
-    public void subCategory(String codSubCat, int layout) {
+    public void subCategory(String codSubCat, int layout, Context context) {
         this.layout = layout;
         Fragment fragment = null;
         Constants.subCategoryPosition = codSubCat;
-        fragment = new ProductList(R.layout.fragment_subcategory,codSubCat);
+        fragment = new ProductList(R.layout.fragment_subcategory,codSubCat, context);
         Constants.createNewFragment(R.id.frame_container, fragment);
     }
 

@@ -3,8 +3,8 @@
 <item>
     <shape
      android:shape="rectangle"> 
-     <stroke android:width="2dp" android:color="#000000" />
-     <gradient android:startColor="#CF8300" android:endColor="#CF8300" 
+     <stroke android:width="2dp" android:color="@color/true_blue" />
+     <gradient android:startColor="@color/sky_blue" android:endColor="@color/sky_blue"
             /> 
  
     <corners android:bottomRightRadius="2dp" android:bottomLeftRadius="2dp" 

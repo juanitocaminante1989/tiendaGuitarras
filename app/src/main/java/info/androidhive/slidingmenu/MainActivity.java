@@ -7,6 +7,7 @@ import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
 import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
+import info.androidhive.slidingmenu.fragments.ProfileFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 
 import java.io.BufferedOutputStream;
@@ -44,6 +45,7 @@ import android.widget.Toast;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -93,41 +95,20 @@ public class MainActivity extends Activity {
         // load slide menu items
         this.savedInstanceState = savedInstanceState;
 
-        new connectFTPServer().execute();
+
 
         mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {
             public void run() {
-
+                new connectFTPServer().execute();
                 recieveData();
             }
         }, 5000);
         //createFolder();
-        file = new File("/ftp/");
+
 
     }
 
-    /**
-     * Slide menu item click listener
-     */
-
-    private void createFolder() {
-        File folder = new File(Environment.getExternalStorageDirectory() +
-                File.separator + "TollCulator");
-// have the object build the directory structure, if needed.
-        if (!folder.exists())
-            folder.mkdirs();
-
-// create a File object for the output file
-        File outputFile = new File(folder.getPath(), "blablabla");
-        try {
-            outputFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-// now attach the OutputStream to the file object, instead of a String representation
-
-    }
 
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
@@ -184,12 +165,14 @@ public class MainActivity extends Activity {
             if (position == 0) {
                 fragment = new HomeFragment(R.layout.activity_main, "");
                 Constants.currentFragment = 0;
-            } else {
-                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position));
+            } else if(position == 1){
+                fragment = new ProfileFragment(context);
                 Constants.currentFragment = 1;
 
-//                recieveData();
-                new connectFTPServer().execute();
+
+            }else {
+                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position-1),context);
+                Constants.currentFragment = 1;
             }
         }
 
@@ -283,7 +266,7 @@ public class MainActivity extends Activity {
             Constants.currentFragment = 1;
 
         } else if (Constants.currentFragment == 3) {
-            Fragment fragment = new ProductList(R.layout.fragment_subcategory, Constants.subCategoryPosition);
+            Fragment fragment = new ProductList(R.layout.fragment_subcategory, Constants.subCategoryPosition, context);
             Constants.createNewFragment(R.id.frame_container, fragment);
 
             Constants.currentFragment = 2;
@@ -386,8 +369,9 @@ public class MainActivity extends Activity {
                                 String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
                                 String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
                                 String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
+                                String directory = jsonObject.getJSONObject("articulo").get("directory").toString();
                                 String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
-                                String queryArt = "INSERT INTO articulo  VALUES('" + cotArt + "','" + codSubCat + "', '" + codCat + "', '" + articulo_name + "', '" + marca_art + "', '" + modelo_art + "', '" + description_art + "', " + precio_art + ", " + iva_art + " , 'fenderstrdwh')";
+
                                 ContentValues initialValues= new ContentValues();
                                 initialValues.put("codArticulo", cotArt);
                                 initialValues.put("codSubCat", codSubCat);
@@ -398,7 +382,7 @@ public class MainActivity extends Activity {
                                 initialValues.put("descripcion", description_art);
                                 initialValues.put("precio", precio_art);
                                 initialValues.put("IVA", iva_art);
-                                initialValues.put("directorio", "fenderstrdwh");
+                                initialValues.put("directorio", directory);
                                 Controller.insertOrUpdateProduct(initialValues);
                                 if(deletedArt.equals("1")){
                                     Constants.database.delete("articulo", "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
@@ -505,11 +489,11 @@ public class MainActivity extends Activity {
         protected Object doInBackground(Object[] objects) {
 
             try {
-                downloadAndSaveFile("ftp://192.168.1.104",21, "android","android","blabla.txt",file);
+                downloadAndSaveFile("192.168.1.104",21, "android","android","blabla.txt",file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return false;
         }
     }
 
@@ -521,8 +505,6 @@ public class MainActivity extends Activity {
 
         try {
             ftp = new FTPClient();
-            ftp.connect(InetAddress.getByName(server));
-            ftp.connect(server);
             ftp.connect(server,portNumber);
             Log.d("", "Connected. Reply: " + ftp.getReplyString());
 
@@ -533,11 +515,25 @@ public class MainActivity extends Activity {
             ftp.enterLocalPassiveMode();
 
             OutputStream outputStream = null;
+            String workingDir = ftp.printWorkingDirectory();
+            FTPFile[] files = ftp.listFiles();
+
+
+//            ftp.changeWorkingDirectory("");
             boolean success = false;
+            File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/"+"tiendamusica");
+            if(!filePath.exists()){
+                filePath.mkdirs();
+            }
+//            boolean change = ftp.changeWorkingDirectory(filePath);
             try {
-                outputStream = new BufferedOutputStream(new FileOutputStream(
-                        localFile));
-                success = ftp.retrieveFile(filename, outputStream);
+                for(FTPFile file: files){
+                    file.getName();
+
+                    outputStream = new BufferedOutputStream(new FileOutputStream(filePath.getPath()+"/"+file.getName()));
+                    success = ftp.retrieveFile(file.getName(), outputStream);
+                }
+
             } finally {
                 if (outputStream != null) {
 

@@ -21,6 +21,8 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
     private LinearLayout singleMessageContainer;
     int layout;
     private ArrayList<CategoryMessage> categoryMessages;
+    Context context;
+
     public void add(CategoryMessage object) {
         categoryMessages.add(object);
         super.add(object);
@@ -29,6 +31,7 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
 
     public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<CategoryMessage> categoryMessages) {
         super(context, textViewResourceId);
+        this.context = context;
         this.layout = layout;
         this.categoryMessages = categoryMessages;
     }
@@ -57,7 +60,7 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
             @Override
             public void onClick(View arg0) {
 
-                producto(MessageObj.message, layout);
+                producto(MessageObj.message, layout, context);
 
                 Constants.currentFragment = 3;
             }
@@ -66,10 +69,10 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         return row;
     }
 
-    public void producto(String codSubCat, int layout) {
+    public void producto(String codSubCat, int layout,Context context) {
         this.layout = layout;
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat, R.layout.fragment_product);
+        fragment = new ProductView(codSubCat, R.layout.fragment_product, context);
         if(Constants.manager!= null)
             Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }

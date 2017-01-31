@@ -8,8 +8,8 @@
     android:id="@+id/listView1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#d50000"
-    android:divider="#000000"
+    android:background="@color/true_blue"
+    android:divider="@color/black"
     android:dividerHeight="10dp"
     android:paddingTop="0dp" >
      

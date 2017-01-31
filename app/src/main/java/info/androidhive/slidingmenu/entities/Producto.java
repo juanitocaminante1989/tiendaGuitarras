@@ -12,14 +12,14 @@ public class Producto {
     public String descripcion;
     public double precio;
     double IVA;
-    public int directorio;
+    public String directorio;
 
 
     public Producto() {
 
     }
 
-    public Producto(String codArticulo, String codSubCat, String codCat, String articulo, String marca, String modelo, String descripcion, double precio, double IVA, int directorio) {
+    public Producto(String codArticulo, String codSubCat, String codCat, String articulo, String marca, String modelo, String descripcion, double precio, double IVA, String directorio) {
         this.codArticulo = codArticulo;
         this.codSubCat = codSubCat;
         this.codCat = codCat;
@@ -113,11 +113,11 @@ public class Producto {
         this.IVA = IVA;
     }
 
-    public int getDirectorio() {
+    public String getDirectorio() {
         return directorio;
     }
 
-    public void setDirectorio(int directorio) {
+    public void setDirectorio(String directorio) {
         this.directorio = directorio;
     }
 }

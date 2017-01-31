@@ -2,6 +2,7 @@ package info.androidhive.slidingmenu.fragments;
 
 import android.app.Fragment;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,25 +26,15 @@ import info.androidhive.slidingmenu.database.Controller;
  */
 public class FragmentCreator extends Fragment{
 
-    private TextView txtResultado;
-    private RelativeLayout relLay;
     View rootView;
     public CategoryArrayAdapter categoryArrayAdapter;
-    public LinearLayout opciones;
     public ListView listView;
-    public Animation animFadein1;
-    public Animation animFadein2;
-    public NotificationManager myNotificationManager;
-    public int numMessagesOne = 0;
-    public int notificationIdOne = 111;
-    List<String> mensajes = new ArrayList<String>();
-    String noti1;
-    String noti2;
-    String noti3;
     String query;
     int layout;
+    Context context;
 
-    public FragmentCreator(int layout, String query) {
+    public FragmentCreator(int layout, String query, Context context) {
+        this.context = context;
         this.query=query;
         this.layout = layout;
     }
@@ -58,7 +49,7 @@ public class FragmentCreator extends Fragment{
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
-        categoryArrayAdapter = new CategoryArrayAdapter(getActivity().getApplicationContext(), layout, layout, controller.consultaSubCategorias(query));
+        categoryArrayAdapter = new CategoryArrayAdapter(context, layout, layout, controller.consultaSubCategorias(query));
         listView.setAdapter(categoryArrayAdapter);
 
         return rootView;

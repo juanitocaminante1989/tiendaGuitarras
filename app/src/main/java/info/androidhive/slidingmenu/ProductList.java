@@ -23,25 +23,15 @@ import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 
 public class ProductList extends Fragment {
-    private TextView txtResultado;
-    private RelativeLayout relLay;
     View rootView;
     public SubCategoryArrayAdapter categoryArrayAdapter;
-    public LinearLayout opciones;
     public ListView listView;
-    public Animation animFadein1;
-    public Animation animFadein2;
-    public NotificationManager myNotificationManager;
-    public int numMessagesOne = 0;
-    public int notificationIdOne = 111;
-    List<String> mensajes = new ArrayList<String>();
-    String noti1;
-    String noti2;
-    String noti3;
     int layout;
+    Context context;
     String codSubCat;
 
-    public ProductList(int layout,String codSubCat) {
+    public ProductList(int layout,String codSubCat, Context context) {
+        this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
     }
@@ -70,9 +60,8 @@ public class ProductList extends Fragment {
 
     public void producto(String codSubCat){
         this.codSubCat = codSubCat;
-        Context context = getActivity().getApplicationContext();
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat,R.layout.fragment_product);
+        fragment = new ProductView(codSubCat,R.layout.fragment_product, context);
         Constants.createNewFragment(R.id.frame_container, fragment);
     }
 

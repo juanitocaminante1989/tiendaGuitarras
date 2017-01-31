@@ -25,6 +25,7 @@ public class Constants {
         }
     }
 
+
     public final static String url = "http://192.168.1.104:80/CarritoCompra/conexion.php";
 
     public static ArrayList<JSONObject> objects;
@@ -32,5 +33,6 @@ public class Constants {
     public static int currentFragment = -1;
     public static String subCategoryPosition = "";
     public static Fragment currentFrag = null;
+    public static boolean userLogged = false;
 
 }

@@ -1,6 +1,7 @@
 package info.androidhive.slidingmenu;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,10 @@ public class ProductView extends Fragment {
     public ListView listView;
     int layout;
     String codSubCat;
+    Context context;
 
-    public ProductView(String codSubCat, int layout) {
+    public ProductView(String codSubCat, int layout, Context context) {
+        this.context = context;
         this.codSubCat = codSubCat;
         this.layout = layout;
     }
@@ -33,7 +36,7 @@ public class ProductView extends Fragment {
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(productoArrayAdapter);
-        productoArrayAdapter = new ProductoArrayAdapter(getActivity().getApplicationContext(), R.layout.activity_products_main, R.layout.activity_products_main, controller.consulta(codSubCat));
+        productoArrayAdapter = new ProductoArrayAdapter(context, R.layout.activity_products_main, R.layout.activity_products_main, controller.consulta(codSubCat));
         listView.setAdapter(productoArrayAdapter);
 
         return rootView;

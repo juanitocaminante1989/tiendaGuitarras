@@ -18,7 +18,7 @@
             android:layout_margin="5dip"
             android:background="@drawable/button"
             android:text="Hello bubbles!"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
     </LinearLayout>
