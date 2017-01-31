@@ -22,28 +22,31 @@ public class Controller {
 
     }
 
-    public static void insertOrUpdateCategory(ContentValues initialValues){
+    public static int insertOrUpdateCategory(ContentValues initialValues){
 
         int id = (int) Constants.database.insertWithOnConflict("categoria", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
             Constants.database.update("categoria", initialValues, "codCat=?", new String[]{(String)initialValues.get("codCat")});
         }
+        return id;
     }
 
-    public static void insertOrUpdateSubCategory(ContentValues initialValues){
+    public static int insertOrUpdateSubCategory(ContentValues initialValues){
 
         int id = (int) Constants.database.insertWithOnConflict("subCategoria", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
             Constants.database.update("subCategoria", initialValues, "codSubCat=?", new String[]{(String)initialValues.get("codSubCat")});
         }
+        return id;
     }
 
-    public static void insertOrUpdateProduct(ContentValues initialValues){
+    public static int insertOrUpdateProduct(ContentValues initialValues){
 
         int id = (int) Constants.database.insertWithOnConflict("articulo", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
             Constants.database.update("articulo", initialValues, "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
         }
+        return id;
     }
 
     public ArrayList<CategoryMessage> consultaSubCategorias(String query) {

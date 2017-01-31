@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
         mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {
             public void run() {
-                new connectFTPServer().execute();
+
                 recieveData();
             }
         }, 5000);
@@ -320,8 +320,10 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(JSONArray json) {
+            int id = 0;
             try {
                 // Getting JSON Array
+
                 Constants.objects = new ArrayList<JSONObject>();
                 if (json != null) {
 
@@ -338,7 +340,7 @@ public class MainActivity extends Activity {
                                 initialValues.put("codCat", codCat);
                                 initialValues.put("category_name", category_name);
                                 initialValues.put("descripcion", description_cat);
-                                Controller.insertOrUpdateCategory(initialValues);
+                                id = Controller.insertOrUpdateCategory(initialValues);
 
                             } else if (jsonObject.has("subcategoria")) {
                                 jsonObject.getJSONObject("subcategoria");
@@ -353,7 +355,7 @@ public class MainActivity extends Activity {
                                 initialValues.put("codCat", codCat);
                                 initialValues.put("subcategory_name", subcategory_name);
                                 initialValues.put("descripcion", description_subcat);
-                                Controller.insertOrUpdateSubCategory(initialValues);
+                                id = Controller.insertOrUpdateSubCategory(initialValues);
                                 if(deletedSub.equals("1")){
                                     Constants.database.delete("subCategoria", "codSubCat=?", new String[]{(String)initialValues.get("codSubCat")});
                                 }
@@ -383,7 +385,7 @@ public class MainActivity extends Activity {
                                 initialValues.put("precio", precio_art);
                                 initialValues.put("IVA", iva_art);
                                 initialValues.put("directorio", directory);
-                                Controller.insertOrUpdateProduct(initialValues);
+                                id = Controller.insertOrUpdateProduct(initialValues);
                                 if(deletedArt.equals("1")){
                                     Constants.database.delete("articulo", "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
                                 }
@@ -404,6 +406,9 @@ public class MainActivity extends Activity {
             } catch (Exception e) {
                 mProgressBar.setVisibility(View.GONE);
                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
+            }
+            if(id != -1) {
+                new connectFTPServer().execute();
             }
             initialize();
         }
