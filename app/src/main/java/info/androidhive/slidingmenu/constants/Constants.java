@@ -26,7 +26,9 @@ public class Constants {
     }
 
 
-    public final static String url = "http://192.168.1.104:80/CarritoCompra/conexion.php";
+    public final static String url = "http://192.168.1.100:80/CarritoCompra/conexion.php";
+    public final static String restService = "http://192.168.1.100:80/CarritoCompra/restservice.php";
+    public final static String recievedata = "http://192.168.1.100:80/CarritoCompra/recievedata.php";
 
     public static ArrayList<JSONObject> objects;
     public static boolean hasExecuted = false;

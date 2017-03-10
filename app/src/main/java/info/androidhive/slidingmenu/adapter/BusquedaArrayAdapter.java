@@ -1,26 +1,18 @@
 package info.androidhive.slidingmenu.adapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import info.androidhive.slidingmenu.ProductView;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class BusquedaArrayAdapter extends ArrayAdapter {
@@ -86,8 +78,10 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(layout, parent, false);
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat, R.layout.fragment_product, context);
-        Constants.createNewFragment(R.id.frame_container, fragment);
+        Controller controller = new Controller();
+        fragment = new ProductoArrayAdapter(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        if(Constants.manager!= null)
+            Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
 
     }
 

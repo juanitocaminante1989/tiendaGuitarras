@@ -18,6 +18,46 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
     String sqlCreateClientes = "CREATE TABLE clientes(NIF VARCHAR (9) NOT NULL, nombre VARCHAR(20) NOT NULL, apellidos VARCHAR(30) NOT NULL, direccion VARCHAR(40) NOT NULL,codPost INTEGER(6) NOT NULL,correo VARCHAR(40) NOT NULL,telefono VARCHAR(9) NOT NULL,clave VARCHAR(20) NOT NULL,CONSTRAINT correoE UNIQUE (correo),PRIMARY KEY (NIF))";
     String sqlCreateCarrito = "CREATE TABLE  Carrito(NIF VARCHAR(100), fechaCreacion DATE, fechaFin DATE, FOREIGN KEY (NIF) REFERENCES clientes(NIF) ON DELETE cascade)";
     String sqlCreateLineaCarrito = "CREATE TABLE lineaCarrito (codLinea VARCHAR(30), codArticulo VARCHAR(30), unidades INTEGER (5), NIF VARCHAR(100), PRIMARY KEY (codLinea, codArticulo), FOREIGN KEY (codArticulo) REFERENCES articulo(codArticulo), FOREIGN KEY (NIF) REFERENCES clientes(NIF) ON DELETE cascade)";
+    String sqlCreateTiendas = "CREATE TABLE tiendas ( idtienda INT NOT NULL , nombre VARCHAR(50) NOT NULL , ciudad INT(50) NOT NULL , calle INT(50) NOT NULL , longitud DOUBLE(100) NOT NULL , latitud  DOUBLE(100) NOT NULL , PRIMARY KEY (idtienda))";
+
+
+
+    public SlideSQLHelper(Context context, String name,CursorFactory factory, int version) {
+        super(context, name, factory, version);
+        // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // TODO Auto-generated method stub
+//        fillData();
+//
+////        for(String string: inserts){
+////            db.execSQL(string);
+////        }
+        db.execSQL(sqlCreateCategoria);
+        db.execSQL(sqlCreateSubCategoria);
+        db.execSQL(sqlCreateArticulo);
+        db.execSQL(sqlCreateClientes);
+        db.execSQL(sqlCreateCarrito);
+        db.execSQL( sqlCreateLineaCarrito);
+        db.execSQL(sqlCreateTiendas);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // TODO Auto-generated method stub
+
+        db.execSQL("DROP TABLE IF EXISTS categoria");
+        db.execSQL("DROP TABLE IF EXISTS subCategoria");
+        db.execSQL("DROP TABLE IF EXISTS articulo");
+        db.execSQL("DROP TABLE IF EXISTS clientes");
+        db.execSQL("DROP TABLE IF EXISTS Carrito");
+        db.execSQL("DROP TABLE IF EXISTS lineaCarrito");
+
+
+    }
+
 
     String guitar1 = "INSERT INTO categoria VALUES ('guitar1', 'Guitarras', 'Guitarras electricas, acusticas, de cualquier estilo.')";
     String bass2 = "INSERT INTO categoria VALUES ('bass2', 'Bajos', 'Bajos electricos, acusticos.')";
@@ -194,42 +234,6 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
     String a98 = "INSERT INTO articulo  VALUES('neutrikNP2CMB','access1105', 'access11', 'Neutrik NP 2 CMB', 'Neutrik', 'NP 2 CMB', 'Adaptador Neutrik NP 2 CMB', 4.19, 23.3, 'neutriknp2cmb')";
     String a99 = "INSERT INTO articulo  VALUES('ibanezRU10','access1106', 'access11', 'Ibanez RU10', 'Ibanez', 'RU10', 'Afinador de guitarra y bajo Ibanez RU10', 41.20, 23.3, 'ibanezru10')";
     String a100 = "INSERT INTO articulo  VALUES('korgBA40','access1106', 'access11', 'Korg BA40', 'Korg', 'BA40', 'Afinador de guitarra Korg BA40', 20.80, 23.3, 'korgba40')";
-
-    public SlideSQLHelper(Context context, String name,CursorFactory factory, int version) {
-        super(context, name, factory, version);
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        // TODO Auto-generated method stub
-//        fillData();
-//
-////        for(String string: inserts){
-////            db.execSQL(string);
-////        }
-        db.execSQL(sqlCreateCategoria);
-        db.execSQL(sqlCreateSubCategoria);
-        db.execSQL(sqlCreateArticulo);
-        db.execSQL(sqlCreateClientes);
-        db.execSQL(sqlCreateCarrito);
-        db.execSQL( sqlCreateLineaCarrito);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
-
-        db.execSQL("DROP TABLE IF EXISTS categoria");
-        db.execSQL("DROP TABLE IF EXISTS subCategoria");
-        db.execSQL("DROP TABLE IF EXISTS articulo");
-        db.execSQL("DROP TABLE IF EXISTS clientes");
-        db.execSQL("DROP TABLE IF EXISTS Carrito");
-        db.execSQL("DROP TABLE IF EXISTS lineaCarrito");
-
-
-    }
-
     public void fillData(){
         inserts.add(sqlCreateCategoria);
         inserts.add(sqlCreateSubCategoria);

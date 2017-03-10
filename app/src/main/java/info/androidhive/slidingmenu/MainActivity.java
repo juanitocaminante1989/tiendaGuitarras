@@ -8,31 +8,44 @@ import info.androidhive.slidingmenu.database.SlideSQLHelper;
 import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.fragments.ProfileFragment;
+import info.androidhive.slidingmenu.fragments.SearchFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
+import info.androidhive.slidingmenu.services.NotificationBuilder;
 
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-
+import java.util.Iterator;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,10 +59,23 @@ import android.widget.Toast;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class MainActivity extends Activity {
+
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -71,7 +97,6 @@ public class MainActivity extends Activity {
 
     public Context context;
     private ProgressBar mProgressBar;
-    private File file;
     private Handler mHandler;
 
     @Override
@@ -80,12 +105,11 @@ public class MainActivity extends Activity {
         context = this.getApplicationContext();
         setContentView(R.layout.activity_main);
 
-
         SlideSQLHelper usdbh;
         usdbh = new SlideSQLHelper(context, "CarritoCompra", null, 1);
         Constants.database = usdbh.getWritableDatabase();
-
         Constants.manager = getFragmentManager();
+
         cuadroBusqueda = (EditText) findViewById(R.id.search);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mTitle = mDrawerTitle = getTitle();
@@ -96,25 +120,48 @@ public class MainActivity extends Activity {
         // load slide menu items
         this.savedInstanceState = savedInstanceState;
 
-
         mHandler = new Handler();
+
         mHandler.postDelayed(new Runnable() {
             public void run() {
-
-                recieveData();
+                if (connection() == true) {
+                    recieveData();
+                } else {
+                    initialize();
+                    mProgressBar.setVisibility(View.GONE);
+                }
+                startRepeatingTask();
             }
-        }, 5000);
-        //createFolder();
-
+        }, 3000);
 
     }
 
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                //this function can change value of mInterval.
+                new JSONReceive().execute();
+            } finally {
+                // 100% guarantee that this always happens, even if
+                // your update method throws an exception
+                mHandler.postDelayed(mStatusChecker, mInterval);
+            }
+        }
+    };
+
+    void startRepeatingTask() {
+        mStatusChecker.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mStatusChecker);
+    }
 
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // display view for selected nav drawer item
             displayView(position);
         }
@@ -168,8 +215,9 @@ public class MainActivity extends Activity {
             } else if (position == 1) {
                 fragment = new ProfileFragment(context);
                 Constants.currentFragment = 1;
-
-
+            } else if (position == 2) {
+//                fragment = new SearchFragment(context);
+                Constants.currentFragment = 1;
             } else {
                 fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position - 1), context);
                 Constants.currentFragment = 1;
@@ -210,6 +258,7 @@ public class MainActivity extends Activity {
             mDrawerToggle.syncState();
     }
 
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -231,7 +280,6 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
 
         if (Constants.currentFragment == 0) {
-
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Saliendo de la Aplicacion")
@@ -246,9 +294,7 @@ public class MainActivity extends Activity {
                     .setNegativeButton("No", null)
                     .show();
         } else if (Constants.currentFragment == 1) {
-
             Fragment fragment = new HomeFragment(R.layout.activity_main, "");
-
             if (fragment != null) {
                 Constants.createNewFragment(R.id.frame_container, fragment);
                 mDrawerList.setItemChecked(0, true);
@@ -308,8 +354,7 @@ public class MainActivity extends Activity {
             JSONParser jParser = new JSONParser();
 
             // Getting JSON from URL
-
-            JSONArray json = jParser.getJSONFromUrl(Constants.url);
+            JSONArray json = jParser.getJSONArrayFromUrl(Constants.url);
             if (json != null)
                 return json;
             else {
@@ -323,7 +368,6 @@ public class MainActivity extends Activity {
             int id = 0;
             try {
                 // Getting JSON Array
-
                 Constants.objects = new ArrayList<JSONObject>();
                 if (json != null) {
 
@@ -335,7 +379,7 @@ public class MainActivity extends Activity {
                             String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
                             String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
                             String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
-                            String queryCat = "INSERT INTO categoria VALUES ('" + codCat + "', '" + category_name + "', '" + description_cat + "')";
+                            //String queryCat = "INSERT INTO categoria VALUES ('" + codCat + "', '" + category_name + "', '" + description_cat + "')";
                             ContentValues initialValues = new ContentValues();
                             initialValues.put("codCat", codCat);
                             initialValues.put("category_name", category_name);
@@ -349,7 +393,7 @@ public class MainActivity extends Activity {
                             String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
                             String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
                             String deletedSub = jsonObject.getJSONObject("subcategoria").get("deleted").toString();
-                            String querysubCat = "INSERT INTO subCategoria VALUES ('" + codSubCat + "', '" + codCat + "', '" + subcategory_name + "', '" + description_subcat + "')";
+                            //String querysubCat = "INSERT INTO subCategoria VALUES ('" + codSubCat + "', '" + codCat + "', '" + subcategory_name + "', '" + description_subcat + "')";
                             ContentValues initialValues = new ContentValues();
                             initialValues.put("codSubCat", codSubCat);
                             initialValues.put("codCat", codCat);
@@ -390,6 +434,27 @@ public class MainActivity extends Activity {
                                 Constants.database.delete("articulo", "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
                             }
 
+                        }else if (jsonObject.has("tiendas")) {
+                            jsonObject.getJSONObject("tiendas");
+                            String codTienda = jsonObject.getJSONObject("tiendas").get("idtienda").toString();
+                            String nombre = jsonObject.getJSONObject("tiendas").get("nombre").toString();
+                            String ciudad = jsonObject.getJSONObject("tiendas").get("ciudad").toString();
+                            String calle = jsonObject.getJSONObject("tiendas").get("calle").toString();
+                            String latitud = jsonObject.getJSONObject("tiendas").get("latitud").toString();
+                            String longitud = jsonObject.getJSONObject("tiendas").get("longitud").toString();
+                            String deletedTienda = jsonObject.getJSONObject("tiendas").get("longitud").toString();
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("idtienda", codTienda);
+                            initialValues.put("nombre", nombre);
+                            initialValues.put("ciudad", ciudad);
+                            initialValues.put("calle", calle);
+                            initialValues.put("latitud", latitud);
+                            initialValues.put("longitud", longitud);
+                            id = Controller.insertOrUpdateProduct(initialValues);
+                            if (deletedTienda.equals("1")) {
+                                Constants.database.delete("tiendas", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+                            }
+
                         }
                         Constants.database.beginTransaction();
                         Constants.database.endTransaction();
@@ -415,36 +480,87 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-
-
             super.onProgressUpdate(values);
             // if we get here, length is known, now set indeterminate to false
             mProgressBar.setIndeterminate(false);
             mProgressBar.setMax(100);
             mProgressBar.setProgress(values[0]);
+        }
+    }
 
+    private class JSONReceive extends AsyncTask<String, Integer, JSONObject> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... args) {
+            JSONParser jParser = new JSONParser();
+
+            // Getting JSON from URL
+            JSONObject json = jParser.getJSONFromUrl(Constants.restService);
+            if (json != null)
+                return json;
+            else {
+                dialog();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+            int id = 0;
+            try {
+                // Getting JSON Array
+
+                if (json != null) {
+                    JSONObject jsonObject = null;
+
+                        jsonObject = json;
+                        if (jsonObject.has("info")) {
+                            
+                            NotificationBuilder.Build(jsonObject.get("info").toString(), "Catalogo actualizado", context, MainActivity.class);
+
+                            new JSONTransmitter().execute();
+                        }
+
+                } else {
+                    return;
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            // if we get here, length is known, now set indeterminate to false
+            mProgressBar.setIndeterminate(false);
+            mProgressBar.setMax(100);
+            mProgressBar.setProgress(values[0]);
         }
     }
 
     public void initialize() {
+
         navMenuTitles = controller.getCategoryNames();
 
         // nav drawer icons from resources
         navMenuIcons = getResources()
                 .obtainTypedArray(R.array.nav_drawer_icons);
 
-
         navDrawerItems = new ArrayList<NavDrawerItem>();
 
         // adding nav drawer items to array
         //navMenuIcons.
-
         for (int i = 0; i < controller.getCantidadCategorias(); i++) {
             NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
             navDrawerItems.add(navDrawerItem);
         }
-
 
         //navDrawerItems.get(0).;
         // Recycle the typed array
@@ -483,8 +599,6 @@ public class MainActivity extends Activity {
             // on first time display view for first nav item
             displayView(0);
         }
-
-
     }
 
 
@@ -502,6 +616,30 @@ public class MainActivity extends Activity {
         }
     }
 
+
+    private boolean connection() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        int connection = info.getType();
+
+        boolean connectionBool = false;
+        switch (connection) {
+
+            case TelephonyManager.NETWORK_TYPE_UMTS:
+                connectionBool = false;
+                break;
+            case ConnectivityManager.TYPE_MOBILE:
+                connectionBool = false;
+                break;
+            case ConnectivityManager.TYPE_WIFI:
+                connectionBool = true;
+                break;
+            default:
+                connectionBool = false;
+        }
+        return connectionBool;
+    }
 
     private Boolean downloadAndSaveFile(String server, int portNumber,
                                         String user, String password)
@@ -523,27 +661,22 @@ public class MainActivity extends Activity {
             String workingDir = ftp.printWorkingDirectory();
             FTPFile[] files = ftp.listFiles();
 
-
-//            ftp.changeWorkingDirectory("");
             boolean success = false;
             File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
             if (!filePath.exists()) {
                 filePath.mkdirs();
             }
-//            boolean change = ftp.changeWorkingDirectory(filePath);
+
             try {
                 for (FTPFile file : files) {
-                    file.getName();
 
                     outputStream = new BufferedOutputStream(new FileOutputStream(filePath.getPath() + "/" + file.getName()));
                     success = ftp.retrieveFile(file.getName(), outputStream);
+                    outputStream.close();
                 }
 
             } finally {
-                if (outputStream != null) {
 
-                    outputStream.close();
-                }
             }
 
             return success;
@@ -554,4 +687,38 @@ public class MainActivity extends Activity {
             }
         }
     }
+
+    public class JSONTransmitter extends AsyncTask<JSONObject, JSONObject, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(JSONObject... data) {
+
+            HttpClient client = new DefaultHttpClient();
+            HttpConnectionParams.setConnectionTimeout(client.getParams(), 100000);
+
+            JSONObject jsonResponse = new JSONObject();
+            try {
+                jsonResponse.put("msg","ok");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            HttpPost post = new HttpPost(Constants.recievedata);
+            try {
+                StringEntity se = new StringEntity("json="+jsonResponse.toString());
+                post.addHeader("content-type", "application/x-www-form-urlencoded");
+                post.setEntity(se);
+
+                HttpResponse response;
+                response = client.execute(post);
+                String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
+
+                jsonResponse=new JSONObject(resFromServer);
+                Log.i("Response from server", jsonResponse.getString("msg"));
+            } catch (Exception e) { e.printStackTrace();}
+
+            return jsonResponse;
+        }
+
+    }
+
 }

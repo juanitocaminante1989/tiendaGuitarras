@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import info.androidhive.slidingmenu.adapter.ProductoArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
@@ -46,25 +47,10 @@ public class ProductList extends Fragment {
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         categoryArrayAdapter = new SubCategoryArrayAdapter(getActivity().getApplicationContext(), R.layout.activity_subcategory, R.layout.activity_subcategory, controller.consultaArticulos(codSubCat));
         listView.setAdapter(categoryArrayAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CategoryMessage MessageObj = (CategoryMessage) adapterView.getItemAtPosition(i);
-                producto(MessageObj.message);
-//                Constants.currentFragment = 2;
-            }
-        });
+
         return rootView;
 
     }
-
-    public void producto(String codSubCat){
-        this.codSubCat = codSubCat;
-        Fragment fragment = null;
-        fragment = new ProductView(codSubCat,R.layout.fragment_product, context);
-        Constants.createNewFragment(R.id.frame_container, fragment);
-    }
-
 
 }
 

@@ -3,7 +3,6 @@ package info.androidhive.slidingmenu.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.location.Address;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +16,10 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
-
 import info.androidhive.slidingmenu.R;
-import info.androidhive.slidingmenu.chops.MusicalDominguez;
-import info.androidhive.slidingmenu.chops.TiendaMidi;
+import info.androidhive.slidingmenu.chops.AssociatedShops;
+import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.GPSTracker;
-import info.androidhive.slidingmenu.chops.MadridMusical;
 
 /**
  * Created by Juan on 26/01/2017.
@@ -61,16 +57,10 @@ public class ProfileFragment extends Fragment {
                 GPSTracker gpsTracker = new GPSTracker(context);
                 LatLng sydney = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
 
-                MadridMusical madridMusical = new MadridMusical();
-                TiendaMidi tiendaMidi = new TiendaMidi();
-                MusicalDominguez musicalDominguez = new MusicalDominguez();
-                LatLng madridMusicalCoord = new LatLng(madridMusical.getLatitude(), madridMusical.getLongitude());
-                LatLng tiendaMidiCoord = new LatLng(tiendaMidi.getLatitude(), tiendaMidi.getLongitude());
-                LatLng musicalDomCoord = new LatLng(musicalDominguez.getLatitude(), musicalDominguez.getLongitude());
-
-                googleMap.addMarker(addMarketOptions(madridMusicalCoord,"Madrid Musical", "Calle Málaga, 8"));
-                googleMap.addMarker(addMarketOptions(tiendaMidiCoord, "Tienda Midi", "Alcalá Norte"));
-                googleMap.addMarker(addMarketOptions(musicalDomCoord, "Musical Dominguez","Calle de Elfo, 102"));
+                for (AssociatedShops tienda: Controller.getTiendas()){
+                    LatLng coords = new LatLng(tienda.getLatitude(), tienda.getLongitude());
+                    googleMap.addMarker(addMarketOptions(coords, tienda.getName(), tienda.getStreet()));
+                }
 
                 // For zooming automatically to the location of the marker
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();

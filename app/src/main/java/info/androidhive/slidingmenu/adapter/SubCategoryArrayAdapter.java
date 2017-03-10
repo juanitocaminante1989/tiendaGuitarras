@@ -11,9 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import info.androidhive.slidingmenu.CategoryMessage;
-import info.androidhive.slidingmenu.ProductView;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.database.Controller;
 
 public class SubCategoryArrayAdapter extends ArrayAdapter {
 
@@ -72,7 +72,8 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
     public void producto(String codSubCat, int layout,Context context) {
         this.layout = layout;
         Fragment fragment = null;
-        fragment = new ProductView(codSubCat, R.layout.fragment_product, context);
+        Controller controller = new Controller();
+        fragment = new ProductoArrayAdapter(context, R.layout.activity_products_main, controller.consulta(codSubCat));
         if(Constants.manager!= null)
             Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }

@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 
 import info.androidhive.slidingmenu.CategoryMessage;
+import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Producto;
 
@@ -22,29 +23,38 @@ public class Controller {
 
     }
 
-    public static int insertOrUpdateCategory(ContentValues initialValues){
+    public static int insertOrUpdateCategory(ContentValues initialValues) {
 
         int id = (int) Constants.database.insertWithOnConflict("categoria", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
-            Constants.database.update("categoria", initialValues, "codCat=?", new String[]{(String)initialValues.get("codCat")});
+            Constants.database.update("categoria", initialValues, "codCat=?", new String[]{(String) initialValues.get("codCat")});
         }
         return id;
     }
 
-    public static int insertOrUpdateSubCategory(ContentValues initialValues){
+    public static int insertOrUpdateSubCategory(ContentValues initialValues) {
 
         int id = (int) Constants.database.insertWithOnConflict("subCategoria", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
-            Constants.database.update("subCategoria", initialValues, "codSubCat=?", new String[]{(String)initialValues.get("codSubCat")});
+            Constants.database.update("subCategoria", initialValues, "codSubCat=?", new String[]{(String) initialValues.get("codSubCat")});
         }
         return id;
     }
 
-    public static int insertOrUpdateProduct(ContentValues initialValues){
+    public static int insertOrUpdateProduct(ContentValues initialValues) {
 
         int id = (int) Constants.database.insertWithOnConflict("articulo", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
-            Constants.database.update("articulo", initialValues, "codArticulo=?", new String[]{(String)initialValues.get("codArticulo")});
+            Constants.database.update("articulo", initialValues, "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
+        }
+        return id;
+    }
+
+    public static int insertOrUpdateShops(ContentValues initialValues) {
+
+        int id = (int) Constants.database.insertWithOnConflict("tiendas", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("tiendas", initialValues, "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
         }
         return id;
     }
@@ -214,18 +224,14 @@ public class Controller {
         return cont;
     }
 
-    public ArrayList<Producto> consulta(String codArticulo) {
-        ArrayList<Producto> productos = new ArrayList<Producto>();
+    public Producto consulta(String codArticulo) {
+        Producto producto = null;
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE codArticulo = '" + codArticulo + "'", null);
-            //txtResultado.setText("");
-
-            Producto producto = null;
-
             int i = 0;
             if (c.moveToFirst()) {
                 do {
-                    producto= new Producto();
+                    producto = new Producto();
                     i = i++;
                     codArticulo = c.getString(0);
                     final String codSubCat = c.getString(1);
@@ -237,12 +243,6 @@ public class Controller {
                     final double precio = Double.parseDouble(c.getString(7));
                     final double IVA = Double.parseDouble(c.getString(8));
                     final String directorio = c.getString(9);
-//                    final String direc = c.getString(9);
-//                    int id = getResources()
-//                            .getIdentifier(direc, "drawable", getActivity().getApplicationContext().getPackageName());
-//                    int bla = getResources().getIdentifier("proaudio", "drawable", getActivity().getApplicationContext().getPackageName());
-
-//                    final int directorio = id;
 
                     producto.setCodArticulo(codArticulo);
                     producto.setCodSubCat(codSubCat);
@@ -255,12 +255,10 @@ public class Controller {
                     producto.setIVA(IVA);
                     producto.setDirectorio(directorio);
 
-                    productos.add(producto);
-
                 } while (c.moveToNext());
             }
         }
-        return  productos;
+        return producto;
     }
 
     public static ArrayList<CategoryMessage> consultaSubCat(String query) {
@@ -286,6 +284,35 @@ public class Controller {
             }
         }
         return categoryMessages;
+    }
+
+    public static ArrayList<AssociatedShops> getTiendas() {
+        ArrayList<AssociatedShops> tiendas = new ArrayList<AssociatedShops>();
+        if (Constants.database != null) {
+            final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas", null);
+            //txtResultado.setText("");
+
+            AssociatedShops tienda = null;
+
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    tienda = new AssociatedShops();
+                    tienda.setId(Integer.parseInt(c.getString(0)));
+                    tienda.setName(c.getString(1));
+                    tienda.setCity(c.getString(2));
+                    tienda.setStreet(c.getString(3));
+                    tienda.setLongitude(Double.parseDouble(c.getString(4)));
+                    tienda.setLatitude(Double.parseDouble(c.getString(5)));
+
+                    i = i++;
+
+                    tiendas.add(tienda);
+
+                } while (c.moveToNext());
+            }
+        }
+        return tiendas;
     }
 
 }
