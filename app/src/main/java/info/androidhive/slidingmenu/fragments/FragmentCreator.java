@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.androidhive.slidingmenu.R;
-import info.androidhive.slidingmenu.adapter.CategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 
 /**
@@ -27,7 +26,6 @@ import info.androidhive.slidingmenu.database.Controller;
 public class FragmentCreator extends Fragment{
 
     View rootView;
-    public CategoryArrayAdapter categoryArrayAdapter;
     public ListView listView;
     String query;
     int layout;
@@ -48,9 +46,6 @@ public class FragmentCreator extends Fragment{
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-
-        categoryArrayAdapter = new CategoryArrayAdapter(context, layout, layout, controller.consultaSubCategorias(query));
-        listView.setAdapter(categoryArrayAdapter);
 
         return rootView;
 

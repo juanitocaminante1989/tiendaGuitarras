@@ -1,12 +1,15 @@
 package info.androidhive.slidingmenu.adapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import android.app.Fragment;
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,22 +17,26 @@ import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.entities.Producto;
 
 public class SubCategoryArrayAdapter extends ArrayAdapter {
 
     TextView chatText;
+    TextView itemPrice;
     private LinearLayout singleMessageContainer;
     int layout;
-    private ArrayList<CategoryMessage> categoryMessages;
+    ImageView itemImage;
+    private ArrayList<Producto> categoryMessages;
     Context context;
+    LinearLayout itemLinear;
 
-    public void add(CategoryMessage object) {
+    public void add(Producto object) {
         categoryMessages.add(object);
         super.add(object);
 
     }
 
-    public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<CategoryMessage> categoryMessages) {
+    public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> categoryMessages) {
         super(context, textViewResourceId);
         this.context = context;
         this.layout = layout;
@@ -40,8 +47,8 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         return this.categoryMessages.size();
     }
 
-    public CategoryMessage getItem(int index) {
-        return (CategoryMessage) this.categoryMessages.get(index);
+    public Producto getItem(int index) {
+        return (Producto) this.categoryMessages.get(index);
 
     }
 
@@ -53,14 +60,29 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
             row = inflater.inflate(layout, parent, false);
         }
         singleMessageContainer = (LinearLayout) row.findViewById(R.id.singleMessageContainer);
-        final CategoryMessage MessageObj = getItem(position);
-        chatText = (TextView) row.findViewById(R.id.singleMessage);
-        chatText.setText(MessageObj.title);
-        chatText.setOnClickListener(new View.OnClickListener() {
+        final Producto MessageObj = getItem(position);
+        chatText = (TextView) row.findViewById(R.id.itemText);
+        itemPrice= (TextView) row.findViewById(R.id.itemPrice);
+        itemLinear = (LinearLayout) row.findViewById(R.id.itemLinear);
+        itemImage = (ImageView) row.findViewById(R.id.itemImage);
+        File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/"+"tiendamusica");
+        File[] files = filePath.listFiles();
+        Uri uri = null;
+        for (File file: files){
+            if(file.getName().equals(MessageObj.directorio)){
+                uri = Uri.fromFile(file);
+
+            }
+        }
+//        holder.imagen.setBackgroundResource(-1);
+        itemImage.setImageURI(uri);
+        chatText.setText(MessageObj.getArticulo());
+        itemPrice.setText(MessageObj.getPrecio()+"€");
+        itemLinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
 
-                producto(MessageObj.message, layout, context);
+                producto(MessageObj.getCodArticulo(), layout, context);
 
                 Constants.currentFragment = 3;
             }

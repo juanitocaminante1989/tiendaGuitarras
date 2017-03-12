@@ -4,158 +4,176 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="@color/white"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/singleMessageContainer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.40" 
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/Textoarticulo"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dip"
-            
-            android:background="@drawable/container"
-            android:text=" Articulo:"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/articulo"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dip"
-            
-            android:background="@drawable/container"
-            android:text="articulo"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/Textomarca1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dip"
-           
-            android:background="@drawable/container"
-            android:text=" Marca:"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/marca"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dip"
-            
-            android:background="@drawable/container"
-            android:text="marca"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-         <TextView
-             android:id="@+id/Textomodelo1"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dip"
-             
-             android:background="@drawable/container"
-             android:text=" Modelo:"
-             android:textColor="@color/black"
-             android:textSize="20sp" />
-
-         <TextView
-             android:id="@+id/modelo"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dip"
-             
-             android:background="@drawable/container"
-             android:text="modelo"
-             android:textColor="@color/white"
-             android:textSize="20sp" />
-
-		<RelativeLayout
-		    android:id="@+id/contImagen"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_gravity="center"
-		    android:background="@drawable/container" >
-"
-         <ImageView
-             android:id="@+id/imagen"
-             android:layout_width="match_parent"
-             android:layout_height="300dp" />
-        </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/samplelinear"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:id="@+id/singleMessageContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/container"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/playsample"
-                android:text="Prueba de sonido"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/articulo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:text="articulo"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
 
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/progressBar4" />
+
+            <RelativeLayout
+                android:id="@+id/contImagen"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/imagen"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/samplelinear"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/playsample"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Prueba de sonido" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar4"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/precio"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:text="precio"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/descripcion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:text="desc"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/similar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:text="PRODUCTOS SIMILARES"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/left_arrow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.15">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/left" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/similarProduct"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.7"
+                    android:background="@drawable/button">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.6"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/itemText"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dip"
+                                android:layout_weight="0.5"
+
+                                android:gravity="center|left"
+                                android:text="Hello bubbles!"
+                                android:textColor="@color/white"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/itemPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dip"
+                                android:layout_weight="0.5"
+
+                                android:gravity="center|left"
+                                android:text="Hello bubbles!"
+                                android:textColor="@color/white"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/itemImage"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="2dp"
+                            android:layout_weight="0.4" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/right_arrow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.15">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/right" />
+                </LinearLayout>
+            </LinearLayout>
+
 
         </LinearLayout>
-
-         <TextView
-             android:id="@+id/Textprecio1"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dip"
-             
-             android:background="@drawable/container"
-             android:text=" Precio:"
-             android:textColor="@color/black"
-             android:textSize="20sp" />
-
-         <TextView
-             android:id="@+id/precio"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dip"
-            
-             android:background="@drawable/container"
-             android:text="precio"
-             android:textColor="@color/white"
-             android:textSize="20sp" />
-
-         <TextView
-             android:id="@+id/TextDescripcion1"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dip"
-            
-             android:background="@drawable/container"
-             android:text=" Descripcion:"
-             android:textColor="@color/black"
-             android:textSize="20sp" />
-
-         <TextView
-             android:id="@+id/descripcion"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dip"
-            
-             android:background="@drawable/container"
-             android:text="precio"
-             android:textColor="@color/white"
-             android:textSize="20sp" />
-         
-    </LinearLayout>
-
+    </ScrollView>
 </LinearLayout>

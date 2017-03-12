@@ -108,6 +108,7 @@ public class Controller {
         ArrayList<String> categoryMessages = new ArrayList<String>();
         categoryMessages.add("Principal");
         categoryMessages.add("Perfil");
+        categoryMessages.add("Búsqueda");
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT category_name FROM Categoria order by codCat ASC", null);
             int i = 0;
@@ -123,30 +124,44 @@ public class Controller {
         return categoryMessages;
     }
 
-    public ArrayList<CategoryMessage> consultaArticulos(String codSubCat) {
-
-        ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
+    public ArrayList<Producto> consultaArticulos(String codArticulo) {
+        Producto producto = null;
+        ArrayList<Producto> productos =new ArrayList<Producto>();
         if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT articulo_name, codArticulo FROM articulo WHERE codSubCat = '" + codSubCat + "'", null);
-
-            CategoryMessage categoryMessage;
+            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE codSubCat = '" + codArticulo + "'", null);
             int i = 0;
             if (c.moveToFirst()) {
                 do {
-                    categoryMessage = new CategoryMessage();
+                    producto = new Producto();
                     i = i++;
-                    String codArt = c.getString(0);
-                    String subCat = c.getString(1);
+                    codArticulo = c.getString(0);
+                    final String codSubCat = c.getString(1);
+                    final String codCat = c.getString(2);
+                    final String articulo = c.getString(3);
+                    final String marca = c.getString(4);
+                    final String modelo = c.getString(5);
+                    final String descripcion = c.getString(6);
+                    final double precio = Double.parseDouble(c.getString(7));
+                    final double IVA = Double.parseDouble(c.getString(8));
+                    final String directorio = c.getString(9);
 
-                    categoryMessage.setTitle(codArt);
-                    categoryMessage.setMessage(subCat);
-
-                    categoryMessages.add(categoryMessage);
+                    producto.setCodArticulo(codArticulo);
+                    producto.setCodSubCat(codSubCat);
+                    producto.setCodCat(codCat);
+                    producto.setArticulo(articulo);
+                    producto.setMarca(marca);
+                    producto.setModelo(modelo);
+                    producto.setDescripcion(descripcion);
+                    producto.setPrecio(precio);
+                    producto.setIVA(IVA);
+                    producto.setDirectorio(directorio);
+                    productos.add(producto);
                 } while (c.moveToNext());
             }
         }
-        return categoryMessages;
+        return productos;
     }
+
 
     public ArrayList<Producto> busqueda(String buscar, Activity activity) {
         ArrayList<Producto> productos = new ArrayList<Producto>();

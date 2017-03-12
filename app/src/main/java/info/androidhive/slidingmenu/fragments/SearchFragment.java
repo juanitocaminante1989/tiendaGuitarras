@@ -1,6 +1,7 @@
 package info.androidhive.slidingmenu.fragments;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.BusquedaArrayAdapter;
+import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 
 /**
@@ -27,62 +29,46 @@ import info.androidhive.slidingmenu.database.Controller;
 
 public class SearchFragment extends Fragment {
 
-    private TextView txtResultado;
-    private RelativeLayout relLay;
-    View rootView;
-    public BusquedaArrayAdapter busquedaArrayAdapter;
-    public LinearLayout opciones;
-    public ListView listView;
-    public Animation animFadein1;
-    public Animation animFadein2;
 
-    public int numMessagesOne = 0;
-    public int notificationIdOne = 111;
-    List<String> mensajes = new ArrayList<String>();
-    String noti1;
-    String noti2;
-    String noti3;
+    public BusquedaArrayAdapter busquedaArrayAdapter;
+    public ListView listView;
     int layout;
     String busqueda;
     private EditText cuadroBusqueda;
     private Button searchButton;
+    Context context;
+    Controller controller;
 
-    public SearchFragment(int layout) {
-        this.layout = layout;
-    }
+    public SearchFragment(Context context) {
+        this.context = context;
 
-    public SearchFragment(int layout, String busqueda) {
-        this.layout = layout;
-        this.busqueda = busqueda;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Controller controller= new Controller();
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        controller = new Controller();
+        View rootView = inflater.inflate(R.layout.search_fragment, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
-        listView = (ListView) rootView.findViewById(R.id.listView1);
+        cuadroBusqueda = (EditText) rootView.findViewById(R.id.search);
+        listView = (ListView) rootView.findViewById(R.id.searchList);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
-        if (busqueda == null || busqueda == "") {
-            buscar();
-        } else {
+        searchButton = (Button) rootView.findViewById(R.id.searchButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-            busquedaArrayAdapter = new BusquedaArrayAdapter(getActivity().getApplicationContext(), layout, layout,  controller.busqueda(busqueda, getActivity()));
-            busquedaArrayAdapter.notifyDataSetChanged();
-            listView.setAdapter(busquedaArrayAdapter);
+                busqueda = cuadroBusqueda.getText().toString();
+                busquedaArrayAdapter = new BusquedaArrayAdapter(context, layout, layout, controller.busqueda(busqueda, getActivity()));
+                busquedaArrayAdapter.notifyDataSetChanged();
+                listView.setAdapter(busquedaArrayAdapter);
 
-        }
+            }
+        });
 
 
         return rootView;
-    }
-
-
-
-    public void buscar() {
-
     }
 
 }

@@ -27,9 +27,6 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         super.add(object);
 
     }
-    /*public CategoryArrayAdapter(int layout){
-		this.layout = layout;
-	}*/
 
     public BusquedaArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> productos) {
         super(context, textViewResourceId);

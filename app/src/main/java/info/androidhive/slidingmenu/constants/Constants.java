@@ -36,5 +36,6 @@ public class Constants {
     public static String subCategoryPosition = "";
     public static Fragment currentFrag = null;
     public static boolean userLogged = false;
+    public static String currentFragmentStr = "";
 
 }

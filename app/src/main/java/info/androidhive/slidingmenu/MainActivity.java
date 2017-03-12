@@ -5,7 +5,6 @@ import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
-import info.androidhive.slidingmenu.fragments.FragmentCreator;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.fragments.ProfileFragment;
 import info.androidhive.slidingmenu.fragments.SearchFragment;
@@ -13,37 +12,27 @@ import info.androidhive.slidingmenu.model.NavDrawerItem;
 import info.androidhive.slidingmenu.services.NotificationBuilder;
 
 import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -52,8 +41,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.net.ftp.FTP;
@@ -78,6 +69,7 @@ public class MainActivity extends Activity {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private ListView SecondDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     // nav drawer title
     private CharSequence mDrawerTitle;
@@ -91,9 +83,12 @@ public class MainActivity extends Activity {
 
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
-    private EditText cuadroBusqueda;
+
     private Controller controller;
     private Bundle savedInstanceState;
+    private LinearLayout mainLayout;
+    private LinearLayout loadLayout;
+    private TextView progressUpdate;
 
     public Context context;
     private ProgressBar mProgressBar;
@@ -110,11 +105,17 @@ public class MainActivity extends Activity {
         Constants.database = usdbh.getWritableDatabase();
         Constants.manager = getFragmentManager();
 
-        cuadroBusqueda = (EditText) findViewById(R.id.search);
+
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
+        SecondDrawerList = (ListView) findViewById(R.id.second_list_slidermenu);
+
+        mainLayout = (LinearLayout) findViewById(R.id.main_layout);
+        loadLayout = (LinearLayout) findViewById(R.id.load_layout);
+        progressUpdate = (TextView) findViewById(R.id.progressUpdate);
 
         controller = new Controller();
         // load slide menu items
@@ -127,8 +128,10 @@ public class MainActivity extends Activity {
                 if (connection() == true) {
                     recieveData();
                 } else {
+                    mainLayout.setVisibility(View.VISIBLE);
+                    loadLayout.setVisibility(View.GONE);
                     initialize();
-                    mProgressBar.setVisibility(View.GONE);
+
                 }
                 startRepeatingTask();
             }
@@ -195,7 +198,9 @@ public class MainActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        boolean secondDrawerOpen = mDrawerLayout.isDrawerOpen(SecondDrawerList);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_settings).setVisible(!secondDrawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -210,29 +215,35 @@ public class MainActivity extends Activity {
         ArrayList<String> categoryId = controller.getCategoryId();
         for (int i = 0; i < categoryId.size(); i++) {
             if (position == 0) {
-                fragment = new HomeFragment(R.layout.activity_main, "");
+                fragment = new HomeFragment(context);
                 Constants.currentFragment = 0;
+                Constants.currentFragmentStr = "home";
             } else if (position == 1) {
                 fragment = new ProfileFragment(context);
                 Constants.currentFragment = 1;
             } else if (position == 2) {
-//                fragment = new SearchFragment(context);
+                fragment = new SearchFragment(context);
                 Constants.currentFragment = 1;
+                Constants.currentFragmentStr = "srch";
             } else {
-                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position - 1), context);
-                Constants.currentFragment = 1;
+//                fragment = new FragmentCreator(R.layout.fragment_layout, categoryId.get(position - 1), context);
+//                Constants.currentFragment = 1;
+
+                setSecondDrawerList(categoryId.get(position - 2));
+                mDrawerLayout.openDrawer(SecondDrawerList);
             }
         }
-
+        mDrawerList.setItemChecked(position, true);
+        mDrawerList.setSelection(position);
+        setTitle(navMenuTitles.get(position));
         if (fragment != null) {
             Constants.currentFrag = fragment;
             Constants.createNewFragment(R.id.frame_container, fragment);
 
             // update selected item and title, then close the drawer
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            setTitle(navMenuTitles.get(position));
+
             mDrawerLayout.closeDrawer(mDrawerList);
+            mDrawerLayout.closeDrawer(SecondDrawerList);
         } else {
             // error in creating fragment
             Log.e("MainActivity", "Error in creating fragment");
@@ -267,15 +278,7 @@ public class MainActivity extends Activity {
             mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void busqueda(View v) {
-        Fragment fragment = null;
-        int layout;
-        String busqueda = cuadroBusqueda.getText().toString();
 
-        layout = R.layout.activity_main;
-        fragment = new HomeFragment(layout, busqueda);
-        Constants.createNewFragment(R.id.frame_container, fragment);
-    }
 
     public void onBackPressed() {
 
@@ -294,14 +297,21 @@ public class MainActivity extends Activity {
                     .setNegativeButton("No", null)
                     .show();
         } else if (Constants.currentFragment == 1) {
-            Fragment fragment = new HomeFragment(R.layout.activity_main, "");
+            Fragment fragment = null;
+            if(Constants.currentFragmentStr.equals("srch")) {
+                fragment = new SearchFragment(context);
+            }else if(Constants.currentFragmentStr.equals("home")){
+                fragment = new HomeFragment(context);
+            }else{
+                fragment = new HomeFragment(context);
+            }
             if (fragment != null) {
                 Constants.createNewFragment(R.id.frame_container, fragment);
                 mDrawerList.setItemChecked(0, true);
                 mDrawerList.setSelection(0);
                 setTitle(navMenuTitles.get(0));
                 mDrawerLayout.closeDrawer(mDrawerList);
-                cuadroBusqueda.setText("");
+
             }
             Constants.currentFragment = 0;
 
@@ -346,7 +356,7 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            mProgressBar.setVisibility(View.VISIBLE);
+            mainLayout.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -434,7 +444,7 @@ public class MainActivity extends Activity {
                                 Constants.database.delete("articulo", "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
                             }
 
-                        }else if (jsonObject.has("tiendas")) {
+                        } else if (jsonObject.has("tiendas")) {
                             jsonObject.getJSONObject("tiendas");
                             String codTienda = jsonObject.getJSONObject("tiendas").get("idtienda").toString();
                             String nombre = jsonObject.getJSONObject("tiendas").get("nombre").toString();
@@ -450,7 +460,7 @@ public class MainActivity extends Activity {
                             initialValues.put("calle", calle);
                             initialValues.put("latitud", latitud);
                             initialValues.put("longitud", longitud);
-                            id = Controller.insertOrUpdateProduct(initialValues);
+                            id = Controller.insertOrUpdateShops(initialValues);
                             if (deletedTienda.equals("1")) {
                                 Constants.database.delete("tiendas", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
                             }
@@ -461,15 +471,18 @@ public class MainActivity extends Activity {
                     }
 
                     Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
-                    mProgressBar.setVisibility(View.GONE);
+                    loadLayout.setVisibility(View.GONE);
+                    mainLayout.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(context, "Download error", Toast.LENGTH_LONG).show();
-                    mProgressBar.setVisibility(View.GONE);
+                    loadLayout.setVisibility(View.GONE);
+                    mainLayout.setVisibility(View.VISIBLE);
                     dialog();
                 }
 
             } catch (Exception e) {
-                mProgressBar.setVisibility(View.GONE);
+                loadLayout.setVisibility(View.GONE);
+                mainLayout.setVisibility(View.VISIBLE);
                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
             }
             if (id != -1) {
@@ -485,6 +498,13 @@ public class MainActivity extends Activity {
             mProgressBar.setIndeterminate(false);
             mProgressBar.setMax(100);
             mProgressBar.setProgress(values[0]);
+            mProgressBar.setProgress(0);
+            mProgressBar.setMax(100);
+            mProgressBar.setProgress(values[0]);
+
+
+// set the drawable as progress drawable
+            progressUpdate.setText(values[0]*2+"%");
         }
     }
 
@@ -518,13 +538,13 @@ public class MainActivity extends Activity {
                 if (json != null) {
                     JSONObject jsonObject = null;
 
-                        jsonObject = json;
-                        if (jsonObject.has("info")) {
-                            
-                            NotificationBuilder.Build(jsonObject.get("info").toString(), "Catalogo actualizado", context, MainActivity.class);
+                    jsonObject = json;
+                    if (jsonObject.has("info")) {
 
-                            new JSONTransmitter().execute();
-                        }
+                        NotificationBuilder.Build(jsonObject.get("info").toString(), "Catalogo actualizado", context, MainActivity.class);
+
+                        new JSONTransmitter().execute();
+                    }
 
                 } else {
                     return;
@@ -557,7 +577,7 @@ public class MainActivity extends Activity {
 
         // adding nav drawer items to array
         //navMenuIcons.
-        for (int i = 0; i < controller.getCantidadCategorias(); i++) {
+        for (int i = 0; i < controller.getCantidadCategorias()+3; i++) {
             NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
             navDrawerItems.add(navDrawerItem);
         }
@@ -577,31 +597,79 @@ public class MainActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, //nav menu toggle icon
-                R.string.app_name, // nav drawer open - description for accessibility
-                R.string.app_name // nav drawer close - description for accessibility
-        ) {
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
-                // calling onPrepareOptionsMenu() to show action bar icons
-                invalidateOptionsMenu();
+        try {
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                    R.drawable.ic_drawer, //nav menu toggle icon
+                    R.string.app_name, // nav drawer open - description for accessibility
+                    R.string.app_name // nav drawer close - description for accessibility
+            ) {
+                public void onDrawerClosed(View view) {
+                    getActionBar().setTitle(mTitle);
+                    // calling onPrepareOptionsMenu() to show action bar icons
+                    invalidateOptionsMenu();
+                    if (mDrawerLayout.isDrawerOpen(SecondDrawerList)) {
+                        mDrawerLayout.closeDrawer(SecondDrawerList);
+                    }
+                }
+
+                public void onDrawerOpened(View drawerView) {
+                    getActionBar().setTitle(mDrawerTitle);
+                    // calling onPrepareOptionsMenu() to hide action bar icons
+                    invalidateOptionsMenu();
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            if (savedInstanceState == null) {
+                // on first time display view for first nav item
+                displayView(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setSecondDrawerList(final String codCat) {
+
+        try {
+            ArrayList<NavDrawerItem> navDrawerItems = new ArrayList<NavDrawerItem>();
+            for (int i = 0; i < controller.consultaSubCategorias(codCat).size(); i++) {
+                NavDrawerItem navDrawerItem = new NavDrawerItem(controller.consultaSubCategorias(codCat).get(i).getMessage(), navMenuIcons.getResourceId(i, -1));
+                navDrawerItems.add(navDrawerItem);
             }
 
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
-                // calling onPrepareOptionsMenu() to hide action bar icons
-                invalidateOptionsMenu();
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        if (savedInstanceState == null) {
-            // on first time display view for first nav item
-            displayView(0);
+            SecondDrawerList.setOnItemClickListener(new SlideMenuClickListener());
+
+            // setting the nav drawer list adapter
+            NavDrawerListAdapter adapter = new NavDrawerListAdapter(getApplicationContext(),
+                    navDrawerItems);
+            SecondDrawerList.setAdapter(adapter);
+
+            SecondDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    subCategory(controller.consultaSubCategorias(codCat).get(i).title, context);
+
+
+                    Constants.currentFragment = 2;
+
+                    mDrawerLayout.closeDrawer(SecondDrawerList);
+                    mDrawerLayout.closeDrawer(mDrawerList);
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
 
+    public void subCategory(String codSubCat, Context context) {
+
+        Fragment fragment = null;
+        Constants.subCategoryPosition = codSubCat;
+        fragment = new ProductList(R.layout.fragment_subcategory,codSubCat, context);
+        Constants.createNewFragment(R.id.frame_container, fragment);
+    }
     private class connectFTPServer extends AsyncTask {
 
         @Override
@@ -698,13 +766,13 @@ public class MainActivity extends Activity {
 
             JSONObject jsonResponse = new JSONObject();
             try {
-                jsonResponse.put("msg","ok");
+                jsonResponse.put("msg", "ok");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             HttpPost post = new HttpPost(Constants.recievedata);
             try {
-                StringEntity se = new StringEntity("json="+jsonResponse.toString());
+                StringEntity se = new StringEntity("json=" + jsonResponse.toString());
                 post.addHeader("content-type", "application/x-www-form-urlencoded");
                 post.setEntity(se);
 
@@ -712,9 +780,11 @@ public class MainActivity extends Activity {
                 response = client.execute(post);
                 String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
 
-                jsonResponse=new JSONObject(resFromServer);
+                jsonResponse = new JSONObject(resFromServer);
                 Log.i("Response from server", jsonResponse.getString("msg"));
-            } catch (Exception e) { e.printStackTrace();}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return jsonResponse;
         }
