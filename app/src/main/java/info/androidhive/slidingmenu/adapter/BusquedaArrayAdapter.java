@@ -14,6 +14,7 @@ import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.fragments.ProductFragment;
 
 public class BusquedaArrayAdapter extends ArrayAdapter {
 
@@ -76,7 +77,7 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         row = inflater.inflate(layout, parent, false);
         Fragment fragment = null;
         Controller controller = new Controller();
-        fragment = new ProductoArrayAdapter(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
         if(Constants.manager!= null)
             Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
 

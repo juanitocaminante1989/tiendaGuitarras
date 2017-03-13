@@ -1,46 +1,44 @@
-package info.androidhive.slidingmenu.adapter;
+package info.androidhive.slidingmenu.fragments;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.viewpagerindicator.CirclePageIndicator;
+
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.adapter.CustomPagerAdapterMainProduct;
+import info.androidhive.slidingmenu.adapter.CustomPagerAdapterProduct;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
 import info.androidhive.slidingmenu.util.ScrollViewX;
 
-public class ProductoArrayAdapter extends Fragment {
+public class ProductFragment extends Fragment {
 
     TextView articulo;
     TextView precio;
@@ -49,22 +47,21 @@ public class ProductoArrayAdapter extends Fragment {
     private LinearLayout sampleLinear;
     int layout;
     HashMap<Integer, View> productViews;
-    private Producto currentProducto;
     private Producto producto;
     private Button play;
     Context context;
     private ProgressBar progressBar;
-    private LinearLayout leftArrow;
-    private LinearLayout rightArrow;
     ArrayList<Producto> productos;
     Controller controller;
     View view;
-    LinearLayout similarProduct;
     ActionBar actionBar;
     ViewPager viewPager;
-    LinearLayout similarProductLayout;
+    ViewPager similarViewPager;
+    CirclePageIndicator similarViewIndicator;
+    RelativeLayout similarProductLayout;
+    CirclePageIndicator mIndicator;
 
-    public ProductoArrayAdapter(Context context, int layout, Producto producto) {
+    public ProductFragment(Context context, int layout, Producto producto) {
 
         this.context = context;
         productViews = new HashMap<Integer, View>();
@@ -84,12 +81,12 @@ public class ProductoArrayAdapter extends Fragment {
         descripcion = (TextView) rootView.findViewById(R.id.descripcion);
         play = (Button) rootView.findViewById(R.id.playsample);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar4);
-        leftArrow = (LinearLayout) rootView.findViewById(R.id.left_arrow);
-        rightArrow = (LinearLayout) rootView.findViewById(R.id.right_arrow);
-        similarProduct = (LinearLayout) rootView.findViewById(R.id.similarProduct);
         actionBar = getActivity().getActionBar();
-        viewPager = (ViewPager) rootView.findViewById(R.id.pager);
-        similarProductLayout = (LinearLayout) rootView.findViewById(R.id.similarProductLayout);
+        viewPager = (ViewPager) rootView.findViewById(R.id.pager_main_product);
+        similarProductLayout = (RelativeLayout) rootView.findViewById(R.id.similarProductLayout);
+        similarViewPager = (ViewPager) rootView.findViewById(R.id.pager_similar_product);
+        similarViewIndicator = (CirclePageIndicator) rootView.findViewById(R.id.indicator_similar_product);
+        mIndicator = (CirclePageIndicator) rootView.findViewById(R.id.indicator_main_product);
 
         final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
         actionBar.setBackgroundDrawable(cd);
@@ -118,26 +115,7 @@ public class ProductoArrayAdapter extends Fragment {
             }
 
         });
-        similarProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToSimilarProduct(currentProducto.getCodArticulo());
-            }
-        });
 
-        leftArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view(-1);
-            }
-        });
-
-        rightArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view(+1);
-            }
-        });
         if (producto.codCat.equals("guitar100") || producto.codCat.equals("bass200")) {
             sampleLinear.setVisibility(View.VISIBLE);
         } else {
@@ -153,12 +131,10 @@ public class ProductoArrayAdapter extends Fragment {
                     }
                 }
                 if (productos.size() != 0) {
-                    currentProducto = productos.get(0);
-                    fillDataSimilar();
-                    if (productos.size() == 1) {
-                        leftArrow.setVisibility(View.INVISIBLE);
-                        rightArrow.setVisibility(View.INVISIBLE);
-                    }
+                    CustomPagerAdapterProduct adapterProduct = new CustomPagerAdapterProduct(context, productos);
+                    similarViewPager.setAdapter(adapterProduct);
+                    similarViewIndicator.setViewPager(similarViewPager);
+
                 } else {
                     similarProductLayout.setVisibility(View.GONE);
                 }
@@ -177,10 +153,10 @@ public class ProductoArrayAdapter extends Fragment {
         return rootView;
     }
 
-    public void goToSimilarProduct(String codSubCat) {
+    public static void goToSimilarProduct(String codSubCat, Context context) {
         Fragment fragment = null;
         Controller controller = new Controller();
-        fragment = new ProductoArrayAdapter(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
         if (Constants.manager != null)
             Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }
@@ -203,54 +179,11 @@ public class ProductoArrayAdapter extends Fragment {
                 }
             }
 
-            CustomPagerAdapter adapter = new CustomPagerAdapter(context, uris);
+            CustomPagerAdapterMainProduct adapter = new CustomPagerAdapterMainProduct(context, uris);
             viewPager.setAdapter(adapter);
+            mIndicator.setViewPager(viewPager);
 //            imagen.setImageURI(uri);
         }
-    }
-
-    public void fillDataSimilar() {
-        if (currentProducto != null) {
-            TextView itemText = (TextView) view.findViewById(R.id.itemText);
-            TextView itemPrice = (TextView) view.findViewById(R.id.itemPrice);
-            ImageView itemImage = (ImageView) view.findViewById(R.id.itemImage);
-            itemText.setText(currentProducto.getArticulo());
-            itemPrice.setText(currentProducto.getPrecio() + "€ ");
-            File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
-            File[] files = filePath.listFiles();
-            Uri uri = null;
-            for (File file : files) {
-                if (file.getName().equals(currentProducto.getDirectorio().get(0).getDirectory())) {
-                    uri = Uri.fromFile(file);
-
-                }
-            }
-            itemImage.setImageURI(uri);
-        }
-    }
-
-    public void view(int number) {
-
-        int index = 0;
-
-        if (number == +1) {
-
-            index = productos.indexOf(currentProducto);
-            if (index == productos.size() - 1) {
-                currentProducto = productos.get(0);
-            } else {
-                currentProducto = productos.get(index + number);
-            }
-        } else {
-            index = productos.indexOf(currentProducto);
-            if (index == 0) {
-                currentProducto = productos.get(productos.size() - 1);
-            } else {
-                currentProducto = productos.get(index + number);
-            }
-        }
-        if (currentProducto != null)
-            fillDataSimilar();
     }
 
     private void playSample() {

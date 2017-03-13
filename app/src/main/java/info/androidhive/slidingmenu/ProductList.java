@@ -1,25 +1,14 @@
 package info.androidhive.slidingmenu;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Fragment;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import info.androidhive.slidingmenu.adapter.ProductoArrayAdapter;
-import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 

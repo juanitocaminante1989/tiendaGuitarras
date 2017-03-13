@@ -17,13 +17,13 @@ import info.androidhive.slidingmenu.R;
  * Created by Juan on 13/03/2017.
  */
 
-class CustomPagerAdapter extends PagerAdapter {
+public class CustomPagerAdapterMainProduct extends PagerAdapter {
 
     Context mContext;
     LayoutInflater mLayoutInflater;
     ArrayList<Uri> images;
 
-    public CustomPagerAdapter(Context context, ArrayList<Uri> images) {
+    public CustomPagerAdapterMainProduct(Context context, ArrayList<Uri> images) {
         mContext = context;
         this.images = images;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

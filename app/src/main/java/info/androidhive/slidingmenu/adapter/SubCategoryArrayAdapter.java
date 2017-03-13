@@ -2,6 +2,7 @@ package info.androidhive.slidingmenu.adapter;
 
 import java.io.File;
 import java.util.ArrayList;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
@@ -13,12 +14,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.fragments.ProductFragment;
 
 public class SubCategoryArrayAdapter extends ArrayAdapter {
 
@@ -63,24 +64,22 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         singleMessageContainer = (LinearLayout) row.findViewById(R.id.singleMessageContainer);
         final Producto MessageObj = getItem(position);
         chatText = (TextView) row.findViewById(R.id.itemText);
-        itemPrice= (TextView) row.findViewById(R.id.itemPrice);
+        itemPrice = (TextView) row.findViewById(R.id.itemPrice);
         itemLinear = (LinearLayout) row.findViewById(R.id.itemLinear);
         itemImage = (ImageView) row.findViewById(R.id.itemImage);
-        File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/"+"tiendamusica");
+        File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
         File[] files = filePath.listFiles();
         Uri uri = null;
         for (File file : files) {
-            for (Images images: MessageObj.getDirectorio()) {
-                if (file.getName().equals(images.getDirectory())) {
-                    uri = Uri.fromFile(file);
+            if (file.getName().equals(MessageObj.getDirectorio().get(0).getDirectory())) {
+                uri = Uri.fromFile(file);
 
-                }
             }
         }
 //        holder.imagen.setBackgroundResource(-1);
         itemImage.setImageURI(uri);
         chatText.setText(MessageObj.getArticulo());
-        itemPrice.setText(MessageObj.getPrecio()+"€");
+        itemPrice.setText(MessageObj.getPrecio() + "€");
         itemLinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -94,12 +93,12 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         return row;
     }
 
-    public void producto(String codSubCat, int layout,Context context) {
+    public void producto(String codSubCat, int layout, Context context) {
         this.layout = layout;
         Fragment fragment = null;
         Controller controller = new Controller();
-        fragment = new ProductoArrayAdapter(context, R.layout.activity_products_main, controller.consulta(codSubCat));
-        if(Constants.manager!= null)
+        fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        if (Constants.manager != null)
             Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }
 

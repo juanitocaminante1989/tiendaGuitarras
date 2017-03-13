@@ -25,4 +25,5 @@ dependencies {
     compile 'org.apache:apache:18'
     compile files('D:/Documentos/Proyectos_Android/TiendaMusica/libs/commons-net-3.5.jar')
     compile 'com.google.android.gms:play-services-location:7.+'
+    compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
 }
