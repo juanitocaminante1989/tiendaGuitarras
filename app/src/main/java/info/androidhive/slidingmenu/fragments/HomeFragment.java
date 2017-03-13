@@ -37,6 +37,7 @@ public class HomeFragment extends Fragment {
     Controller controller;
     ViewPager similarViewPager;
     CirclePageIndicator similarViewIndicator;
+    Timer swipeTimer;
 
 
     public HomeFragment(Context context) {
@@ -69,7 +70,7 @@ public class HomeFragment extends Fragment {
                         similarViewPager.setAdapter(adapter);
                         similarViewIndicator.setViewPager(similarViewPager);
 
-                        Timer swipeTimer = new Timer();
+                        swipeTimer = new Timer();
                         swipeTimer.schedule(new TimerTask() {
 
                             @Override
@@ -97,8 +98,15 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
 
-
         return rootView;
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(swipeTimer!=null){
+            swipeTimer.cancel();
+        }
+    }
 }

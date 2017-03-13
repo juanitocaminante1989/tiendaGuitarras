@@ -19,6 +19,7 @@ import java.util.TimerTask;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.fragments.ProductFragment;
 
 /**
@@ -52,7 +53,7 @@ public class CustomPagerAdapterProduct extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, final int position) {
+    public Object instantiateItem(final ViewGroup container, final int position) {
         View itemView = mLayoutInflater.inflate(R.layout.view_pager_item, container, false);
 
         imageView = (ImageView) itemView.findViewById(R.id.itemImage);
