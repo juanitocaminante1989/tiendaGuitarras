@@ -27,6 +27,7 @@ import info.androidhive.slidingmenu.adapter.BusquedaArrayAdapter;
 import info.androidhive.slidingmenu.adapter.ProductoArrayAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class HomeFragment extends Fragment {
@@ -117,7 +118,7 @@ public class HomeFragment extends Fragment {
             File[] files = filePath.listFiles();
             Uri uri = null;
             for (File file : files) {
-                if (file.getName().equals(producto.directorio)) {
+                if (file.getName().equals(producto.getDirectorio().get(0).getDirectory())) {
                     uri = Uri.fromFile(file);
 
                 }

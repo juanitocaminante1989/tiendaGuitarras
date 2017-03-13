@@ -1,6 +1,8 @@
 package info.androidhive.slidingmenu.entities;
 
 
+import java.util.ArrayList;
+
 public class Producto {
 
     public String codArticulo;
@@ -12,14 +14,14 @@ public class Producto {
     public String descripcion;
     public double precio;
     double IVA;
-    public String directorio;
+    public ArrayList<Images> directorio;
 
 
     public Producto() {
 
     }
 
-    public Producto(String codArticulo, String codSubCat, String codCat, String articulo, String marca, String modelo, String descripcion, double precio, double IVA, String directorio) {
+    public Producto(String codArticulo, String codSubCat, String codCat, String articulo, String marca, String modelo, String descripcion, double precio, double IVA, ArrayList<Images> directorio) {
         this.codArticulo = codArticulo;
         this.codSubCat = codSubCat;
         this.codCat = codCat;
@@ -113,11 +115,11 @@ public class Producto {
         this.IVA = IVA;
     }
 
-    public String getDirectorio() {
+    public ArrayList<Images> getDirectorio() {
         return directorio;
     }
 
-    public void setDirectorio(String directorio) {
+    public void setDirectorio(ArrayList<Images> directorio) {
         this.directorio = directorio;
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
 
 /**
@@ -55,6 +56,24 @@ public class Controller {
         int id = (int) Constants.database.insertWithOnConflict("tiendas", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
             Constants.database.update("tiendas", initialValues, "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+        }
+        return id;
+    }
+
+    public static int insertOrUpdateStock(ContentValues initialValues) {
+
+        int id = (int) Constants.database.insertWithOnConflict("stock", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("stock", initialValues, "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+        }
+        return id;
+    }
+
+    public static int insertOrUpdateImages(ContentValues initialValues) {
+
+        int id = (int) Constants.database.insertWithOnConflict("images", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("images", initialValues, "directory=?", new String[]{(String) initialValues.get("directory")});
         }
         return id;
     }
@@ -124,6 +143,29 @@ public class Controller {
         return categoryMessages;
     }
 
+    public ArrayList<Images> getImages(String codArticulo) {
+        Images image = null;
+        ArrayList<Images> images =new ArrayList<Images>();
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM images WHERE codArticulo = '" + codArticulo + "'", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    image = new Images();
+                    i = i++;
+                    final String directory = c.getString(0);
+                    final String codArticulo1 = c.getString(1);
+
+
+                    image.setDirectory(directory);
+                    image.setCodArticulo(codArticulo1);
+                    images.add(image);
+                } while (c.moveToNext());
+            }
+        }
+        return images;
+    }
+
     public ArrayList<Producto> consultaArticulos(String codArticulo) {
         Producto producto = null;
         ArrayList<Producto> productos =new ArrayList<Producto>();
@@ -143,7 +185,7 @@ public class Controller {
                     final String descripcion = c.getString(6);
                     final double precio = Double.parseDouble(c.getString(7));
                     final double IVA = Double.parseDouble(c.getString(8));
-                    final String directorio = c.getString(9);
+
 
                     producto.setCodArticulo(codArticulo);
                     producto.setCodSubCat(codSubCat);
@@ -154,7 +196,8 @@ public class Controller {
                     producto.setDescripcion(descripcion);
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
-                    producto.setDirectorio(directorio);
+                    ArrayList<Images> images = this.getImages(codArticulo);
+                    producto.setDirectorio(images);
                     productos.add(producto);
                 } while (c.moveToNext());
             }
@@ -257,7 +300,6 @@ public class Controller {
                     final String descripcion = c.getString(6);
                     final double precio = Double.parseDouble(c.getString(7));
                     final double IVA = Double.parseDouble(c.getString(8));
-                    final String directorio = c.getString(9);
 
                     producto.setCodArticulo(codArticulo);
                     producto.setCodSubCat(codSubCat);
@@ -268,7 +310,8 @@ public class Controller {
                     producto.setDescripcion(descripcion);
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
-                    producto.setDirectorio(directorio);
+                    ArrayList<Images> images = this.getImages(codArticulo);
+                    producto.setDirectorio(images);
 
                 } while (c.moveToNext());
             }

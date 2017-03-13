@@ -17,6 +17,7 @@ import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class SubCategoryArrayAdapter extends ArrayAdapter {
@@ -68,10 +69,12 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/"+"tiendamusica");
         File[] files = filePath.listFiles();
         Uri uri = null;
-        for (File file: files){
-            if(file.getName().equals(MessageObj.directorio)){
-                uri = Uri.fromFile(file);
+        for (File file : files) {
+            for (Images images: MessageObj.getDirectorio()) {
+                if (file.getName().equals(images.getDirectory())) {
+                    uri = Uri.fromFile(file);
 
+                }
             }
         }
 //        holder.imagen.setBackgroundResource(-1);

@@ -431,7 +431,6 @@ public class MainActivity extends Activity {
                             String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
                             String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
                             String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
-                            String directory = jsonObject.getJSONObject("articulo").get("directory").toString();
                             String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
 
                             ContentValues initialValues = new ContentValues();
@@ -444,7 +443,6 @@ public class MainActivity extends Activity {
                             initialValues.put("descripcion", description_art);
                             initialValues.put("precio", precio_art);
                             initialValues.put("IVA", iva_art);
-                            initialValues.put("directorio", directory);
                             id = Controller.insertOrUpdateProduct(initialValues);
                             if (deletedArt.equals("1")) {
                                 Constants.database.delete("articulo", "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
@@ -458,7 +456,7 @@ public class MainActivity extends Activity {
                             String calle = jsonObject.getJSONObject("tiendas").get("calle").toString();
                             String latitud = jsonObject.getJSONObject("tiendas").get("latitud").toString();
                             String longitud = jsonObject.getJSONObject("tiendas").get("longitud").toString();
-                            String deletedTienda = jsonObject.getJSONObject("tiendas").get("longitud").toString();
+                            String deletedTienda = jsonObject.getJSONObject("tiendas").get("deleted").toString();
                             ContentValues initialValues = new ContentValues();
                             initialValues.put("idtienda", codTienda);
                             initialValues.put("nombre", nombre);
@@ -469,6 +467,34 @@ public class MainActivity extends Activity {
                             id = Controller.insertOrUpdateShops(initialValues);
                             if (deletedTienda.equals("1")) {
                                 Constants.database.delete("tiendas", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+                            }
+
+                        }else if (jsonObject.has("stock")) {
+                            jsonObject.getJSONObject("stock");
+                            String codTienda = jsonObject.getJSONObject("stock").get("idtienda").toString();
+                            String codarticulo = jsonObject.getJSONObject("stock").get("codArticulo").toString();
+                            String stock = jsonObject.getJSONObject("stock").get("stock").toString();
+                            String deletedStock = jsonObject.getJSONObject("stock").get("deleted").toString();
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("idtienda", codTienda);
+                            initialValues.put("codArticulo", codarticulo);
+                            initialValues.put("stock", stock);
+                            id = Controller.insertOrUpdateStock(initialValues);
+                            if (deletedStock.equals("1")) {
+                                Constants.database.delete("stock", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+                            }
+
+                        }else if (jsonObject.has("images")) {
+                            jsonObject.getJSONObject("images");
+                            String directory = jsonObject.getJSONObject("images").get("directory").toString();
+                            String codarticulo = jsonObject.getJSONObject("images").get("codArticulo").toString();
+                            String deletedimage = jsonObject.getJSONObject("images").get("deleted").toString();
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("directory", directory);
+                            initialValues.put("codArticulo", codarticulo);
+                            id = Controller.insertOrUpdateImages(initialValues);
+                            if (deletedimage.equals("1")) {
+                                Constants.database.delete("images", "directory=?", new String[]{(String) initialValues.get("directory")});
                             }
 
                         }
@@ -682,7 +708,7 @@ public class MainActivity extends Activity {
         protected Object doInBackground(Object[] objects) {
 
             try {
-                downloadAndSaveFile("192.168.1.104", 21, "android", "android");
+                downloadAndSaveFile(Constants.IP, 21, "android", "android");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -738,6 +764,9 @@ public class MainActivity extends Activity {
             boolean success = false;
             File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
             if (!filePath.exists()) {
+                filePath.mkdirs();
+            }else{
+                filePath.delete();
                 filePath.mkdirs();
             }
 

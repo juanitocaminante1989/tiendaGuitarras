@@ -25,10 +25,10 @@ public class Constants {
         }
     }
 
-
-    public final static String url = "http://192.168.1.100:80/CarritoCompra/conexion.php";
-    public final static String restService = "http://192.168.1.100:80/CarritoCompra/restservice.php";
-    public final static String recievedata = "http://192.168.1.100:80/CarritoCompra/recievedata.php";
+    public final static String IP = "192.168.1.100";
+    public final static String url = "http://"+IP+":80/CarritoCompra/conexion.php";
+    public final static String restService = "http://"+IP+":80/CarritoCompra/restservice.php";
+    public final static String recievedata = "http://"+IP+":80/CarritoCompra/recievedata.php";
 
     public static ArrayList<JSONObject> objects;
     public static boolean hasExecuted = false;

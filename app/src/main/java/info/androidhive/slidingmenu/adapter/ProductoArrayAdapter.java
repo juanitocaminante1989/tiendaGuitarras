@@ -36,6 +36,7 @@ import android.widget.TextView;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
 import info.androidhive.slidingmenu.util.ScrollViewX;
 
@@ -44,7 +45,7 @@ public class ProductoArrayAdapter extends Fragment {
     TextView articulo;
     TextView precio;
     TextView descripcion;
-//    ImageView imagen;
+    //    ImageView imagen;
     private LinearLayout sampleLinear;
     int layout;
     HashMap<Integer, View> productViews;
@@ -104,16 +105,14 @@ public class ProductoArrayAdapter extends Fragment {
             }
 
             private int getAlphaforActionBar(int scrollY) {
-                int minDist = 0,maxDist = 255;
-                if(scrollY>maxDist){
+                int minDist = 0, maxDist = 255;
+                if (scrollY > maxDist) {
                     return 255;
-                }
-                else if(scrollY<minDist){
+                } else if (scrollY < minDist) {
                     return 0;
-                }
-                else {
+                } else {
                     int alpha = 0;
-                    alpha = (int)  ((255.0/maxDist)*(maxDist-scrollY));
+                    alpha = (int) ((255.0 / maxDist) * (maxDist - scrollY));
                     return alpha;
                 }
             }
@@ -153,14 +152,14 @@ public class ProductoArrayAdapter extends Fragment {
                         iter.remove();
                     }
                 }
-                if(productos.size()!=0) {
+                if (productos.size() != 0) {
                     currentProducto = productos.get(0);
                     fillDataSimilar();
                     if (productos.size() == 1) {
                         leftArrow.setVisibility(View.INVISIBLE);
                         rightArrow.setVisibility(View.INVISIBLE);
                     }
-                }else{
+                } else {
                     similarProductLayout.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -194,24 +193,17 @@ public class ProductoArrayAdapter extends Fragment {
             File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
             File[] files = filePath.listFiles();
             Uri uri = null;
+            ArrayList<Uri> uris = new ArrayList<Uri>();
             for (File file : files) {
-                if (file.getName().equals(producto.directorio)) {
-                    uri = Uri.fromFile(file);
-
-                }
-            }
-            ArrayList<Uri> images = new ArrayList<Uri>();
-            images.add(uri);
-            ArrayList<Producto> productos = controller.consultaArticulos(producto.getCodSubCat());
-            for(Producto producto: productos){
-                for (File file : files) {
-                    if (file.getName().equals(producto.directorio)) {
+                for (Images images : producto.getDirectorio()) {
+                    if (file.getName().equals(images.getDirectory())) {
                         uri = Uri.fromFile(file);
-                        images.add(uri);
+                        uris.add(uri);
                     }
                 }
             }
-            CustomPagerAdapter adapter = new CustomPagerAdapter(context, images);
+
+            CustomPagerAdapter adapter = new CustomPagerAdapter(context, uris);
             viewPager.setAdapter(adapter);
 //            imagen.setImageURI(uri);
         }
@@ -228,12 +220,11 @@ public class ProductoArrayAdapter extends Fragment {
             File[] files = filePath.listFiles();
             Uri uri = null;
             for (File file : files) {
-                if (file.getName().equals(currentProducto.getDirectorio())) {
+                if (file.getName().equals(currentProducto.getDirectorio().get(0).getDirectory())) {
                     uri = Uri.fromFile(file);
 
                 }
             }
-
             itemImage.setImageURI(uri);
         }
     }
@@ -282,7 +273,6 @@ public class ProductoArrayAdapter extends Fragment {
         }, amountToUpdate);
         mp.start();
     }
-
 
 
 }
