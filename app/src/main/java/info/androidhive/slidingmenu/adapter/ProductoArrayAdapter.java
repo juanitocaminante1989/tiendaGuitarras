@@ -8,12 +8,20 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +37,14 @@ import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.util.ScrollViewX;
 
 public class ProductoArrayAdapter extends Fragment {
 
     TextView articulo;
     TextView precio;
     TextView descripcion;
-    ImageView imagen;
+//    ImageView imagen;
     private LinearLayout sampleLinear;
     int layout;
     HashMap<Integer, View> productViews;
@@ -50,6 +59,8 @@ public class ProductoArrayAdapter extends Fragment {
     Controller controller;
     View view;
     LinearLayout similarProduct;
+    ActionBar actionBar;
+    ViewPager viewPager;
 
     public ProductoArrayAdapter(Context context, int layout, Producto producto) {
 
@@ -67,14 +78,46 @@ public class ProductoArrayAdapter extends Fragment {
         sampleLinear = (LinearLayout) rootView.findViewById(R.id.samplelinear);
         articulo = (TextView) rootView.findViewById(R.id.articulo);
         precio = (TextView) rootView.findViewById(R.id.precio);
-        imagen = (ImageView) rootView.findViewById(R.id.imagen);
+//        imagen = (ImageView) rootView.findViewById(R.id.imagen);
         descripcion = (TextView) rootView.findViewById(R.id.descripcion);
         play = (Button) rootView.findViewById(R.id.playsample);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar4);
         leftArrow = (LinearLayout) rootView.findViewById(R.id.left_arrow);
         rightArrow = (LinearLayout) rootView.findViewById(R.id.right_arrow);
         similarProduct = (LinearLayout) rootView.findViewById(R.id.similarProduct);
+        actionBar = getActivity().getActionBar();
+        viewPager = (ViewPager) rootView.findViewById(R.id.pager);
 
+
+        final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
+        actionBar.setBackgroundDrawable(cd);
+        cd.setAlpha(255);
+        ScrollViewX scrollView = (ScrollViewX) rootView.findViewById(R.id.scroll_view);
+
+        scrollView.setOnScrollViewListener(new ScrollViewX.OnScrollViewListener() {
+
+            @Override
+            public void onScrollChanged(ScrollViewX v, int l, int t, int oldl, int oldt) {
+
+                cd.setAlpha(getAlphaforActionBar(v.getScrollY()));
+            }
+
+            private int getAlphaforActionBar(int scrollY) {
+                int minDist = 0,maxDist = 255;
+                if(scrollY>maxDist){
+                    return 255;
+                }
+                else if(scrollY<minDist){
+                    return 0;
+                }
+                else {
+                    int alpha = 0;
+                    alpha = (int)  ((255.0/maxDist)*(maxDist-scrollY));
+                    return alpha;
+                }
+            }
+
+        });
         similarProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,9 +195,20 @@ public class ProductoArrayAdapter extends Fragment {
 
                 }
             }
-//        holder.imagen.setBackgroundResource(-1);
-
-            imagen.setImageURI(uri);
+            ArrayList<Uri> images = new ArrayList<Uri>();
+            images.add(uri);
+            ArrayList<Producto> productos = controller.consultaArticulos(producto.getCodSubCat());
+            for(Producto producto: productos){
+                for (File file : files) {
+                    if (file.getName().equals(producto.directorio)) {
+                        uri = Uri.fromFile(file);
+                        images.add(uri);
+                    }
+                }
+            }
+            CustomPagerAdapter adapter = new CustomPagerAdapter(context, images);
+            viewPager.setAdapter(adapter);
+//            imagen.setImageURI(uri);
         }
     }
 
@@ -223,5 +277,7 @@ public class ProductoArrayAdapter extends Fragment {
         }, amountToUpdate);
         mp.start();
     }
+
+
 
 }

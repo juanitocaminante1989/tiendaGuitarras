@@ -6,7 +6,8 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <ScrollView
+    <info.androidhive.slidingmenu.util.ScrollViewX
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -17,14 +18,7 @@
             android:background="@drawable/container"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/articulo"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dip"
-                android:text="articulo"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+
 
 
             <RelativeLayout
@@ -33,12 +27,20 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center">
 
-                <ImageView
-                    android:id="@+id/imagen"
+                <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/pager"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp" />
+                    android:layout_height="300dp">
+                </android.support.v4.view.ViewPager>
             </RelativeLayout>
-
+            <TextView
+                android:id="@+id/articulo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:text="articulo"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
             <LinearLayout
                 android:id="@+id/samplelinear"
                 android:layout_width="match_parent"
@@ -175,5 +177,5 @@
 
 
         </LinearLayout>
-    </ScrollView>
+    </info.androidhive.slidingmenu.util.ScrollViewX>
 </LinearLayout>

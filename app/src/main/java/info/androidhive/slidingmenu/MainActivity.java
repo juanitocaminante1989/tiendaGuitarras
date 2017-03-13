@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -26,6 +27,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -93,6 +96,7 @@ public class MainActivity extends Activity {
     public Context context;
     private ProgressBar mProgressBar;
     private Handler mHandler;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +120,7 @@ public class MainActivity extends Activity {
         mainLayout = (LinearLayout) findViewById(R.id.main_layout);
         loadLayout = (LinearLayout) findViewById(R.id.load_layout);
         progressUpdate = (TextView) findViewById(R.id.progressUpdate);
+        actionBar = getActionBar();
 
         controller = new Controller();
         // load slide menu items
@@ -281,7 +286,8 @@ public class MainActivity extends Activity {
 
 
     public void onBackPressed() {
-
+        final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
+        actionBar.setBackgroundDrawable(cd);
         if (Constants.currentFragment == 0) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
