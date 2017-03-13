@@ -70,14 +70,17 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
         File[] files = filePath.listFiles();
         Uri uri = null;
-        for (File file : files) {
-            if (file.getName().equals(MessageObj.getDirectorio().get(0).getDirectory())) {
-                uri = Uri.fromFile(file);
+        if(MessageObj.getDirectorio().size()>0) {
+            for (File file : files) {
+                if (file.getName().equals(MessageObj.getDirectorio().get(0).getDirectory())) {
+                    uri = Uri.fromFile(file);
 
+                }
             }
+            itemImage.setImageURI(uri);
         }
 //        holder.imagen.setBackgroundResource(-1);
-        itemImage.setImageURI(uri);
+
         chatText.setText(MessageObj.getArticulo());
         itemPrice.setText(MessageObj.getPrecio() + "€");
         itemLinear.setOnClickListener(new View.OnClickListener() {

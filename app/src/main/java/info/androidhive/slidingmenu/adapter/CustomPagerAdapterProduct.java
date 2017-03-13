@@ -68,14 +68,15 @@ public class CustomPagerAdapterProduct extends PagerAdapter {
         File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
         File[] files = filePath.listFiles();
         Uri uri = null;
-        for (File file : files) {
-            if (file.getName().equals(producto.getDirectorio().get(0).getDirectory())) {
-                uri = Uri.fromFile(file);
+        if(producto.getDirectorio().size()>0) {
+            for (File file : files) {
+                if (file.getName().equals(producto.getDirectorio().get(0).getDirectory())) {
+                    uri = Uri.fromFile(file);
 
+                }
             }
+            imageView.setImageURI(uri);
         }
-        imageView.setImageURI(uri);
-
         offerLinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

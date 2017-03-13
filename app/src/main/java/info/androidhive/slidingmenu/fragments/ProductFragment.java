@@ -170,18 +170,21 @@ public class ProductFragment extends Fragment {
             File[] files = filePath.listFiles();
             Uri uri = null;
             ArrayList<Uri> uris = new ArrayList<Uri>();
-            for (File file : files) {
-                for (Images images : producto.getDirectorio()) {
-                    if (file.getName().equals(images.getDirectory())) {
-                        uri = Uri.fromFile(file);
-                        uris.add(uri);
+            if (producto.getDirectorio().size() > 0) {
+                for (File file : files) {
+                    for (Images images : producto.getDirectorio()) {
+                        if (file.getName().equals(images.getDirectory())) {
+                            uri = Uri.fromFile(file);
+                            uris.add(uri);
+                        }
                     }
                 }
-            }
 
-            CustomPagerAdapterMainProduct adapter = new CustomPagerAdapterMainProduct(context, uris);
-            viewPager.setAdapter(adapter);
-            mIndicator.setViewPager(viewPager);
+                CustomPagerAdapterMainProduct adapter = new CustomPagerAdapterMainProduct(context, uris);
+
+                viewPager.setAdapter(adapter);
+                mIndicator.setViewPager(viewPager);
+            }
 //            imagen.setImageURI(uri);
         }
     }
