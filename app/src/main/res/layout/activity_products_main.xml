@@ -89,6 +89,7 @@
                 android:textSize="20sp" />
 
             <LinearLayout
+                android:id="@+id/similarProductLayout"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:orientation="horizontal">

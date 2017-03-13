@@ -61,6 +61,7 @@ public class ProductoArrayAdapter extends Fragment {
     LinearLayout similarProduct;
     ActionBar actionBar;
     ViewPager viewPager;
+    LinearLayout similarProductLayout;
 
     public ProductoArrayAdapter(Context context, int layout, Producto producto) {
 
@@ -87,7 +88,7 @@ public class ProductoArrayAdapter extends Fragment {
         similarProduct = (LinearLayout) rootView.findViewById(R.id.similarProduct);
         actionBar = getActivity().getActionBar();
         viewPager = (ViewPager) rootView.findViewById(R.id.pager);
-
+        similarProductLayout = (LinearLayout) rootView.findViewById(R.id.similarProductLayout);
 
         final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
         actionBar.setBackgroundDrawable(cd);
@@ -152,11 +153,15 @@ public class ProductoArrayAdapter extends Fragment {
                         iter.remove();
                     }
                 }
-                currentProducto = productos.get(0);
-                fillDataSimilar();
-                if(productos.size()==1){
-                    leftArrow.setVisibility(View.INVISIBLE);
-                    rightArrow.setVisibility(View.INVISIBLE);
+                if(productos.size()!=0) {
+                    currentProducto = productos.get(0);
+                    fillDataSimilar();
+                    if (productos.size() == 1) {
+                        leftArrow.setVisibility(View.INVISIBLE);
+                        rightArrow.setVisibility(View.INVISIBLE);
+                    }
+                }else{
+                    similarProductLayout.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
