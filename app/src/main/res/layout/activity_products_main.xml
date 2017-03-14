@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@color/white"
+    android:background="@color/sky_blue"
     android:orientation="vertical">
 
     <info.androidhive.slidingmenu.util.ScrollViewX
@@ -19,8 +19,6 @@
             android:orientation="vertical">
 
 
-
-
             <RelativeLayout
                 android:id="@+id/contImagen"
                 android:layout_width="fill_parent"
@@ -30,16 +28,17 @@
                 <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/pager_main_product"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp">
-                </android.support.v4.view.ViewPager>
+                    android:layout_height="300dp"></android.support.v4.view.ViewPager>
+
                 <com.viewpagerindicator.CirclePageIndicator
                     android:id="@+id/indicator_main_product"
-                    android:padding="10dip"
-                    android:layout_height="30dp"
                     android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:padding="10dip"
 
                     />
             </RelativeLayout>
+
             <TextView
                 android:id="@+id/articulo"
                 android:layout_width="fill_parent"
@@ -48,6 +47,7 @@
                 android:text="articulo"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
+
             <LinearLayout
                 android:id="@+id/samplelinear"
                 android:layout_width="match_parent"
@@ -87,33 +87,63 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/similar"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dip"
-                android:text="PRODUCTOS SIMILARES"
+                android:text="DISPONIBILIDAD EN TIENDAS"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
-            <RelativeLayout
-                android:id="@+id/similarProductLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:orientation="horizontal">
-                <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/pager_similar_product"
+                android:layout_height="wrap_content">
+
+                <ListView
+                    android:id="@+id/shopAvailList"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
-                </android.support.v4.view.ViewPager>
-                <com.viewpagerindicator.CirclePageIndicator
-                    android:id="@+id/indicator_similar_product"
-                    android:padding="10dip"
-                    android:layout_height="30dp"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapViewProducts"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/similar"
                     android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dip"
+                    android:text="PRODUCTOS SIMILARES"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
 
-                    />
-            </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/similarProductLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:orientation="horizontal">
 
+                    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/pager_similar_product"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"></android.support.v4.view.ViewPager>
+
+                    <com.viewpagerindicator.CirclePageIndicator
+                        android:id="@+id/indicator_similar_product"
+                        android:layout_width="fill_parent"
+                        android:layout_height="30dp"
+                        android:padding="10dip"
+
+                        />
+                </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </info.androidhive.slidingmenu.util.ScrollViewX>

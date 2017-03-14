@@ -471,17 +471,19 @@ public class MainActivity extends Activity {
 
                         }else if (jsonObject.has("stock")) {
                             jsonObject.getJSONObject("stock");
+                            String idStock = jsonObject.getJSONObject("stock").get("idStock").toString();
                             String codTienda = jsonObject.getJSONObject("stock").get("idtienda").toString();
                             String codarticulo = jsonObject.getJSONObject("stock").get("codArticulo").toString();
                             String stock = jsonObject.getJSONObject("stock").get("stock").toString();
                             String deletedStock = jsonObject.getJSONObject("stock").get("deleted").toString();
                             ContentValues initialValues = new ContentValues();
+                            initialValues.put("idStock", idStock);
                             initialValues.put("idtienda", codTienda);
                             initialValues.put("codArticulo", codarticulo);
                             initialValues.put("stock", stock);
                             id = Controller.insertOrUpdateStock(initialValues);
                             if (deletedStock.equals("1")) {
-                                Constants.database.delete("stock", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+                                Constants.database.delete("stock", "idStock=?", new String[]{(String) initialValues.get("idStock")});
                             }
 
                         }else if (jsonObject.has("images")) {

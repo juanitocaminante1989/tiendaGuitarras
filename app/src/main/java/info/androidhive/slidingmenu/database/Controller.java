@@ -14,6 +14,7 @@ import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.entities.shopStock;
 
 /**
  * Created by Juan on 15/06/2016.
@@ -64,7 +65,7 @@ public class Controller {
 
         int id = (int) Constants.database.insertWithOnConflict("stock", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
-            Constants.database.update("stock", initialValues, "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
+            Constants.database.update("stock", initialValues, "idStock=?", new String[]{(String) initialValues.get("idStock")});
         }
         return id;
     }
@@ -371,6 +372,62 @@ public class Controller {
             }
         }
         return tiendas;
+    }
+
+    public static ArrayList<AssociatedShops> getShopByProduct(String codArticulo) {
+        ArrayList<AssociatedShops> tiendas = new ArrayList<AssociatedShops>();
+        if (Constants.database != null) {
+            final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas WHERE tiendas.idtienda in (SELECT stock.idtienda from stock where stock.codArticulo = '"+codArticulo+"')", null);
+            //txtResultado.setText("");
+
+            AssociatedShops tienda = null;
+
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    tienda = new AssociatedShops();
+                    tienda.setId(Integer.parseInt(c.getString(0)));
+                    tienda.setName(c.getString(1));
+                    tienda.setCity(c.getString(2));
+                    tienda.setStreet(c.getString(3));
+                    tienda.setLongitude(Double.parseDouble(c.getString(4)));
+                    tienda.setLatitude(Double.parseDouble(c.getString(5)));
+
+                    i = i++;
+
+                    tiendas.add(tienda);
+
+                } while (c.moveToNext());
+            }
+        }
+        return tiendas;
+    }
+
+    public static ArrayList<shopStock> getStockShopByProduct(String codArticulo) {
+        ArrayList<shopStock> shopStocks = new ArrayList<shopStock>();
+        if (Constants.database != null) {
+            final Cursor c = Constants.database.rawQuery("SELECT tiendas.nombre, tiendas.ciudad, tiendas.calle, stock.stock FROM tiendas, stock WHERE stock.codArticulo ='"+codArticulo+"' AND tiendas.idtienda = stock.idtienda", null);
+            //txtResultado.setText("");
+
+            shopStock shopStock = null;
+
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    shopStock = new shopStock();
+                    shopStock.setName(c.getString(0));
+                    shopStock.setCity(c.getString(1));
+                    shopStock.setStreet(c.getString(2));
+                    shopStock.setStock(Integer.parseInt(c.getString(3)));
+
+                    i = i++;
+
+                    shopStocks.add(shopStock);
+
+                } while (c.moveToNext());
+            }
+        }
+        return shopStocks;
     }
 
 }

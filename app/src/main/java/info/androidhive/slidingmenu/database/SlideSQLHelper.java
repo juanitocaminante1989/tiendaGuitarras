@@ -19,7 +19,7 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
     String sqlCreateCarrito = "CREATE TABLE  Carrito(NIF VARCHAR(100), fechaCreacion DATE, fechaFin DATE, FOREIGN KEY (NIF) REFERENCES clientes(NIF) ON DELETE cascade)";
     String sqlCreateLineaCarrito = "CREATE TABLE lineaCarrito (codLinea VARCHAR(30), codArticulo VARCHAR(30), unidades INTEGER (5), NIF VARCHAR(100), PRIMARY KEY (codLinea, codArticulo), FOREIGN KEY (codArticulo) REFERENCES articulo(codArticulo), FOREIGN KEY (NIF) REFERENCES clientes(NIF) ON DELETE cascade)";
     String sqlCreateTiendas = "CREATE TABLE tiendas ( idtienda INT NOT NULL , nombre VARCHAR(50) NOT NULL , ciudad INT(50) NOT NULL , calle INT(50) NOT NULL , longitud DOUBLE(100) NOT NULL , latitud  DOUBLE(100) NOT NULL , PRIMARY KEY (idtienda))";
-    String sqlCreateStock = "CREATE TABLE stock ( idtienda INT NOT NULL , codArticulo VARCHAR(50) NOT NULL , stock INT(50) NOT NULL)";
+    String sqlCreateStock = "CREATE TABLE stock ( idStock INT NOT NULL, idtienda INT NOT NULL , codArticulo VARCHAR(50) NOT NULL , stock INT(50) NOT NULL, PRIMARY KEY (idStock))";
     String sqlCreateImages = "CREATE TABLE images ( directory VARCHAR(50) NOT NULL , codArticulo VARCHAR(30) NOT NULL, PRIMARY KEY (directory))";
 
 

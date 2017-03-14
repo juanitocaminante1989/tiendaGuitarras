@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/shopAvailListLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/shopAvailitemName"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dip"
+                android:layout_weight="0.25"
+                android:gravity="center|left"
+                android:text="Hello bubbles!"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/shopAvailitemCity"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dip"
+                android:layout_weight="0.25"
+                android:gravity="center|left"
+                android:text="Hello bubbles!"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/shopAvailitemStreet"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dip"
+                android:layout_weight="0.25"
+                android:gravity="center|left"
+                android:text="Hello bubbles!"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dip"
+                android:layout_weight="0.25"
+                android:gravity="center|left"
+                android:text="Stock: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.25"></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.25"></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.25"></LinearLayout>
+
+            <ImageView
+                android:id="@+id/stockImage"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.25" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>
