@@ -247,8 +247,7 @@ public class ProductFragment extends Fragment {
         Fragment fragment = null;
         Controller controller = new Controller();
         fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
-        if (Constants.manager != null)
-            Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        Constants.createNewFragment(R.id.frame_container, fragment);
     }
 
     public void fillData() {
@@ -386,5 +385,13 @@ public class ProductFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+        mMapView.onDestroy();
+        view = null;
     }
 }

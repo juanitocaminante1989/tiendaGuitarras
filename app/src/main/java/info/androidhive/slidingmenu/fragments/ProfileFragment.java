@@ -29,6 +29,7 @@ import info.androidhive.slidingmenu.entities.GPSTracker;
 public class ProfileFragment extends Fragment {
 
     MapView mMapView;
+    private View generalView;
     private GoogleMap googleMap;
     private Context context;
 
@@ -39,7 +40,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.map_fragment, container, false);
-
+        generalView = rootView;
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
@@ -102,5 +103,6 @@ public class ProfileFragment extends Fragment {
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+        generalView = null;
     }
 }

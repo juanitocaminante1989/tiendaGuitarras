@@ -38,6 +38,7 @@ public class SearchFragment extends Fragment {
     private Button searchButton;
     Context context;
     Controller controller;
+    private View generalView;
 
     public SearchFragment(){
 
@@ -53,6 +54,7 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         controller = new Controller();
         View rootView = inflater.inflate(R.layout.search_fragment, container, false);
+        generalView = rootView;
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         cuadroBusqueda = (EditText) rootView.findViewById(R.id.search);
         listView = (ListView) rootView.findViewById(R.id.searchList);
@@ -77,4 +79,9 @@ public class SearchFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        generalView = null;
+    }
 }

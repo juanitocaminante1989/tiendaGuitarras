@@ -101,8 +101,8 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
         Fragment fragment = null;
         Controller controller = new Controller();
         fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
-        if (Constants.manager != null)
-            Constants.manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        Constants.createNewFragment(R.id.frame_container, fragment);
+
     }
 
 

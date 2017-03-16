@@ -1,32 +1,23 @@
 package info.androidhive.slidingmenu.fragments;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
 
-import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.R;
-import info.androidhive.slidingmenu.adapter.CustomPagerAdapterMainProduct;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterProduct;
 import info.androidhive.slidingmenu.adapter.MarcaGridViewAdapter;
-import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
@@ -40,6 +31,7 @@ public class HomeFragment extends Fragment {
     CirclePageIndicator similarViewIndicator;
     Timer swipeTimer;
     GridView marcasGridView;
+    View generalView;
 
     public HomeFragment(){
 
@@ -56,7 +48,7 @@ public class HomeFragment extends Fragment {
 
         controller = new Controller();
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-
+        generalView = rootView;
         similarViewPager = (ViewPager) rootView.findViewById(R.id.pager_similar_product);
         similarViewIndicator = (CirclePageIndicator) rootView.findViewById(R.id.indicator_similar_product);
         marcasGridView = (GridView) rootView.findViewById(R.id.marcaGridHome);
@@ -120,9 +112,12 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+
+
         super.onDestroyView();
         if(swipeTimer!=null){
             swipeTimer.cancel();
         }
+        generalView = null;
     }
 }

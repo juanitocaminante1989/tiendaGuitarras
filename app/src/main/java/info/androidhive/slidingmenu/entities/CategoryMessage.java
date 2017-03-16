@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu;
+package info.androidhive.slidingmenu.entities;
 
 import android.widget.Button;
 

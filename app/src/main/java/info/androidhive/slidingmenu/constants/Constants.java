@@ -22,6 +22,7 @@ public class Constants {
 
     public static void createNewFragment(int layoutId, Fragment fragment){
         if(Constants.manager!=null) {
+
             Constants.manager.beginTransaction().replace(layoutId, fragment).commit();
         }
     }
@@ -47,5 +48,6 @@ public class Constants {
     public static String currentFragmentStr = "";
     public static int idMarca = -1;
     public static Producto productSent = null;
+
 
 }

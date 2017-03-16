@@ -1,4 +1,4 @@
-package info.androidhive.slidingmenu;
+package info.androidhive.slidingmenu.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 

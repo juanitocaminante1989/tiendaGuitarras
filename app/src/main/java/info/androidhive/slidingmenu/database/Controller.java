@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-import info.androidhive.slidingmenu.CategoryMessage;
+import info.androidhive.slidingmenu.entities.CategoryMessage;
 import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Images;

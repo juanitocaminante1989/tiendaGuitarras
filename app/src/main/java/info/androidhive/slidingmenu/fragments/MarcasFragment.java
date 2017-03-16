@@ -51,4 +51,10 @@ public class MarcasFragment extends Fragment{
 
     }
 
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+        rootView = null;
+    }
 }
