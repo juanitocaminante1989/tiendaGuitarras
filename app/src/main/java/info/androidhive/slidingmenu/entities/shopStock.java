@@ -4,12 +4,16 @@ package info.androidhive.slidingmenu.entities;
  * Created by Juan on 14/03/2017.
  */
 
-public class shopStock{
+public class ShopStock {
 
     private String street;
     private int stock;
     private String city;
     private String name;
+
+    public ShopStock(){
+
+    }
 
     public String getStreet() {
         return street;

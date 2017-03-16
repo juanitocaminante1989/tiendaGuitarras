@@ -5,17 +5,23 @@ import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
+import info.androidhive.slidingmenu.entities.Producto;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
+import info.androidhive.slidingmenu.fragments.MarcasFragment;
 import info.androidhive.slidingmenu.fragments.ProfileFragment;
 import info.androidhive.slidingmenu.fragments.SearchFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 import info.androidhive.slidingmenu.services.NotificationBuilder;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
@@ -53,10 +59,13 @@ import android.widget.Toast;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -218,16 +227,20 @@ public class MainActivity extends Activity {
         int layout;
         Controller controller = new Controller();
         ArrayList<String> categoryId = controller.getCategoryId();
+        String tag = "";
         for (int i = 0; i < categoryId.size(); i++) {
             if (position == 0) {
                 fragment = new HomeFragment(context);
+                tag = "home";
                 Constants.currentFragment = 0;
                 Constants.currentFragmentStr = "home";
             } else if (position == 1) {
                 fragment = new ProfileFragment(context);
+                tag = "profile";
                 Constants.currentFragment = 1;
             } else if (position == 2) {
                 fragment = new SearchFragment(context);
+                tag = "profile";
                 Constants.currentFragment = 1;
                 Constants.currentFragmentStr = "srch";
             } else {
@@ -243,7 +256,7 @@ public class MainActivity extends Activity {
         setTitle(navMenuTitles.get(position));
         if (fragment != null) {
             Constants.currentFrag = fragment;
-            Constants.createNewFragment(R.id.frame_container, fragment);
+            Constants.createNewFragment(R.id.frame_container, fragment, tag);
 
             // update selected item and title, then close the drawer
 
@@ -284,10 +297,10 @@ public class MainActivity extends Activity {
     }
 
 
-
     public void onBackPressed() {
         final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
         actionBar.setBackgroundDrawable(cd);
+        String tag = "";
         if (Constants.currentFragment == 0) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -304,15 +317,19 @@ public class MainActivity extends Activity {
                     .show();
         } else if (Constants.currentFragment == 1) {
             Fragment fragment = null;
-            if(Constants.currentFragmentStr.equals("srch")) {
+
+            if (Constants.currentFragmentStr.equals("srch")) {
                 fragment = new SearchFragment(context);
-            }else if(Constants.currentFragmentStr.equals("home")){
+                tag = "search";
+            } else if (Constants.currentFragmentStr.equals("home")) {
+                tag = "home";
                 fragment = new HomeFragment(context);
-            }else{
+            } else {
+                tag = "home";
                 fragment = new HomeFragment(context);
             }
             if (fragment != null) {
-                Constants.createNewFragment(R.id.frame_container, fragment);
+                Constants.createNewFragment(R.id.frame_container, fragment, tag);
                 mDrawerList.setItemChecked(0, true);
                 mDrawerList.setSelection(0);
                 setTitle(navMenuTitles.get(0));
@@ -328,9 +345,13 @@ public class MainActivity extends Activity {
             Constants.currentFragment = 1;
 
         } else if (Constants.currentFragment == 3) {
-            Fragment fragment = new ProductList(R.layout.fragment_subcategory, Constants.subCategoryPosition, context);
-            Constants.createNewFragment(R.id.frame_container, fragment);
-
+            if (Constants.whichFragment == 1) {
+                Fragment fragment = new ProductList(R.layout.fragment_subcategory, Constants.subCategoryPosition, context);
+                Constants.createNewFragment(R.id.frame_container, fragment);
+            } else if (Constants.whichFragment == 2) {
+                Fragment fragment = new MarcasFragment(R.layout.marcas_fragment, Constants.idMarca, context);
+                Constants.createNewFragment(R.id.frame_container, fragment);
+            }
             Constants.currentFragment = 2;
         }
     }
@@ -428,9 +449,11 @@ public class MainActivity extends Activity {
                             String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
                             String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
                             String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
+                            String idmarca_art = jsonObject.getJSONObject("articulo").get("idMarca").toString();
                             String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
                             String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
                             String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
+                            String views_art = jsonObject.getJSONObject("articulo").get("views").toString();
                             String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
 
                             ContentValues initialValues = new ContentValues();
@@ -439,10 +462,12 @@ public class MainActivity extends Activity {
                             initialValues.put("codCat", codCat);
                             initialValues.put("articulo_name", articulo_name);
                             initialValues.put("marca", marca_art);
+                            initialValues.put("idMarca", idmarca_art);
                             initialValues.put("modelo", modelo_art);
                             initialValues.put("descripcion", description_art);
                             initialValues.put("precio", precio_art);
                             initialValues.put("IVA", iva_art);
+                            initialValues.put("views", views_art);
                             id = Controller.insertOrUpdateProduct(initialValues);
                             if (deletedArt.equals("1")) {
                                 Constants.database.delete("articulo", "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
@@ -469,7 +494,7 @@ public class MainActivity extends Activity {
                                 Constants.database.delete("tiendas", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
                             }
 
-                        }else if (jsonObject.has("stock")) {
+                        } else if (jsonObject.has("stock")) {
                             jsonObject.getJSONObject("stock");
                             String idStock = jsonObject.getJSONObject("stock").get("idStock").toString();
                             String codTienda = jsonObject.getJSONObject("stock").get("idtienda").toString();
@@ -486,7 +511,7 @@ public class MainActivity extends Activity {
                                 Constants.database.delete("stock", "idStock=?", new String[]{(String) initialValues.get("idStock")});
                             }
 
-                        }else if (jsonObject.has("images")) {
+                        } else if (jsonObject.has("images")) {
                             jsonObject.getJSONObject("images");
                             String directory = jsonObject.getJSONObject("images").get("directory").toString();
                             String codarticulo = jsonObject.getJSONObject("images").get("codArticulo").toString();
@@ -497,6 +522,19 @@ public class MainActivity extends Activity {
                             id = Controller.insertOrUpdateImages(initialValues);
                             if (deletedimage.equals("1")) {
                                 Constants.database.delete("images", "directory=?", new String[]{(String) initialValues.get("directory")});
+                            }
+
+                        } else if (jsonObject.has("marcas")) {
+                            jsonObject.getJSONObject("marcas");
+                            String idmarcas = jsonObject.getJSONObject("marcas").get("idMarca").toString();
+                            String nombre = jsonObject.getJSONObject("marcas").get("nombre").toString();
+                            String deletedmarca = jsonObject.getJSONObject("marcas").get("deleted").toString();
+                            ContentValues initialValues = new ContentValues();
+                            initialValues.put("idMarca", idmarcas);
+                            initialValues.put("nombre", nombre);
+                            id = Controller.insertOrUpdateMarcas(initialValues);
+                            if (deletedmarca.equals("1")) {
+                                Constants.database.delete("marcas", "idMarca=?", new String[]{(String) initialValues.get("idMarca")});
                             }
 
                         }
@@ -538,7 +576,7 @@ public class MainActivity extends Activity {
 
 
 // set the drawable as progress drawable
-            progressUpdate.setText(values[0]*2+"%");
+            progressUpdate.setText(values[0] * 2 + "%");
         }
     }
 
@@ -611,7 +649,7 @@ public class MainActivity extends Activity {
 
         // adding nav drawer items to array
         //navMenuIcons.
-        for (int i = 0; i < controller.getCantidadCategorias()+3; i++) {
+        for (int i = 0; i < controller.getCantidadCategorias() + 3; i++) {
             NavDrawerItem navDrawerItem = new NavDrawerItem(navMenuTitles.get(i), navMenuIcons.getResourceId(i, -1));
             navDrawerItems.add(navDrawerItem);
         }
@@ -683,7 +721,7 @@ public class MainActivity extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     subCategory(controller.consultaSubCategorias(codCat).get(i).title, context);
 
-
+                    Constants.whichFragment = 1;
                     Constants.currentFragment = 2;
 
                     mDrawerLayout.closeDrawer(SecondDrawerList);
@@ -701,9 +739,10 @@ public class MainActivity extends Activity {
 
         Fragment fragment = null;
         Constants.subCategoryPosition = codSubCat;
-        fragment = new ProductList(R.layout.fragment_subcategory,codSubCat, context);
-        Constants.createNewFragment(R.id.frame_container, fragment);
+        fragment = new ProductList(R.layout.fragment_subcategory, codSubCat, context);
+        Constants.createNewFragment(R.id.frame_container, fragment, "product");
     }
+
     private class connectFTPServer extends AsyncTask {
 
         @Override
@@ -767,7 +806,7 @@ public class MainActivity extends Activity {
             File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
             if (!filePath.exists()) {
                 filePath.mkdirs();
-            }else{
+            } else {
                 filePath.delete();
                 filePath.mkdirs();
             }
@@ -828,4 +867,166 @@ public class MainActivity extends Activity {
 
     }
 
+    public static class JSONUpdateProducts extends AsyncTask<JSONObject, JSONObject, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(JSONObject... data) {
+
+            HttpClient client = new DefaultHttpClient();
+            HttpConnectionParams.setConnectionTimeout(client.getParams(), 100000);
+
+            JSONObject jsonResponse = new JSONObject();
+            ArrayList<JSONObject> jsonObjects =new ArrayList<JSONObject>();
+            JSONObject jsonObject = null;
+            try {
+                Producto producto = Constants.productSent;
+
+                jsonObject = new JSONObject();
+
+                jsonObject.put("codArticulo",producto.getCodArticulo());
+                jsonObject.put("codCat",producto.getCodCat());
+                jsonObject.put("codSubCat",producto.getCodSubCat());
+                jsonObject.put("articulo_name",producto.getArticulo());
+                jsonObject.put("descripcion",producto.getDescripcion());
+                jsonObject.put("marca",producto.getMarca());
+                jsonObject.put("idMarca",producto.getIdMarca());
+                jsonObject.put("modelo",producto.getModelo());
+                jsonObject.put("precio",producto.getPrecio());
+                jsonObject.put("IVA",producto.getIVA());
+                jsonObject.put("views",producto.getViews());
+                jsonObjects.add(jsonObject);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            HttpPost post = new HttpPost(Constants.recievedata);
+            try {
+
+                String jsonString = jsonObjects.toString();
+                StringEntity se = new StringEntity("json=" + jsonString);
+                post.addHeader("content-type", "application/x-www-form-urlencoded");
+                post.setEntity(se);
+
+                HttpResponse response;
+                response = client.execute(post);
+                String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
+
+                jsonResponse = new JSONObject(resFromServer);
+                Log.i("Response from server", jsonResponse.getString("msg"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return jsonResponse;
+        }
+
+    }
+
+//    public static class RestClient extends AsyncTask<JSONObject, JSONObject, JSONObject> {
+//
+//        private JSONObject convertStreamToString(InputStream is) {
+//    /*
+//     * To convert the InputStream to String we use the BufferedReader.readLine()
+//     * method. We iterate until the BufferedReader return null which means
+//     * there's no more data to read. Each line will appended to a StringBuilder
+//     * and returned as String.
+//     */
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+//            StringBuilder sb = new StringBuilder();
+//
+//            String line = null;
+//            try {
+//                while ((line = reader.readLine()) != null) {
+//                    sb.append(line + "\n");
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    is.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            JSONObject jsonObject = new JSONObject();
+//            try {
+//                jsonObject.put("android", sb.toString());
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            return jsonObject;
+//        }
+//
+//        @Override
+//        protected JSONObject doInBackground(JSONObject... jsonObjects) {
+//
+//    /*
+//    HttpParams httpparams = new BasicHttpParams();
+//    HttpConnectionParams.setConnectionTimeout(httpparams, 30000);
+//    HttpConnectionParams.setSoTimeout(httpparams, 30000);
+//    */
+//            HttpClient httpclient = new DefaultHttpClient();
+//
+//            HttpPost httppost = new HttpPost(Constants.recievedata);
+//
+//            httppost.addHeader("Content-Type", "application/json");
+//
+//            JSONObject jsonResponse = new JSONObject();
+//            ArrayList<Producto> productos = Controller.getAllProducts();
+//            JSONObject jsonObject = null;
+//            ArrayList<JSONObject> jsonObjects1 = new ArrayList<JSONObject>();
+//            try {
+//
+//                for (Producto producto : productos) {
+//                    jsonObject = new JSONObject();
+//                    jsonObject.put("codArticulo", producto.getCodArticulo());
+//                    jsonObject.put("codCat", producto.getCodCat());
+//                    jsonObject.put("codSubCat", producto.getCodSubCat());
+//                    jsonObject.put("articulo_name", producto.getArticulo());
+//                    jsonObject.put("descripcion", producto.getDescripcion());
+//                    jsonObject.put("marca", producto.getMarca());
+//                    jsonObject.put("idMarca", producto.getIdMarca());
+//                    jsonObject.put("modelo", producto.getModelo());
+//                    jsonObject.put("precio", producto.getPrecio());
+//                    jsonObject.put("IVA", producto.getIVA());
+//                    jsonObject.put("views", producto.getViews());
+//                    jsonObjects1.add(jsonObject);
+//                }
+//
+//                jsonResponse.put("articulo", jsonObjects1.toString());
+//            } catch (JSONException e) {
+//
+//            }
+//
+//            try {
+//                httppost.setEntity(new ByteArrayEntity(jsonResponse.toString().getBytes("UTF8")));
+//                //httppost.setHeader("json", json.toString());
+//                HttpResponse response = httpclient.execute(httppost);
+//                HttpEntity entity = response.getEntity();
+//                if (entity != null) {
+//                    InputStream instream = entity.getContent();
+//                    JSONObject result = new RestClient().convertStreamToString(instream);
+//
+//
+//                    return result;
+//                }
+//
+//            } catch (UnsupportedEncodingException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+////                return e.toString();
+//            } catch (ClientProtocolException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+////                return e.toString();
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+////                return e.toString();
+//            }
+//
+//
+//            return null;
+//        }
+//    }
 }

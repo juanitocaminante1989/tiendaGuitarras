@@ -39,6 +39,10 @@ public class SearchFragment extends Fragment {
     Context context;
     Controller controller;
 
+    public SearchFragment(){
+
+    }
+
     public SearchFragment(Context context) {
         this.context = context;
 
@@ -58,12 +62,14 @@ public class SearchFragment extends Fragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                busqueda = cuadroBusqueda.getText().toString();
-                busquedaArrayAdapter = new BusquedaArrayAdapter(context, layout, layout, controller.busqueda(busqueda, getActivity()));
-                busquedaArrayAdapter.notifyDataSetChanged();
-                listView.setAdapter(busquedaArrayAdapter);
-
+                try {
+                    busqueda = cuadroBusqueda.getText().toString();
+                    busquedaArrayAdapter = new BusquedaArrayAdapter(context, layout, layout, controller.busqueda(busqueda, getActivity()));
+                    busquedaArrayAdapter.notifyDataSetChanged();
+                    listView.setAdapter(busquedaArrayAdapter);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 

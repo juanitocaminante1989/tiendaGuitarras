@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,21 +25,25 @@ import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterMainProduct;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterProduct;
+import info.androidhive.slidingmenu.adapter.MarcaGridViewAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
 
 public class HomeFragment extends Fragment {
-    public LinearLayout offerLinear;
     Context context;
     ArrayList<Producto> productos;
-    ArrayList<CategoryMessage> categoryMessages;
     Producto producto;
     Controller controller;
     ViewPager similarViewPager;
     CirclePageIndicator similarViewIndicator;
     Timer swipeTimer;
+    GridView marcasGridView;
 
+    public HomeFragment(){
+
+    }
 
     public HomeFragment(Context context) {
         this.context = context;
@@ -52,15 +57,14 @@ public class HomeFragment extends Fragment {
         controller = new Controller();
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        offerLinear = (LinearLayout) rootView.findViewById(R.id.offerLinear);
-
         similarViewPager = (ViewPager) rootView.findViewById(R.id.pager_similar_product);
         similarViewIndicator = (CirclePageIndicator) rootView.findViewById(R.id.indicator_similar_product);
-        try {
-            categoryMessages = controller.consultaSubCategorias("guitar100");
+        marcasGridView = (GridView) rootView.findViewById(R.id.marcaGridHome);
 
-            if (categoryMessages.size() != 0) {
-                productos = controller.consultaArticulos(categoryMessages.get(0).getTitle());
+        try {
+
+
+                productos = controller.getMostViewedProducts();
 
                 if (productos.size() != 0) {
                     producto = productos.get(0);
@@ -93,7 +97,19 @@ public class HomeFragment extends Fragment {
 
                     }
                 }
+
+        ArrayList<Marca> marcas = controller.getMarcas();
+
+            if(marcas != null){
+                if(marcas.size()>0){
+
+                    MarcaGridViewAdapter adapter = new MarcaGridViewAdapter(context, 0, marcas);
+                    marcasGridView.setAdapter(adapter);
+
+                }
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

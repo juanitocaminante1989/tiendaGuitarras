@@ -56,6 +56,9 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         articulo = (Button) row.findViewById(R.id.singleMessage);
 
         articulo.setText(MessageObj.articulo);
+        if(MessageObj.getCodArticulo().equals("null")){
+            articulo.setEnabled(false);
+        }
         articulo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

@@ -11,8 +11,13 @@
         android:layout_height="0dp">
 
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PRODUCTOS DESTACADOS"
+        android:gravity="center"/>
     <LinearLayout
-        android:layout_weight="0.8"
+        android:layout_weight="0.4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal">
@@ -20,8 +25,8 @@
         <RelativeLayout
             android:id="@+id/similarProductLayout"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
             android:orientation="horizontal">
             <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/pager_similar_product"
@@ -36,5 +41,29 @@
 
                 />
         </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="0dp">
+
+        <TextView
+            android:layout_weight="0.1"
+            android:text="NUESTRAS MARCAS"
+            android:gravity="center|top"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+        <GridView
+            android:id="@+id/marcaGridHome"
+            android:layout_weight="0.3"
+            android:numColumns="3"
+
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+        </GridView>
     </LinearLayout>
 </LinearLayout>

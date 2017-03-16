@@ -34,7 +34,7 @@
 
                     android:gravity="center|left"
                     android:text="Hello bubbles!"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="18sp" />
                 <TextView
                     android:id="@+id/itemPrice"
@@ -43,10 +43,9 @@
                     android:layout_height="0dp"
                     android:layout_gravity="center"
                     android:layout_margin="5dip"
-
                     android:gravity="center|left"
                     android:text="Hello bubbles!"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>
 

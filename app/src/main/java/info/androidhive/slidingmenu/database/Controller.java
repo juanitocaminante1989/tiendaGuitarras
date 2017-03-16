@@ -13,8 +13,9 @@ import info.androidhive.slidingmenu.CategoryMessage;
 import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Images;
+import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
-import info.androidhive.slidingmenu.entities.shopStock;
+import info.androidhive.slidingmenu.entities.ShopStock;
 
 /**
  * Created by Juan on 15/06/2016.
@@ -75,6 +76,15 @@ public class Controller {
         int id = (int) Constants.database.insertWithOnConflict("images", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         if (id == -1) {
             Constants.database.update("images", initialValues, "directory=?", new String[]{(String) initialValues.get("directory")});
+        }
+        return id;
+    }
+
+    public static int insertOrUpdateMarcas(ContentValues initialValues) {
+
+        int id = (int) Constants.database.insertWithOnConflict("marcas", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            Constants.database.update("marcas", initialValues, "idMarca=?", new String[]{(String) initialValues.get("idMarca")});
         }
         return id;
     }
@@ -182,10 +192,12 @@ public class Controller {
                     final String codCat = c.getString(2);
                     final String articulo = c.getString(3);
                     final String marca = c.getString(4);
-                    final String modelo = c.getString(5);
-                    final String descripcion = c.getString(6);
-                    final double precio = Double.parseDouble(c.getString(7));
-                    final double IVA = Double.parseDouble(c.getString(8));
+                    final int idMarca = Integer.parseInt(c.getString(5));
+                    final String modelo = c.getString(6);
+                    final String descripcion = c.getString(7);
+                    final double precio = Double.parseDouble(c.getString(8));
+                    final double IVA = Double.parseDouble(c.getString(9));
+                    final int views = Integer.parseInt(c.getString(10));
 
 
                     producto.setCodArticulo(codArticulo);
@@ -193,10 +205,12 @@ public class Controller {
                     producto.setCodCat(codCat);
                     producto.setArticulo(articulo);
                     producto.setMarca(marca);
+                    producto.setIdMarca(idMarca);
                     producto.setModelo(modelo);
                     producto.setDescripcion(descripcion);
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
+                    producto.setViews(views);
                     ArrayList<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
                     productos.add(producto);
@@ -260,8 +274,8 @@ public class Controller {
                     } while (c.moveToNext());
                 } else {
                     producto = new Producto();
-                    producto.setCodArticulo("");
-                    producto.setArticulo("");
+                    producto.setCodArticulo("null");
+                    producto.setArticulo("No se han encontrado articulos");
                     producto.setMarca("No se han encontrado articulos");
                     producto.setModelo("");
                     producto.setDescripcion("");
@@ -297,20 +311,24 @@ public class Controller {
                     final String codCat = c.getString(2);
                     final String articulo = c.getString(3);
                     final String marca = c.getString(4);
-                    final String modelo = c.getString(5);
-                    final String descripcion = c.getString(6);
-                    final double precio = Double.parseDouble(c.getString(7));
-                    final double IVA = Double.parseDouble(c.getString(8));
+                    final int idMarca = Integer.parseInt(c.getString(5));
+                    final String modelo = c.getString(6);
+                    final String descripcion = c.getString(7);
+                    final double precio = Double.parseDouble(c.getString(8));
+                    final double IVA = Double.parseDouble(c.getString(9));
+                    final int views = Integer.parseInt(c.getString(10));
 
                     producto.setCodArticulo(codArticulo);
                     producto.setCodSubCat(codSubCat);
                     producto.setCodCat(codCat);
                     producto.setArticulo(articulo);
                     producto.setMarca(marca);
+                    producto.setIdMarca(idMarca);
                     producto.setModelo(modelo);
                     producto.setDescripcion(descripcion);
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
+                    producto.setViews(views);
                     ArrayList<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
 
@@ -403,18 +421,18 @@ public class Controller {
         return tiendas;
     }
 
-    public static ArrayList<shopStock> getStockShopByProduct(String codArticulo) {
-        ArrayList<shopStock> shopStocks = new ArrayList<shopStock>();
+    public static ArrayList<ShopStock> getStockShopByProduct(String codArticulo) {
+        ArrayList<ShopStock> shopStocks = new ArrayList<ShopStock>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT tiendas.nombre, tiendas.ciudad, tiendas.calle, stock.stock FROM tiendas, stock WHERE stock.codArticulo ='"+codArticulo+"' AND tiendas.idtienda = stock.idtienda", null);
             //txtResultado.setText("");
 
-            shopStock shopStock = null;
+            ShopStock shopStock = null;
 
             int i = 0;
             if (c.moveToFirst()) {
                 do {
-                    shopStock = new shopStock();
+                    shopStock = new ShopStock();
                     shopStock.setName(c.getString(0));
                     shopStock.setCity(c.getString(1));
                     shopStock.setStreet(c.getString(2));
@@ -428,6 +446,194 @@ public class Controller {
             }
         }
         return shopStocks;
+    }
+
+    public static ArrayList<Marca> getMarcas() {
+        ArrayList<Marca> marcas = new ArrayList<Marca>();
+        if (Constants.database != null) {
+            final Cursor c = Constants.database.rawQuery("SELECT * FROM marcas", null);
+            //txtResultado.setText("");
+
+            Marca marca = null;
+
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    marca= new Marca();
+                    marca.setIdMarca(Integer.parseInt(c.getString(0)));
+                    marca.setNombre(c.getString(1));
+
+
+                    i = i++;
+
+                    marcas.add(marca);
+
+                } while (c.moveToNext());
+            }
+        }
+        return marcas;
+    }
+
+    public ArrayList<Producto> getProductsByMarcaId(int marcaId) {
+        ArrayList<Producto> productos = new ArrayList<Producto>();
+        Producto producto = null;
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE idMarca = " + marcaId + "", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    producto = new Producto();
+                    i = i++;
+                    final String codArticulo = c.getString(0);
+                    final String codSubCat = c.getString(1);
+                    final String codCat = c.getString(2);
+                    final String articulo = c.getString(3);
+                    final String marca = c.getString(4);
+                    final int idMarca = Integer.parseInt(c.getString(5));
+                    final String modelo = c.getString(6);
+                    final String descripcion = c.getString(7);
+                    final double precio = Double.parseDouble(c.getString(8));
+                    final double IVA = Double.parseDouble(c.getString(9));
+                    final int views = Integer.parseInt(c.getString(10));
+
+                    producto.setCodArticulo(codArticulo);
+                    producto.setCodSubCat(codSubCat);
+                    producto.setCodCat(codCat);
+                    producto.setArticulo(articulo);
+                    producto.setMarca(marca);
+                    producto.setIdMarca(idMarca);
+                    producto.setModelo(modelo);
+                    producto.setDescripcion(descripcion);
+                    producto.setPrecio(precio);
+                    producto.setIVA(IVA);
+                    producto.setViews(views);
+                    ArrayList<Images> images = this.getImages(codArticulo);
+                    producto.setDirectorio(images);
+
+                    productos.add(producto);
+
+                } while (c.moveToNext());
+            }
+        }
+        return productos;
+    }
+
+    public static void updateViews(Producto producto){
+
+        String cotArt = producto.getCodArticulo();
+        String codCat = producto.getCodCat();
+        String codSubCat = producto.getCodSubCat();
+        String articulo_name = producto.getArticulo();
+        String description_art = producto.getDescripcion();
+        String marca_art = producto.getMarca();
+        int idmarca_art = producto.getIdMarca();
+        String modelo_art = producto.getModelo();
+        double precio_art = producto.getPrecio();
+        double iva_art = producto.getIVA();
+        int views_art = producto.getViews();
+
+
+        ContentValues initialValues = new ContentValues();
+        initialValues.put("codArticulo", cotArt);
+        initialValues.put("codSubCat", codSubCat);
+        initialValues.put("codCat", codCat);
+        initialValues.put("articulo_name", articulo_name);
+        initialValues.put("marca", marca_art);
+        initialValues.put("idMarca", idmarca_art);
+        initialValues.put("modelo", modelo_art);
+        initialValues.put("descripcion", description_art);
+        initialValues.put("precio", precio_art);
+        initialValues.put("IVA", iva_art);
+        initialValues.put("views", views_art);
+
+        Constants.database.update("articulo", initialValues, "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
+
+    }
+
+    public  ArrayList<Producto> getMostViewedProducts(){
+        ArrayList<Producto> productos = new ArrayList<Producto>();
+        Producto producto = null;
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE articulo.views >= 0 ORDER BY articulo.views DESC LIMIT 6", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    producto = new Producto();
+                    i = i++;
+                    final String codArticulo = c.getString(0);
+                    final String codSubCat = c.getString(1);
+                    final String codCat = c.getString(2);
+                    final String articulo = c.getString(3);
+                    final String marca = c.getString(4);
+                    final int idMarca = Integer.parseInt(c.getString(5));
+                    final String modelo = c.getString(6);
+                    final String descripcion = c.getString(7);
+                    final double precio = Double.parseDouble(c.getString(8));
+                    final double IVA = Double.parseDouble(c.getString(9));
+                    final int views = Integer.parseInt(c.getString(10));
+
+                    producto.setCodArticulo(codArticulo);
+                    producto.setCodSubCat(codSubCat);
+                    producto.setCodCat(codCat);
+                    producto.setArticulo(articulo);
+                    producto.setMarca(marca);
+                    producto.setIdMarca(idMarca);
+                    producto.setModelo(modelo);
+                    producto.setDescripcion(descripcion);
+                    producto.setPrecio(precio);
+                    producto.setIVA(IVA);
+                    producto.setViews(views);
+                    ArrayList<Images> images = this.getImages(codArticulo);
+                    producto.setDirectorio(images);
+
+                    productos.add(producto);
+
+                } while (c.moveToNext());
+            }
+        }
+        return productos;
+    }
+
+    public static ArrayList<Producto> getAllProducts(){
+        ArrayList<Producto> productos = new ArrayList<Producto>();
+        Producto producto = null;
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    producto = new Producto();
+                    i = i++;
+                    final String codArticulo = c.getString(0);
+                    final String codSubCat = c.getString(1);
+                    final String codCat = c.getString(2);
+                    final String articulo = c.getString(3);
+                    final String marca = c.getString(4);
+                    final int idMarca = Integer.parseInt(c.getString(5));
+                    final String modelo = c.getString(6);
+                    final String descripcion = c.getString(7);
+                    final double precio = Double.parseDouble(c.getString(8));
+                    final double IVA = Double.parseDouble(c.getString(9));
+                    final int views = Integer.parseInt(c.getString(10));
+
+                    producto.setCodArticulo(codArticulo);
+                    producto.setCodSubCat(codSubCat);
+                    producto.setCodCat(codCat);
+                    producto.setArticulo(articulo);
+                    producto.setMarca(marca);
+                    producto.setIdMarca(idMarca);
+                    producto.setModelo(modelo);
+                    producto.setDescripcion(descripcion);
+                    producto.setPrecio(precio);
+                    producto.setIVA(IVA);
+                    producto.setViews(views);
+
+                    productos.add(producto);
+
+                } while (c.moveToNext());
+            }
+        }
+        return productos;
     }
 
 }

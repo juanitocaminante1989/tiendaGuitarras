@@ -10,10 +10,12 @@ public class Producto {
     public String codCat;
     public String articulo;
     public String marca;
+    public int idMarca;
     public String modelo;
     public String descripcion;
     public double precio;
     double IVA;
+    int views;
     public ArrayList<Images> directorio;
 
 
@@ -41,6 +43,22 @@ public class Producto {
         this.marca = marca;
         this.modelo = modelo;
         this.descripcion = descripcion;
+    }
+
+    public int getIdMarca() {
+        return idMarca;
+    }
+
+    public void setIdMarca(int idMarca) {
+        this.idMarca = idMarca;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
     }
 
     public String getCodArticulo() {

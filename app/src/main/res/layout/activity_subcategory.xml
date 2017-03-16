@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -29,7 +30,7 @@
 
                 android:gravity="center|left"
                 android:text="Hello bubbles!"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp" />
             <TextView
                 android:id="@+id/itemPrice"
@@ -41,7 +42,7 @@
 
                 android:gravity="center|left"
                 android:text="Hello bubbles!"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp" />
         </LinearLayout>
 

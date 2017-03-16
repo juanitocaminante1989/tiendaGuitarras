@@ -1,6 +1,5 @@
 package info.androidhive.slidingmenu.fragments;
 
-import java.io.CharArrayReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,9 +18,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -45,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import info.androidhive.slidingmenu.MainActivity;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterMainProduct;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterProduct;
@@ -54,7 +54,7 @@ import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.GPSTracker;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
-import info.androidhive.slidingmenu.entities.shopStock;
+import info.androidhive.slidingmenu.entities.ShopStock;
 import info.androidhive.slidingmenu.util.ScrollViewX;
 
 public class ProductFragment extends Fragment {
@@ -114,56 +114,63 @@ public class ProductFragment extends Fragment {
         mMapView = (MapView) rootView.findViewById(R.id.mapViewProducts);
         mMapView.onCreate(savedInstanceState);
         availableShopsList = (ListView) rootView.findViewById(R.id.shopAvailList);
-
+        this.getTag();
         mMapView.onResume(); // needed to get the map to display immediately
 
+        int views = producto.getViews() + 1;
+        producto.setViews(views);
 
+        Controller.updateViews(producto);
+        Constants.productSent = producto;
 
-        final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
-        actionBar.setBackgroundDrawable(cd);
-        cd.setAlpha(255);
-        scrollView = (ScrollViewX) rootView.findViewById(R.id.scroll_view);
-        ViewTreeObserver vto = scrollView.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener (new ViewTreeObserver.OnGlobalLayoutListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onGlobalLayout() {
-                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                scrollViewHeight= scrollView.getMeasuredHeight();
+        try {
+            new MainActivity.JSONUpdateProducts().execute();
+            final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
+            actionBar.setBackgroundDrawable(cd);
 
-            }
-        });
-        scrollView.setOnScrollViewListener(new ScrollViewX.OnScrollViewListener() {
+            cd.setAlpha(255);
+            scrollView = (ScrollViewX) rootView.findViewById(R.id.scroll_view);
+            ViewTreeObserver vto = scrollView.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                @Override
+                public void onGlobalLayout() {
+                    scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    scrollViewHeight = scrollView.getMeasuredHeight();
 
-            @Override
-            public void onScrollChanged(ScrollViewX v, int l, int t, int oldl, int oldt) {
-
-                cd.setAlpha(getAlphaforActionBar(v.getScrollY()));
-            }
-
-            private int getAlphaforActionBar(int scrollY) {
-                int minDist = 0, maxDist = scrollViewHeight;
-                if (scrollY > maxDist) {
-                    return 255;
-                } else if (scrollY < minDist) {
-                    return 0;
-                } else {
-                    int alpha = 0;
-                    alpha = (int) ((255.0 / maxDist) * (maxDist - scrollY));
-                    return alpha;
                 }
+            });
+            scrollView.setOnScrollViewListener(new ScrollViewX.OnScrollViewListener() {
+
+                @Override
+                public void onScrollChanged(ScrollViewX v, int l, int t, int oldl, int oldt) {
+
+                    cd.setAlpha(getAlphaforActionBar(v.getScrollY()));
+                }
+
+                private int getAlphaforActionBar(int scrollY) {
+                    int minDist = 0, maxDist = scrollViewHeight;
+                    if (scrollY > maxDist) {
+                        return 255;
+                    } else if (scrollY < minDist) {
+                        return 0;
+                    } else {
+                        int alpha = 0;
+                        alpha = (int) ((255.0 / maxDist) * (maxDist - scrollY));
+                        return alpha;
+                    }
+                }
+
+            });
+
+            if (producto.codCat.equals("guitar100") || producto.codCat.equals("bass200")) {
+                sampleLinear.setVisibility(View.VISIBLE);
+            } else {
+                sampleLinear.setVisibility(View.GONE);
             }
+            productos = controller.consultaArticulos(producto.getCodSubCat());
+            if (productos.size() != 0) {
 
-        });
-
-        if (producto.codCat.equals("guitar100") || producto.codCat.equals("bass200")) {
-            sampleLinear.setVisibility(View.VISIBLE);
-        } else {
-            sampleLinear.setVisibility(View.GONE);
-        }
-        productos = controller.consultaArticulos(producto.getCodSubCat());
-        if (productos.size() != 0) {
-            try {
                 Iterator<Producto> iter = productos.iterator();
                 while (iter.hasNext()) {
                     if (iter.next().getCodArticulo().equals(producto.getCodArticulo())) {
@@ -178,55 +185,56 @@ public class ProductFragment extends Fragment {
                 } else {
                     similarProductLayout.setVisibility(View.GONE);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+
             }
-        }
 
-        mMapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap mMap) {
-                googleMap = mMap;
+            mMapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap mMap) {
+                    googleMap = mMap;
 
-                // For showing a move to my location button
-                googleMap.setMyLocationEnabled(true);
+                    // For showing a move to my location button
+                    googleMap.setMyLocationEnabled(true);
 
-                // For dropping a marker at a point on the Map
-                GPSTracker gpsTracker = new GPSTracker(context);
-                LatLng sydney = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
-                if(Controller.getShopByProduct(producto.codArticulo).size()>0) {
-                    for (AssociatedShops tienda : Controller.getShopByProduct(producto.codArticulo)) {
-                        LatLng coords = new LatLng(tienda.getLatitude(), tienda.getLongitude());
-                        googleMap.addMarker(addMarketOptions(coords, tienda.getName(), tienda.getStreet()));
+                    // For dropping a marker at a point on the Map
+                    GPSTracker gpsTracker = new GPSTracker(context);
+                    LatLng sydney = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+                    if (Controller.getShopByProduct(producto.codArticulo).size() > 0) {
+                        for (AssociatedShops tienda : Controller.getShopByProduct(producto.codArticulo)) {
+                            LatLng coords = new LatLng(tienda.getLatitude(), tienda.getLongitude());
+                            googleMap.addMarker(addMarketOptions(coords, tienda.getName(), tienda.getStreet()));
+                        }
                     }
+                    // For zooming automatically to the location of the marker
+                    CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 }
-                // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        });
+            });
 
-        fillData();
+            fillData();
 
-        ArrayList<shopStock> shopStocks = Controller.getStockShopByProduct(producto.codArticulo);
-        if(shopStocks != null){
-            if(shopStocks.size()>0){
-                listViewAdapter adapter = new listViewAdapter(context, 0, shopStocks);
-                availableShopsList.setAdapter(adapter);
-                setListViewHeightBasedOnChildren(availableShopsList);
+            ArrayList<ShopStock> shopStocks = Controller.getStockShopByProduct(producto.codArticulo);
+            if (shopStocks != null) {
+                if (shopStocks.size() > 0) {
+                    listViewAdapter adapter = new listViewAdapter(context, 0, shopStocks);
+                    availableShopsList.setAdapter(adapter);
+                    setListViewHeightBasedOnChildren(availableShopsList);
+                }
             }
+
+            play.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    playSample();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playSample();
-            }
-        });
         return rootView;
     }
 
-    public MarkerOptions addMarketOptions(LatLng place, String title, String snippet){
+    public MarkerOptions addMarketOptions(LatLng place, String title, String snippet) {
 
         MarkerOptions marker = new MarkerOptions();
         marker.position(place).title(title).snippet(snippet);
@@ -291,19 +299,18 @@ public class ProductFragment extends Fragment {
         mp.start();
     }
 
-    private class listViewAdapter extends ArrayAdapter{
+    private class listViewAdapter extends ArrayAdapter {
 
-        private ArrayList<shopStock> shopStocks;
-        private shopStock shopStock;
+        private ArrayList<ShopStock> shopStocks;
+        private ShopStock shopStock;
         private Context context;
 
-        public listViewAdapter(Context context, int resourceLayout, ArrayList<shopStock> shopStocks) {
+        public listViewAdapter(Context context, int resourceLayout, ArrayList<ShopStock> shopStocks) {
             super(context, resourceLayout);
-            this.context= context;
+            this.context = context;
             this.shopStocks = shopStocks;
 
         }
-
 
 
         @Override
@@ -333,7 +340,7 @@ public class ProductFragment extends Fragment {
 
             Drawable imageId = null;
 
-            switch (shopStock.getStock()){
+            switch (shopStock.getStock()) {
 
                 case 0:
                     imageId = context.getResources().getDrawable(R.drawable.batteryempty);
@@ -376,4 +383,8 @@ public class ProductFragment extends Fragment {
         listView.requestLayout();
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        return super.onContextItemSelected(item);
+    }
 }
