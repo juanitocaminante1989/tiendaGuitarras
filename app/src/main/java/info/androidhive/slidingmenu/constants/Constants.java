@@ -29,6 +29,7 @@ public class Constants {
 
     public static void createNewFragment(int layoutId, Fragment fragment, String tag){
         if(Constants.manager!=null) {
+
             Constants.manager.beginTransaction().replace(layoutId, fragment, tag).commit();
         }
     }
