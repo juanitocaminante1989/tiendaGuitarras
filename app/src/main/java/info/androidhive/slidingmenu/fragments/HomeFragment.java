@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,75 +23,68 @@ import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends CustomFragment {
     Context context;
-    ArrayList<Producto> productos;
-    Producto producto;
+    SparseArray<Producto> productos;
     Controller controller;
     ViewPager similarViewPager;
     CirclePageIndicator similarViewIndicator;
     Timer swipeTimer;
     GridView marcasGridView;
     View generalView;
+    int layout;
 
-    public HomeFragment(){
 
-    }
-
-    public HomeFragment(Context context) {
+    public HomeFragment(int layout, View rootView, Context context) {
+        super(layout, rootView, context);
+        this.layout = layout;
         this.context = context;
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateCustomView(View var1) {
         controller = new Controller();
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-        generalView = rootView;
-        similarViewPager = (ViewPager) rootView.findViewById(R.id.pager_similar_product);
-        similarViewIndicator = (CirclePageIndicator) rootView.findViewById(R.id.indicator_similar_product);
-        marcasGridView = (GridView) rootView.findViewById(R.id.marcaGridHome);
+        generalView = var1;
+        similarViewPager = (ViewPager) var1.findViewById(R.id.pager_similar_product);
+        similarViewIndicator = (CirclePageIndicator) var1.findViewById(R.id.indicator_similar_product);
+        marcasGridView = (GridView) var1.findViewById(R.id.marcaGridHome);
 
         try {
 
 
-                productos = controller.getMostViewedProducts();
+            productos = controller.getMostViewedProducts();
 
-                if (productos.size() != 0) {
-                    producto = productos.get(0);
-                    if (producto != null){
+            if (productos.size() != 0) {
 
-                        final CustomPagerAdapterProduct adapter = new CustomPagerAdapterProduct(context, productos);
-                        similarViewPager.setAdapter(adapter);
-                        similarViewIndicator.setViewPager(similarViewPager);
+                    final CustomPagerAdapterProduct adapter = new CustomPagerAdapterProduct(context, productos);
+                    similarViewPager.setAdapter(adapter);
+                    similarViewIndicator.setViewPager(similarViewPager);
 
-                        swipeTimer = new Timer();
-                        swipeTimer.schedule(new TimerTask() {
+                    swipeTimer = new Timer();
+                    swipeTimer.schedule(new TimerTask() {
 
-                            @Override
-                            public void run() {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
+                        @Override
+                        public void run() {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
 
-                                        int pos = similarViewPager.getCurrentItem();
+                                    int pos = similarViewPager.getCurrentItem();
 
-                                        if(pos == productos.size()-1){
-                                            pos = -1;
-                                        }
-                                        pos++;
-                                        similarViewPager.setCurrentItem(pos, true);
+                                    if(pos == productos.size()-1){
+                                        pos = -1;
                                     }
-                                });
-                            }
-                        }, 500, 3000);
+                                    pos++;
+                                    similarViewPager.setCurrentItem(pos, true);
+                                }
+                            });
+                        }
+                    }, 500, 3000);
 
-                    }
-                }
 
-        ArrayList<Marca> marcas = controller.getMarcas();
+            }
+
+            SparseArray<Marca> marcas = controller.getMarcas();
 
             if(marcas != null){
                 if(marcas.size()>0){
@@ -106,9 +100,8 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
 
-        return rootView;
+        return var1;
     }
-
 
     @Override
     public void onDestroyView() {
@@ -118,6 +111,6 @@ public class HomeFragment extends Fragment {
         if(swipeTimer!=null){
             swipeTimer.cancel();
         }
-        generalView = null;
+
     }
 }

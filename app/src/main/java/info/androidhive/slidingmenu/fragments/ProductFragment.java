@@ -3,13 +3,11 @@ package info.androidhive.slidingmenu.fragments;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -19,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,9 +54,10 @@ import info.androidhive.slidingmenu.entities.GPSTracker;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
 import info.androidhive.slidingmenu.entities.ShopStock;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 import info.androidhive.slidingmenu.util.ScrollViewX;
 
-public class ProductFragment extends Fragment {
+public class ProductFragment extends CustomFragment {
 
 
     //    ImageView imagen;
@@ -72,7 +72,7 @@ public class ProductFragment extends Fragment {
     private TextView descripcion;
     private HashMap<Integer, View> productViews;
     private Context context;
-    private ArrayList<Producto> productos;
+    private SparseArray<Producto> productos;
     private Controller controller;
     private View view;
     private ActionBar actionBar;
@@ -85,8 +85,11 @@ public class ProductFragment extends Fragment {
     private int scrollViewHeight = 0;
     private ScrollViewX scrollView;
     private ListView availableShopsList;
+    private Bundle savedInstanceState;
 
-    public ProductFragment(Context context, int layout, Producto producto) {
+
+    public ProductFragment(int layout, View view, Context context, Producto producto) {
+        super(layout, view, context, producto);
 
         this.context = context;
         productViews = new HashMap<Integer, View>();
@@ -95,8 +98,8 @@ public class ProductFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_products_main, container, false);
+    public View onCreateCustomView(View var1) {
+        View rootView = var1;
         view = rootView;
         controller = new Controller();
         sampleLinear = (LinearLayout) rootView.findViewById(R.id.samplelinear);
@@ -171,12 +174,13 @@ public class ProductFragment extends Fragment {
             productos = controller.consultaArticulos(producto.getCodSubCat());
             if (productos.size() != 0) {
 
-                Iterator<Producto> iter = productos.iterator();
-                while (iter.hasNext()) {
-                    if (iter.next().getCodArticulo().equals(producto.getCodArticulo())) {
-                        iter.remove();
+                for (int i = 0; i < productos.size(); i++) {
+                    if (productos.get(i).getCodArticulo() == producto.getCodArticulo()) {
+                        productos.removeAt(i);
                     }
                 }
+
+
                 if (productos.size() != 0) {
                     CustomPagerAdapterProduct adapterProduct = new CustomPagerAdapterProduct(context, productos);
                     similarViewPager.setAdapter(adapterProduct);
@@ -199,10 +203,11 @@ public class ProductFragment extends Fragment {
                     // For dropping a marker at a point on the Map
                     GPSTracker gpsTracker = new GPSTracker(context);
                     LatLng sydney = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
-                    if (Controller.getShopByProduct(producto.codArticulo).size() > 0) {
-                        for (AssociatedShops tienda : Controller.getShopByProduct(producto.codArticulo)) {
-                            LatLng coords = new LatLng(tienda.getLatitude(), tienda.getLongitude());
-                            googleMap.addMarker(addMarketOptions(coords, tienda.getName(), tienda.getStreet()));
+                    SparseArray<AssociatedShops> associatedShopsSparseArray = Controller.getShopByProduct(producto.codArticulo);
+                    if (associatedShopsSparseArray.size() > 0) {
+                        for (int i = 0; i < associatedShopsSparseArray.size(); i++) {
+                            LatLng coords = new LatLng(associatedShopsSparseArray.get(i).getLatitude(), associatedShopsSparseArray.get(i).getLongitude());
+                            googleMap.addMarker(addMarketOptions(coords, associatedShopsSparseArray.get(i).getName(), associatedShopsSparseArray.get(i).getStreet()));
                         }
                     }
                     // For zooming automatically to the location of the marker
@@ -213,7 +218,7 @@ public class ProductFragment extends Fragment {
 
             fillData();
 
-            ArrayList<ShopStock> shopStocks = Controller.getStockShopByProduct(producto.codArticulo);
+            SparseArray<ShopStock> shopStocks = Controller.getStockShopByProduct(producto.codArticulo);
             if (shopStocks != null) {
                 if (shopStocks.size() > 0) {
                     listViewAdapter adapter = new listViewAdapter(context, 0, shopStocks);
@@ -229,9 +234,15 @@ public class ProductFragment extends Fragment {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugUtilities.writeLog("Error", e);
         }
         return rootView;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.savedInstanceState = savedInstanceState;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     public MarkerOptions addMarketOptions(LatLng place, String title, String snippet) {
@@ -244,9 +255,9 @@ public class ProductFragment extends Fragment {
     }
 
     public static void goToSimilarProduct(String codSubCat, Context context) {
-        Fragment fragment = null;
+        CustomFragment fragment = null;
         Controller controller = new Controller();
-        fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        fragment = new ProductFragment(R.layout.activity_products_main, null, context, controller.consulta(codSubCat));
         Constants.createNewFragment(R.id.frame_container, fragment);
     }
 
@@ -261,18 +272,19 @@ public class ProductFragment extends Fragment {
             ArrayList<Uri> uris = new ArrayList<Uri>();
             if (producto.getDirectorio().size() > 0) {
                 for (File file : files) {
-                    for (Images images : producto.getDirectorio()) {
-                        if (file.getName().equals(images.getDirectory())) {
+                    for (int i = 0; i < producto.getDirectorio().size(); i++) {
+
+                        if (file.getName().equals(producto.getDirectorio().get(i).getDirectory())) {
                             uri = Uri.fromFile(file);
                             uris.add(uri);
                         }
                     }
+
+                    CustomPagerAdapterMainProduct adapter = new CustomPagerAdapterMainProduct(context, uris);
+
+                    viewPager.setAdapter(adapter);
+                    mIndicator.setViewPager(viewPager);
                 }
-
-                CustomPagerAdapterMainProduct adapter = new CustomPagerAdapterMainProduct(context, uris);
-
-                viewPager.setAdapter(adapter);
-                mIndicator.setViewPager(viewPager);
             }
         }
     }
@@ -300,11 +312,11 @@ public class ProductFragment extends Fragment {
 
     private class listViewAdapter extends ArrayAdapter {
 
-        private ArrayList<ShopStock> shopStocks;
+        private SparseArray<ShopStock> shopStocks;
         private ShopStock shopStock;
         private Context context;
 
-        public listViewAdapter(Context context, int resourceLayout, ArrayList<ShopStock> shopStocks) {
+        public listViewAdapter(Context context, int resourceLayout, SparseArray<ShopStock> shopStocks) {
             super(context, resourceLayout);
             this.context = context;
             this.shopStocks = shopStocks;
@@ -333,53 +345,58 @@ public class ProductFragment extends Fragment {
             ImageView stockImage = (ImageView) row.findViewById(R.id.stockImage);
 
             shopStock = shopStocks.get(position);
-            itemName.setText(shopStock.getName());
-            itemCity.setText(shopStock.getCity());
-            itemStreet.setText(shopStock.getStreet());
+            if(shopStock != null) {
+                itemName.setText(shopStock.getName());
+                itemCity.setText(shopStock.getCity());
+                itemStreet.setText(shopStock.getStreet());
 
-            Drawable imageId = null;
+                Drawable imageId = null;
 
-            switch (shopStock.getStock()) {
+                switch (shopStock.getStock()) {
 
-                case 0:
-                    imageId = context.getResources().getDrawable(R.drawable.batteryempty);
-                    break;
+                    case 0:
+                        imageId = context.getResources().getDrawable(R.drawable.batteryempty);
+                        break;
 
-                case 1:
-                    imageId = context.getResources().getDrawable(R.drawable.batterylow);
-                    break;
+                    case 1:
+                        imageId = context.getResources().getDrawable(R.drawable.batterylow);
+                        break;
 
-                case 2:
-                    imageId = context.getResources().getDrawable(R.drawable.batteryfull);
-                    break;
+                    case 2:
+                        imageId = context.getResources().getDrawable(R.drawable.batteryfull);
+                        break;
 
+                }
+
+                stockImage.setImageDrawable(imageId);
             }
-
-            stockImage.setImageDrawable(imageId);
-
             notifyDataSetChanged();
             return row;
         }
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
-        }
+        try {
+            ListAdapter listAdapter = listView.getAdapter();
+            if (listAdapter == null) {
+                // pre-condition
+                return;
+            }
 
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
+            int totalHeight = 0;
+            for (int i = 0; i < listAdapter.getCount(); i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
 
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
+            params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+            listView.setLayoutParams(params);
+            listView.requestLayout();
+        }catch (Exception e ){
+            DebugUtilities.writeLog("Error",e);
+        }
     }
 
     @Override
@@ -388,10 +405,8 @@ public class ProductFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         mMapView.onDestroy();
-        view = null;
     }
 }

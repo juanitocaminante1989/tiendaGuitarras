@@ -6,6 +6,7 @@ import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
 import info.androidhive.slidingmenu.fragments.MarcasFragment;
 import info.androidhive.slidingmenu.fragments.ProductList;
@@ -41,6 +42,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,7 +82,7 @@ public class MainActivity extends Activity {
     private CharSequence mTitle;
 
     // slide menu items
-    private ArrayList<String> navMenuTitles;
+    private SparseArray<String> navMenuTitles;
     private TypedArray navMenuIcons;
 
     private ArrayList<NavDrawerItem> navDrawerItems;
@@ -213,23 +215,23 @@ public class MainActivity extends Activity {
      */
     private void displayView(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = null;
+        CustomFragment fragment = null;
         int layout;
         Controller controller = new Controller();
-        ArrayList<String> categoryId = controller.getCategoryId();
+        SparseArray<String> categoryId = controller.getCategoryId();
         String tag = "";
         for (int i = 0; i < categoryId.size(); i++) {
             if (position == 0) {
-                fragment = new HomeFragment(context);
+                fragment = new HomeFragment(R.layout.fragment_home, null,context);
                 tag = "home";
                 Constants.currentFragment = 0;
                 Constants.currentFragmentStr = "home";
             } else if (position == 1) {
-                fragment = new ProfileFragment(context);
+                fragment = new ProfileFragment(R.layout.map_fragment, null, context);
                 tag = "profile";
                 Constants.currentFragment = 1;
             } else if (position == 2) {
-                fragment = new SearchFragment(context);
+                fragment = new SearchFragment(R.layout.search_fragment, null, context);
                 tag = "profile";
                 Constants.currentFragment = 1;
                 Constants.currentFragmentStr = "srch";
@@ -306,17 +308,17 @@ public class MainActivity extends Activity {
                     .setNegativeButton("No", null)
                     .show();
         } else if (Constants.currentFragment == 1) {
-            Fragment fragment = null;
+            CustomFragment fragment = null;
 
             if (Constants.currentFragmentStr.equals("srch")) {
-                fragment = new SearchFragment(context);
+                fragment = new SearchFragment(R.layout.search_fragment, null, context);
                 tag = "search";
             } else if (Constants.currentFragmentStr.equals("home")) {
                 tag = "home";
-                fragment = new HomeFragment(context);
+                fragment = new HomeFragment(R.layout.fragment_home, null,context);
             } else {
                 tag = "home";
-                fragment = new HomeFragment(context);
+                fragment = new HomeFragment(R.layout.fragment_home, null,context);
             }
             if (fragment != null) {
                 Constants.createNewFragment(R.id.frame_container, fragment, tag);
@@ -336,10 +338,10 @@ public class MainActivity extends Activity {
 
         } else if (Constants.currentFragment == 3) {
             if (Constants.whichFragment == 1) {
-                Fragment fragment = new ProductList(R.layout.fragment_subcategory, Constants.subCategoryPosition, context);
+                CustomFragment fragment = new ProductList(R.layout.fragment_subcategory, null, context, Constants.subCategoryPosition);
                 Constants.createNewFragment(R.id.frame_container, fragment);
             } else if (Constants.whichFragment == 2) {
-                Fragment fragment = new MarcasFragment(R.layout.marcas_fragment, Constants.idMarca, context);
+                CustomFragment fragment = new MarcasFragment(R.layout.marcas_fragment, null, context, Constants.idMarca);
                 Constants.createNewFragment(R.id.frame_container, fragment);
             }
             Constants.currentFragment = 2;
@@ -395,7 +397,7 @@ public class MainActivity extends Activity {
             int id = 0;
             try {
                 // Getting JSON Array
-                Constants.objects = new ArrayList<JSONObject>();
+                Constants.objects = new SparseArray<JSONObject>();
                 if (json != null) {
 
                     JSONObject jsonObject = null;
@@ -542,15 +544,16 @@ public class MainActivity extends Activity {
                     dialog();
                 }
 
+
+            if (id != -1) {
+                new connectFTPServer().execute();
+            }
+            initialize();
             } catch (Exception e) {
                 loadLayout.setVisibility(View.GONE);
                 mainLayout.setVisibility(View.VISIBLE);
                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
             }
-            if (id != -1) {
-                new connectFTPServer().execute();
-            }
-            initialize();
         }
 
         @Override
@@ -727,9 +730,9 @@ public class MainActivity extends Activity {
 
     public void subCategory(String codSubCat, Context context) {
 
-        Fragment fragment = null;
+        CustomFragment fragment = null;
         Constants.subCategoryPosition = codSubCat;
-        fragment = new ProductList(R.layout.fragment_subcategory, codSubCat, context);
+        fragment = new ProductList(R.layout.fragment_subcategory, null, context, codSubCat);
         Constants.createNewFragment(R.id.frame_container, fragment, "product");
     }
 

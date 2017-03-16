@@ -13,7 +13,7 @@ import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
 
-public class ProductList extends Fragment {
+public class ProductList extends CustomFragment {
     View rootView;
     public SubCategoryArrayAdapter categoryArrayAdapter;
     public ListView listView;
@@ -21,21 +21,19 @@ public class ProductList extends Fragment {
     Context context;
     String codSubCat;
 
-    public ProductList(){
 
-    }
 
-    public ProductList(int layout,String codSubCat, Context context) {
+    public ProductList(int layout,View view, Context context, String codSubCat) {
+        super(layout, view, context, codSubCat);
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    public View onCreateCustomView(View var1) {
         Controller controller = new Controller();
-        rootView = inflater.inflate(layout, container, false);
+        rootView= var1;
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
@@ -43,8 +41,6 @@ public class ProductList extends Fragment {
         listView.setAdapter(categoryArrayAdapter);
 
         return rootView;
-
     }
-
 }
 

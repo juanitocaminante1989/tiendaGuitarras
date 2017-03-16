@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.fragments.ProductFragment;
 
 public class SubCategoryArrayAdapter extends ArrayAdapter {
@@ -28,17 +30,11 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
     private LinearLayout singleMessageContainer;
     int layout;
     ImageView itemImage;
-    private ArrayList<Producto> categoryMessages;
+    private SparseArray<Producto> categoryMessages;
     Context context;
     LinearLayout itemLinear;
 
-    public void add(Producto object) {
-        categoryMessages.add(object);
-        super.add(object);
-
-    }
-
-    public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> categoryMessages) {
+    public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, SparseArray<Producto> categoryMessages) {
         super(context, textViewResourceId);
         this.context = context;
         this.layout = layout;
@@ -98,9 +94,9 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
 
     public void producto(String codSubCat, int layout, Context context) {
         this.layout = layout;
-        Fragment fragment = null;
+        CustomFragment fragment = null;
         Controller controller = new Controller();
-        fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        fragment = new ProductFragment(R.layout.activity_products_main, null, context, controller.consulta(codSubCat));
         Constants.createNewFragment(R.id.frame_container, fragment);
 
     }

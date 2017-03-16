@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.entities.Marca;
+import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.fragments.MarcasFragment;
 
 /**
@@ -22,10 +24,10 @@ import info.androidhive.slidingmenu.fragments.MarcasFragment;
  */
 
 public class MarcaGridViewAdapter extends ArrayAdapter{
-    private ArrayList<Marca> marcas;
+    private SparseArray<Marca> marcas;
     private Context context;
 
-    public MarcaGridViewAdapter(Context context, int textViewResourceId, ArrayList<Marca> marcas) {
+    public MarcaGridViewAdapter(Context context, int textViewResourceId, SparseArray<Marca> marcas) {
         super(context, textViewResourceId);
         this.context = context;
         this.marcas = marcas;
@@ -58,7 +60,7 @@ public class MarcaGridViewAdapter extends ArrayAdapter{
                 @Override
                 public void onClick(View view) {
                     Constants.idMarca = marca.getIdMarca();
-                    Fragment fragment = new MarcasFragment(R.layout.marcas_fragment, marca.getIdMarca(), context);
+                    CustomFragment fragment = new MarcasFragment(R.layout.marcas_fragment,null, context,marca.getIdMarca());
                     Constants.createNewFragment(R.id.frame_container, fragment);
                     Constants.currentFragment = 2;
                     Constants.whichFragment = 2;

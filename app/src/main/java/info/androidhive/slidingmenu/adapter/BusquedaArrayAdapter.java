@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,22 +15,17 @@ import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.fragments.ProductFragment;
 
 public class BusquedaArrayAdapter extends ArrayAdapter {
 
     Button articulo;
     int layout;
-    private ArrayList<Producto> productos;
+    private SparseArray<Producto> productos;
     Context context;
 
-    public void add(Producto object) {
-        productos.add(object);
-        super.add(object);
-
-    }
-
-    public BusquedaArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> productos) {
+    public BusquedaArrayAdapter(Context context, int textViewResourceId, int layout, SparseArray<Producto> productos) {
         super(context, textViewResourceId);
         this.context = context;
         this.layout = layout;
@@ -78,9 +74,9 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
         //layout = R.layout.activity_proaudio_main;
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(layout, parent, false);
-        Fragment fragment = null;
+        CustomFragment fragment = null;
         Controller controller = new Controller();
-        fragment = new ProductFragment(context, R.layout.activity_products_main, controller.consulta(codSubCat));
+        fragment = new ProductFragment(R.layout.activity_products_main, null, context, controller.consulta(codSubCat));
         Constants.createNewFragment(R.id.frame_container, fragment);
 
     }

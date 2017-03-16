@@ -17,7 +17,7 @@ import info.androidhive.slidingmenu.database.Controller;
  * Created by Juan on 16/03/2017.
  */
 
-public class MarcasFragment extends Fragment{
+public class MarcasFragment extends CustomFragment{
 
     View rootView;
     public SubCategoryArrayAdapter categoryArrayAdapter;
@@ -26,30 +26,27 @@ public class MarcasFragment extends Fragment{
     Context context;
     int codSubCat;
 
-    public  MarcasFragment(){
 
-    }
 
-    public MarcasFragment(int layout,int codSubCat, Context context) {
+    public MarcasFragment(int layout,View view, Context context, int codSubCat ) {
+        super(layout, view, context, codSubCat);
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    public View onCreateCustomView(View var1) {
         Controller controller = new Controller();
-        rootView = inflater.inflate(layout, container, false);
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
-        listView = (ListView) rootView.findViewById(R.id.marcasList);
+        listView = (ListView) var1.findViewById(R.id.marcasList);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         categoryArrayAdapter = new SubCategoryArrayAdapter(context, R.layout.activity_subcategory, R.layout.activity_subcategory, controller.getProductsByMarcaId(codSubCat));
         listView.setAdapter(categoryArrayAdapter);
 
-        return rootView;
-
+        return var1;
     }
+
 
     @Override
     public void onDestroyView() {

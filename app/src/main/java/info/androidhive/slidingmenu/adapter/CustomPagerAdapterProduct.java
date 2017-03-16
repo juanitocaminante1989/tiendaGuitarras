@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +31,12 @@ public class CustomPagerAdapterProduct extends PagerAdapter {
 
     Context mContext;
     LayoutInflater mLayoutInflater;
-    ArrayList<Producto> productos;
+    SparseArray<Producto> productos;
     ImageView imageView;
     TextView itemName;
     TextView itemPrice;
 
-    public CustomPagerAdapterProduct(Context context, ArrayList<Producto> producto) {
+    public CustomPagerAdapterProduct(Context context, SparseArray<Producto> producto) {
         mContext = context;
         this.productos = producto;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

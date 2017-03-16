@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
 
@@ -89,9 +90,9 @@ public class Controller {
         return id;
     }
 
-    public ArrayList<CategoryMessage> consultaSubCategorias(String query) {
+    public SparseArray<CategoryMessage> consultaSubCategorias(String query) {
 
-        ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
+        SparseArray<CategoryMessage> categoryMessages = new SparseArray<CategoryMessage>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codCat = '" + query + "'", null);
             //txtResultado.setText("");
@@ -100,93 +101,92 @@ public class Controller {
             if (c.moveToFirst()) {
                 do {
                     categoryMessage = new CategoryMessage();
-                    i = i++;
                     String codSubCat = c.getString(0);
                     String subCat = c.getString(1);
 
                     categoryMessage.setTitle(codSubCat);
                     categoryMessage.setMessage(subCat);
 
-                    categoryMessages.add(categoryMessage);
+                    categoryMessages.put(i,categoryMessage);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return categoryMessages;
     }
 
-    public ArrayList<String> getCategoryId() {
+    public SparseArray<String> getCategoryId() {
 
-        ArrayList<String> categoryMessages = new ArrayList<String>();
-        categoryMessages.add("");
+        SparseArray<String> categoryMessages = new SparseArray<String>();
+        categoryMessages.put(0,"");
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT codCat FROM Categoria order by codCat ASC", null);
-            int i = 0;
+            int i = 1;
             if (c.moveToFirst()) {
                 do {
-                    i = i++;
                     String codCat = c.getString(0);
 
-                    categoryMessages.add(codCat);
+                    categoryMessages.put(i,codCat);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return categoryMessages;
     }
 
-    public ArrayList<String> getCategoryNames() {
+    public SparseArray<String> getCategoryNames() {
 
-        ArrayList<String> categoryMessages = new ArrayList<String>();
-        categoryMessages.add("Principal");
-        categoryMessages.add("Perfil");
-        categoryMessages.add("Búsqueda");
+        SparseArray<String> categoryMessages = new SparseArray<String>();
+        categoryMessages.put(0,"Principal");
+        categoryMessages.put(1,"Perfil");
+        categoryMessages.put(2,"Búsqueda");
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT category_name FROM Categoria order by codCat ASC", null);
-            int i = 0;
+            int i = 3;
             if (c.moveToFirst()) {
                 do {
-                    i = i++;
                     String codCat = c.getString(0);
 
-                    categoryMessages.add(codCat);
+                    categoryMessages.put(i, codCat);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return categoryMessages;
     }
 
-    public ArrayList<Images> getImages(String codArticulo) {
+    public SparseArray<Images> getImages(String codArticulo) {
         Images image = null;
-        ArrayList<Images> images =new ArrayList<Images>();
+        SparseArray<Images> images =new SparseArray<Images>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM images WHERE codArticulo = '" + codArticulo + "'", null);
             int i = 0;
             if (c.moveToFirst()) {
                 do {
                     image = new Images();
-                    i = i++;
                     final String directory = c.getString(0);
                     final String codArticulo1 = c.getString(1);
 
 
                     image.setDirectory(directory);
                     image.setCodArticulo(codArticulo1);
-                    images.add(image);
+                    images.put(i,image);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return images;
     }
 
-    public ArrayList<Producto> consultaArticulos(String codArticulo) {
+    public SparseArray<Producto> consultaArticulos(String codArticulo) {
         Producto producto = null;
-        ArrayList<Producto> productos =new ArrayList<Producto>();
+        SparseArray<Producto> productos =new SparseArray<Producto>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE codSubCat = '" + codArticulo + "'", null);
             int i = 0;
             if (c.moveToFirst()) {
                 do {
                     producto = new Producto();
-                    i = i++;
                     codArticulo = c.getString(0);
                     final String codSubCat = c.getString(1);
                     final String codCat = c.getString(2);
@@ -211,9 +211,10 @@ public class Controller {
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
                     producto.setViews(views);
-                    ArrayList<Images> images = this.getImages(codArticulo);
+                    SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
-                    productos.add(producto);
+                    productos.put(i, producto);
+                    i++;
                 } while (c.moveToNext());
             }
         }
@@ -221,8 +222,8 @@ public class Controller {
     }
 
 
-    public ArrayList<Producto> busqueda(String buscar, Activity activity) {
-        ArrayList<Producto> productos = new ArrayList<Producto>();
+    public SparseArray<Producto> busqueda(String buscar, Activity activity) {
+        SparseArray<Producto> productos = new SparseArray<Producto>();
         if ((buscar.equals("")) || (buscar == null) || (buscar.equals(" "))) {
             new AlertDialog.Builder(activity)
                     .setTitle("Campo vacío")
@@ -269,8 +270,8 @@ public class Controller {
                         producto.setMarca(marca);
                         producto.setModelo(modelo);
                         producto.setDescripcion(descripcion);
-                        productos.add(producto);
-
+                        productos.put(i,producto);
+                        i++;
                     } while (c.moveToNext());
                 } else {
                     producto = new Producto();
@@ -279,7 +280,7 @@ public class Controller {
                     producto.setMarca("No se han encontrado articulos");
                     producto.setModelo("");
                     producto.setDescripcion("");
-                    productos.add(producto);
+                    productos.put(0,producto);
 
                 }
             }
@@ -305,7 +306,7 @@ public class Controller {
             if (c.moveToFirst()) {
                 do {
                     producto = new Producto();
-                    i = i++;
+
                     codArticulo = c.getString(0);
                     final String codSubCat = c.getString(1);
                     final String codCat = c.getString(2);
@@ -329,18 +330,18 @@ public class Controller {
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
                     producto.setViews(views);
-                    ArrayList<Images> images = this.getImages(codArticulo);
+                    SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
-
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return producto;
     }
 
-    public static ArrayList<CategoryMessage> consultaSubCat(String query) {
+    public static SparseArray<CategoryMessage> consultaSubCat(String query) {
 
-        ArrayList<CategoryMessage> categoryMessages = new ArrayList<CategoryMessage>();
+        SparseArray<CategoryMessage> categoryMessages = new SparseArray<CategoryMessage>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codSubCat = '" + query + "'", null);
             //txtResultado.setText("");
@@ -349,22 +350,23 @@ public class Controller {
             if (c.moveToFirst()) {
                 do {
                     categoryMessage = new CategoryMessage();
-                    i = i++;
+
                     String codSubCat = c.getString(0);
                     String subCat = c.getString(1);
 
                     categoryMessage.setTitle(codSubCat);
                     categoryMessage.setMessage(subCat);
 
-                    categoryMessages.add(categoryMessage);
+                    categoryMessages.put(i,categoryMessage);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return categoryMessages;
     }
 
-    public static ArrayList<AssociatedShops> getTiendas() {
-        ArrayList<AssociatedShops> tiendas = new ArrayList<AssociatedShops>();
+    public static SparseArray<AssociatedShops> getTiendas() {
+        SparseArray<AssociatedShops> tiendas = new SparseArray<AssociatedShops>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas", null);
             //txtResultado.setText("");
@@ -382,9 +384,9 @@ public class Controller {
                     tienda.setLongitude(Double.parseDouble(c.getString(4)));
                     tienda.setLatitude(Double.parseDouble(c.getString(5)));
 
-                    i = i++;
+                    i++;
 
-                    tiendas.add(tienda);
+                    tiendas.put(i,tienda);
 
                 } while (c.moveToNext());
             }
@@ -392,8 +394,8 @@ public class Controller {
         return tiendas;
     }
 
-    public static ArrayList<AssociatedShops> getShopByProduct(String codArticulo) {
-        ArrayList<AssociatedShops> tiendas = new ArrayList<AssociatedShops>();
+    public static SparseArray<AssociatedShops> getShopByProduct(String codArticulo) {
+        SparseArray<AssociatedShops> tiendas = new SparseArray<AssociatedShops>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas WHERE tiendas.idtienda in (SELECT stock.idtienda from stock where stock.codArticulo = '"+codArticulo+"')", null);
             //txtResultado.setText("");
@@ -411,18 +413,16 @@ public class Controller {
                     tienda.setLongitude(Double.parseDouble(c.getString(4)));
                     tienda.setLatitude(Double.parseDouble(c.getString(5)));
 
-                    i = i++;
-
-                    tiendas.add(tienda);
-
+                    tiendas.put(i,tienda);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return tiendas;
     }
 
-    public static ArrayList<ShopStock> getStockShopByProduct(String codArticulo) {
-        ArrayList<ShopStock> shopStocks = new ArrayList<ShopStock>();
+    public static SparseArray<ShopStock> getStockShopByProduct(String codArticulo) {
+        SparseArray<ShopStock> shopStocks = new SparseArray<ShopStock>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT tiendas.nombre, tiendas.ciudad, tiendas.calle, stock.stock FROM tiendas, stock WHERE stock.codArticulo ='"+codArticulo+"' AND tiendas.idtienda = stock.idtienda", null);
             //txtResultado.setText("");
@@ -438,18 +438,16 @@ public class Controller {
                     shopStock.setStreet(c.getString(2));
                     shopStock.setStock(Integer.parseInt(c.getString(3)));
 
-                    i = i++;
-
-                    shopStocks.add(shopStock);
-
+                    shopStocks.put(i,shopStock);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return shopStocks;
     }
 
-    public static ArrayList<Marca> getMarcas() {
-        ArrayList<Marca> marcas = new ArrayList<Marca>();
+    public static SparseArray<Marca> getMarcas() {
+        SparseArray<Marca> marcas = new SparseArray<Marca>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT * FROM marcas", null);
             //txtResultado.setText("");
@@ -463,10 +461,10 @@ public class Controller {
                     marca.setIdMarca(Integer.parseInt(c.getString(0)));
                     marca.setNombre(c.getString(1));
 
+                    marcas.put(i,marca);
+                    i++;
 
-                    i = i++;
 
-                    marcas.add(marca);
 
                 } while (c.moveToNext());
             }
@@ -474,8 +472,8 @@ public class Controller {
         return marcas;
     }
 
-    public ArrayList<Producto> getProductsByMarcaId(int marcaId) {
-        ArrayList<Producto> productos = new ArrayList<Producto>();
+    public SparseArray<Producto> getProductsByMarcaId(int marcaId) {
+        SparseArray<Producto> productos = new SparseArray<Producto>();
         Producto producto = null;
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE idMarca = " + marcaId + "", null);
@@ -483,7 +481,7 @@ public class Controller {
             if (c.moveToFirst()) {
                 do {
                     producto = new Producto();
-                    i = i++;
+
                     final String codArticulo = c.getString(0);
                     final String codSubCat = c.getString(1);
                     final String codCat = c.getString(2);
@@ -507,11 +505,11 @@ public class Controller {
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
                     producto.setViews(views);
-                    ArrayList<Images> images = this.getImages(codArticulo);
+                    SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
 
-                    productos.add(producto);
-
+                    productos.put(i,producto);
+                    i++;
                 } while (c.moveToNext());
             }
         }
@@ -550,8 +548,8 @@ public class Controller {
 
     }
 
-    public  ArrayList<Producto> getMostViewedProducts(){
-        ArrayList<Producto> productos = new ArrayList<Producto>();
+    public  SparseArray<Producto> getMostViewedProducts(){
+        SparseArray<Producto> productos = new SparseArray<Producto>();
         Producto producto = null;
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE articulo.views >= 0 ORDER BY articulo.views DESC LIMIT 6", null);
@@ -559,7 +557,7 @@ public class Controller {
             if (c.moveToFirst()) {
                 do {
                     producto = new Producto();
-                    i = i++;
+
                     final String codArticulo = c.getString(0);
                     final String codSubCat = c.getString(1);
                     final String codCat = c.getString(2);
@@ -583,19 +581,19 @@ public class Controller {
                     producto.setPrecio(precio);
                     producto.setIVA(IVA);
                     producto.setViews(views);
-                    ArrayList<Images> images = this.getImages(codArticulo);
+                    SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
 
-                    productos.add(producto);
-
+                    productos.put(i,producto);
+                    i++;
                 } while (c.moveToNext());
             }
         }
         return productos;
     }
 
-    public static ArrayList<Producto> getAllProducts(){
-        ArrayList<Producto> productos = new ArrayList<Producto>();
+    public static SparseArray<Producto> getAllProducts(){
+        SparseArray<Producto> productos = new SparseArray<Producto>();
         Producto producto = null;
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo", null);
@@ -603,7 +601,7 @@ public class Controller {
             if (c.moveToFirst()) {
                 do {
                     producto = new Producto();
-                    i = i++;
+
                     final String codArticulo = c.getString(0);
                     final String codSubCat = c.getString(1);
                     final String codCat = c.getString(2);
@@ -628,8 +626,8 @@ public class Controller {
                     producto.setIVA(IVA);
                     producto.setViews(views);
 
-                    productos.add(producto);
-
+                    productos.put(i,producto);
+                    i++;
                 } while (c.moveToNext());
             }
         }

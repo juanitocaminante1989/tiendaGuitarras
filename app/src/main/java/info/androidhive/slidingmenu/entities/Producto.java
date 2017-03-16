@@ -1,6 +1,8 @@
 package info.androidhive.slidingmenu.entities;
 
 
+import android.util.SparseArray;
+
 import java.util.ArrayList;
 
 public class Producto {
@@ -16,14 +18,14 @@ public class Producto {
     public double precio;
     double IVA;
     int views;
-    public ArrayList<Images> directorio;
+    public SparseArray<Images> directorio;
 
 
     public Producto() {
 
     }
 
-    public Producto(String codArticulo, String codSubCat, String codCat, String articulo, String marca, String modelo, String descripcion, double precio, double IVA, ArrayList<Images> directorio) {
+    public Producto(String codArticulo, String codSubCat, String codCat, String articulo, String marca, String modelo, String descripcion, double precio, double IVA, SparseArray<Images> directorio) {
         this.codArticulo = codArticulo;
         this.codSubCat = codSubCat;
         this.codCat = codCat;
@@ -133,11 +135,11 @@ public class Producto {
         this.IVA = IVA;
     }
 
-    public ArrayList<Images> getDirectorio() {
+    public SparseArray<Images> getDirectorio() {
         return directorio;
     }
 
-    public void setDirectorio(ArrayList<Images> directorio) {
+    public void setDirectorio(SparseArray<Images> directorio) {
         this.directorio = directorio;
     }
 }
