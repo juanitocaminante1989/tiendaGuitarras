@@ -30,11 +30,11 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
     private LinearLayout singleMessageContainer;
     int layout;
     ImageView itemImage;
-    private SparseArray<Producto> categoryMessages;
+    private ArrayList<Producto> categoryMessages;
     Context context;
     LinearLayout itemLinear;
 
-    public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, SparseArray<Producto> categoryMessages) {
+    public SubCategoryArrayAdapter(Context context, int textViewResourceId, int layout, ArrayList<Producto> categoryMessages) {
         super(context, textViewResourceId);
         this.context = context;
         this.layout = layout;

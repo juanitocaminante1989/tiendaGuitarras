@@ -178,9 +178,9 @@ public class Controller {
         return images;
     }
 
-    public SparseArray<Producto> consultaArticulos(String codArticulo) {
+    public ArrayList<Producto> consultaArticulos(String codArticulo) {
         Producto producto = null;
-        SparseArray<Producto> productos =new SparseArray<Producto>();
+        ArrayList<Producto> productos =new ArrayList<Producto>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE codSubCat = '" + codArticulo + "'", null);
             int i = 0;
@@ -213,7 +213,7 @@ public class Controller {
                     producto.setViews(views);
                     SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
-                    productos.put(i, producto);
+                    productos.add(producto);
                     i++;
                 } while (c.moveToNext());
             }
@@ -472,8 +472,8 @@ public class Controller {
         return marcas;
     }
 
-    public SparseArray<Producto> getProductsByMarcaId(int marcaId) {
-        SparseArray<Producto> productos = new SparseArray<Producto>();
+    public ArrayList<Producto> getProductsByMarcaId(int marcaId) {
+        ArrayList<Producto> productos = new ArrayList<Producto>();
         Producto producto = null;
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE idMarca = " + marcaId + "", null);
@@ -508,7 +508,7 @@ public class Controller {
                     SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
 
-                    productos.put(i,producto);
+                    productos.add(producto);
                     i++;
                 } while (c.moveToNext());
             }
@@ -548,8 +548,8 @@ public class Controller {
 
     }
 
-    public  SparseArray<Producto> getMostViewedProducts(){
-        SparseArray<Producto> productos = new SparseArray<Producto>();
+    public  ArrayList<Producto> getMostViewedProducts(){
+        ArrayList<Producto> productos = new ArrayList<Producto>();
         Producto producto = null;
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT * FROM articulo WHERE articulo.views >= 0 ORDER BY articulo.views DESC LIMIT 6", null);
@@ -584,7 +584,7 @@ public class Controller {
                     SparseArray<Images> images = this.getImages(codArticulo);
                     producto.setDirectorio(images);
 
-                    productos.put(i,producto);
+                    productos.add(producto);
                     i++;
                 } while (c.moveToNext());
             }

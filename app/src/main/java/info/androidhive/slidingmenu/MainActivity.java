@@ -800,8 +800,11 @@ public class MainActivity extends Activity {
             if (!filePath.exists()) {
                 filePath.mkdirs();
             } else {
-                filePath.delete();
-                filePath.mkdirs();
+                File file = null;
+               for(int i =0;i< filePath.listFiles().length;i++){
+                    file = filePath.listFiles()[i];
+                   file.delete();
+               }
             }
 
             try {

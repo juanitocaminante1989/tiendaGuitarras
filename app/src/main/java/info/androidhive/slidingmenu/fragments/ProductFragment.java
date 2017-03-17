@@ -72,7 +72,7 @@ public class ProductFragment extends CustomFragment {
     private TextView descripcion;
     private HashMap<Integer, View> productViews;
     private Context context;
-    private SparseArray<Producto> productos;
+    private ArrayList<Producto> productos;
     private Controller controller;
     private View view;
     private ActionBar actionBar;
@@ -173,13 +173,16 @@ public class ProductFragment extends CustomFragment {
             }
             productos = controller.consultaArticulos(producto.getCodSubCat());
             if (productos.size() != 0) {
+                try {
+                    for (int i = 0; i < productos.size(); i++) {
+                        if (productos.get(i).getCodArticulo().equals(producto.getCodArticulo())) {
+                            productos.remove(i);
 
-                for (int i = 0; i < productos.size(); i++) {
-                    if (productos.get(i).getCodArticulo() == producto.getCodArticulo()) {
-                        productos.removeAt(i);
+                        }
                     }
+                }catch(Exception e){
+                    DebugUtilities.writeLog("Error", e);
                 }
-
 
                 if (productos.size() != 0) {
                     CustomPagerAdapterProduct adapterProduct = new CustomPagerAdapterProduct(context, productos);

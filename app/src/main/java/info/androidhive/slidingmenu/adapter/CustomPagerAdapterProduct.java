@@ -31,12 +31,12 @@ public class CustomPagerAdapterProduct extends PagerAdapter {
 
     Context mContext;
     LayoutInflater mLayoutInflater;
-    SparseArray<Producto> productos;
+    ArrayList<Producto> productos;
     ImageView imageView;
     TextView itemName;
     TextView itemPrice;
 
-    public CustomPagerAdapterProduct(Context context, SparseArray<Producto> producto) {
+    public CustomPagerAdapterProduct(Context context, ArrayList<Producto> producto) {
         mContext = context;
         this.productos = producto;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -64,19 +64,21 @@ public class CustomPagerAdapterProduct extends PagerAdapter {
 
 
         final Producto producto = productos.get(position);
-        itemName.setText(producto.getArticulo());
-        itemPrice.setText(producto.getPrecio() + " €");
-        File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
-        File[] files = filePath.listFiles();
-        Uri uri = null;
-        if(producto.getDirectorio().size()>0) {
-            for (File file : files) {
-                if (file.getName().equals(producto.getDirectorio().get(0).getDirectory())) {
-                    uri = Uri.fromFile(file);
+        if(producto != null) {
+            itemName.setText(producto.getArticulo());
+            itemPrice.setText(producto.getPrecio() + " €");
+            File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
+            File[] files = filePath.listFiles();
+            Uri uri = null;
+            if (producto.getDirectorio().size() > 0) {
+                for (File file : files) {
+                    if (file.getName().equals(producto.getDirectorio().get(0).getDirectory())) {
+                        uri = Uri.fromFile(file);
 
+                    }
                 }
+                imageView.setImageURI(uri);
             }
-            imageView.setImageURI(uri);
         }
         offerLinear.setOnClickListener(new View.OnClickListener() {
             @Override

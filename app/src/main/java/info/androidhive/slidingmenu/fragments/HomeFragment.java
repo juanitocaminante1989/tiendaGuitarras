@@ -25,7 +25,7 @@ import info.androidhive.slidingmenu.entities.Producto;
 
 public class HomeFragment extends CustomFragment {
     Context context;
-    SparseArray<Producto> productos;
+    ArrayList<Producto> productos;
     Controller controller;
     ViewPager similarViewPager;
     CirclePageIndicator similarViewIndicator;
