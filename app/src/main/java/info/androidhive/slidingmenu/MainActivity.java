@@ -422,6 +422,7 @@ public class MainActivity extends Activity {
 
                             if(Controller.getClient(nif) != null){
                                 Constants.userLogged = true;
+
                             }else{
                                 Constants.userLogged = false;
                             }

@@ -28,8 +28,8 @@ public class Constants {
         try {
             if (Constants.manager != null) {
                 FragmentTransaction e = Constants.manager.beginTransaction();
-
-              //  e.setCustomAnimations(R.animator.slide_left, R.animator.slide_left);
+                e.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                e.setCustomAnimations(R.animator.slide_left, R.animator.slide_right);
 
                 e.replace(layoutId, fragment).commit();
             }
@@ -42,8 +42,9 @@ public class Constants {
         try {
             if (Constants.manager != null) {
                 FragmentTransaction e = Constants.manager.beginTransaction();
+                e.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                e.setCustomAnimations(R.animator.slide_left, R.animator.slide_right);
 
-               // e.setCustomAnimations(R.animator.slide_left, R.animator.slide_left);
 
                 e.replace(layoutId, fragment, tag).commit();
             }

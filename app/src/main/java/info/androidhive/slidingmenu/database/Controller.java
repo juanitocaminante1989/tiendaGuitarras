@@ -711,9 +711,11 @@ public class Controller {
 
 
                     i++;
+                    Constants.currentClient= client;
                 } while (c.moveToNext());
             }
         }
+
         return client;
     }
 
