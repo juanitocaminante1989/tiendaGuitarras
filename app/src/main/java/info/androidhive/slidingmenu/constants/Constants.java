@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.entities.Client;
 import info.androidhive.slidingmenu.entities.Producto;
 import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.util.DebugUtilities;
@@ -55,6 +56,7 @@ public class Constants {
     public final static String url = "http://"+IP+":80/CarritoCompra/conexion.php";
     public final static String restService = "http://"+IP+":80/CarritoCompra/restservice.php";
     public final static String recievedata = "http://"+IP+":80/CarritoCompra/recievedata.php";
+    public final static String checkUser = "http://"+IP+":80/CarritoCompra/checkUser.php";
 
     public static SparseArray<JSONObject> objects;
     public static boolean hasExecuted = false;
@@ -66,6 +68,7 @@ public class Constants {
     public static String currentFragmentStr = "";
     public static int idMarca = -1;
     public static Producto productSent = null;
+    public static Client currentClient = null;
 
 
 }

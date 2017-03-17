@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import info.androidhive.slidingmenu.entities.CategoryMessage;
 import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.entities.Client;
 import info.androidhive.slidingmenu.entities.Images;
 import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
@@ -89,6 +90,7 @@ public class Controller {
         }
         return id;
     }
+
 
     public SparseArray<CategoryMessage> consultaSubCategorias(String query) {
 
@@ -632,6 +634,87 @@ public class Controller {
             }
         }
         return productos;
+    }
+
+    public static boolean insertClients(Client client){
+        boolean exists = false;
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM clientes", null);
+            if(c.moveToFirst()) {
+                exists  = true;
+                String nif = c.getString(0);
+                String correo = c.getString(5);
+                if (nif.equals(client.getNif())){
+                    exists = true;
+                }else{
+                    exists = false;
+                }
+                if(correo.equals(client.getCorreo())) {
+                    exists = true;
+                }else{
+                    exists = false;
+                }
+
+            }else{
+                ContentValues initialValues = new ContentValues();
+
+                initialValues.put("NIF", client.getNif());
+                initialValues.put("nombre", client.getNombre());
+                initialValues.put("apellidos", client.getApellidos());
+                initialValues.put("direccion", client.getDireccion());
+                initialValues.put("codPost", client.getCodPos());
+                initialValues.put("correo", client.getCorreo());
+                initialValues.put("telefono", client.getTelefono());
+                initialValues.put("clave", client.getClave());
+                initialValues.put("logged", 1);
+
+                Constants.database.insert("clientes", "codCat=?", initialValues);
+
+                exists = false;
+                Constants.currentClient = client;
+            }
+        }
+//        Constants.database.insert();
+                return exists;
+    }
+
+    public static Client getClient(String dni){
+        Client client = null;
+
+
+        if (Constants.database != null) {
+            Cursor c = Constants.database.rawQuery("SELECT * FROM clientes WHERE NIF = '"+dni+"'", null);
+            int i = 0;
+            if (c.moveToFirst()) {
+                do {
+                    client = new Client();
+
+                    final String nif = c.getString(0);
+                    final String nombre = c.getString(1);
+                    final String apellidos = c.getString(2);
+                    final String direccion = c.getString(3);
+                    final String codPost = c.getString(4);
+                    final String correo = c.getString(5);
+                    final String telefono = c.getString(6);
+                    final String clave= c.getString(7);
+                    final int logged = Integer.parseInt(c.getString(8));
+
+                    client.setNif(nif);
+                    client.setNombre(nombre);
+                    client.setApellidos(apellidos);
+                    client.setDireccion(direccion);
+                    client.setCodPos(codPost);
+                    client.setCorreo(correo);
+                    client.setTelefono(telefono);
+                    client.setClave(clave);
+                    client.setLogged(logged);
+
+
+                    i++;
+                } while (c.moveToNext());
+            }
+        }
+        return client;
     }
 
 }

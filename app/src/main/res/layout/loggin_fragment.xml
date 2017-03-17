@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+     <LinearLayout
+         android:layout_weight="0.9"
+         android:layout_width="match_parent"
+         android:layout_height="0dp">
+    <LinearLayout
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Nombre"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/nombre"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="DNI/NIF"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/nif"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Direccion"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/direccion"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Teléfono"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/telefono"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Apellidos"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/apellido"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:textColor="@color/black" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Correo electrónico"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/correo"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Codigo Postal"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/codpos"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.25"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:gravity="center"
+                android:text="Contraseña"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:gravity="center"
+                android:id="@+id/clave"
+                android:textColor="@color/black"
+                android:layout_weight="0.5"
+                android:password="true"
+                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
+    </LinearLayout>
+     </LinearLayout>
+    <LinearLayout
+        android:layout_weight="0.1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <Button
+            android:id="@+id/logginButton"
+            android:text="Iniciar Sesion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</LinearLayout>

@@ -15,7 +15,7 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
     String sqlCreateCategoria = "CREATE TABLE categoria(codCat VARCHAR(30),category_name VARCHAR(30), descripcion VARCHAR(100), PRIMARY KEY (codCat))";
     String sqlCreateSubCategoria = "CREATE TABLE subCategoria(codSubCat VARCHAR(30),codCat VARCHAR(30),subcategory_name VARCHAR(100), descripcion VARCHAR(100),PRIMARY KEY (codSubCat),FOREIGN KEY (codCat) REFERENCES categoria(codCat))";
     String sqlCreateArticulo = "CREATE TABLE articulo(codArticulo VARCHAR(30),codSubCat VARCHAR(30),codCat VARCHAR(30),articulo_name VARCHAR(100), marca VARCHAR(30), idMarca INT(30),modelo VARCHAR(50), descripcion VARCHAR(100), precio DECIMAL(7,2),IVA DECIMAL(5,2), views INT, PRIMARY KEY (codArticulo),FOREIGN KEY (codCat) REFERENCES categoria(codCat),FOREIGN KEY (codSubCat) REFERENCES subCategoria(codSubCat))";
-    String sqlCreateClientes = "CREATE TABLE clientes(NIF VARCHAR (9) NOT NULL, nombre VARCHAR(20) NOT NULL, apellidos VARCHAR(30) NOT NULL, direccion VARCHAR(40) NOT NULL,codPost INTEGER(6) NOT NULL,correo VARCHAR(40) NOT NULL,telefono VARCHAR(9) NOT NULL,clave VARCHAR(20) NOT NULL,CONSTRAINT correoE UNIQUE (correo),PRIMARY KEY (NIF))";
+    String sqlCreateClientes = "CREATE TABLE clientes(NIF VARCHAR (9) NOT NULL, nombre VARCHAR(20) NOT NULL, apellidos VARCHAR(30) NOT NULL, direccion VARCHAR(40) NOT NULL,codPost VARCHAR(6) NOT NULL,correo VARCHAR(40) NOT NULL,telefono VARCHAR(9) NOT NULL,clave VARCHAR(20) NOT NULL, logged INT, CONSTRAINT correoE UNIQUE (correo),PRIMARY KEY (NIF))";
     String sqlCreateCarrito = "CREATE TABLE  Carrito(NIF VARCHAR(100), fechaCreacion DATE, fechaFin DATE, FOREIGN KEY (NIF) REFERENCES clientes(NIF) ON DELETE cascade)";
     String sqlCreateLineaCarrito = "CREATE TABLE lineaCarrito (codLinea VARCHAR(30), codArticulo VARCHAR(30), unidades INTEGER (5), NIF VARCHAR(100), PRIMARY KEY (codLinea, codArticulo), FOREIGN KEY (codArticulo) REFERENCES articulo(codArticulo), FOREIGN KEY (NIF) REFERENCES clientes(NIF) ON DELETE cascade)";
     String sqlCreateTiendas = "CREATE TABLE tiendas ( idtienda INT NOT NULL , nombre VARCHAR(50) NOT NULL , ciudad INT(50) NOT NULL , calle INT(50) NOT NULL , longitud DOUBLE(100) NOT NULL , latitud  DOUBLE(100) NOT NULL , PRIMARY KEY (idtienda))";
@@ -60,7 +60,10 @@ public class SlideSQLHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS clientes");
         db.execSQL("DROP TABLE IF EXISTS Carrito");
         db.execSQL("DROP TABLE IF EXISTS lineaCarrito");
-
+        db.execSQL("DROP TABLE IF EXISTS tiendas");
+        db.execSQL("DROP TABLE IF EXISTS stock");
+        db.execSQL("DROP TABLE IF EXISTS images");
+        db.execSQL("DROP TABLE IF EXISTS marcas");
 
     }
 
