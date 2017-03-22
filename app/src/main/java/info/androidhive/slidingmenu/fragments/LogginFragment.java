@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import info.androidhive.slidingmenu.MainActivity;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.data.JSONUpdateClients;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Client;
 
@@ -82,7 +83,7 @@ public class LogginFragment extends CustomFragment{
         Client cliente = new Client(nombreStr, apellidosStr, nifStr, correoStr, direccionStr, codPosStr, telefonoStr, passwordStr);
         Constants.currentClient = cliente;
         try {
-            new MainActivity.JSONUpdateClients().execute().get();
+            new JSONUpdateClients().execute().get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

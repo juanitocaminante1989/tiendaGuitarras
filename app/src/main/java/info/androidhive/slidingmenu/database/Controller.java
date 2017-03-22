@@ -386,10 +386,8 @@ public class Controller {
                     tienda.setLongitude(Double.parseDouble(c.getString(4)));
                     tienda.setLatitude(Double.parseDouble(c.getString(5)));
 
-                    i++;
-
                     tiendas.put(i,tienda);
-
+                    i++;
                 } while (c.moveToNext());
             }
         }

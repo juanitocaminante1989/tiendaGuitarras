@@ -2,6 +2,8 @@ package info.androidhive.slidingmenu;
 
 import info.androidhive.slidingmenu.adapter.NavDrawerListAdapter;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.data.GetClients;
+import info.androidhive.slidingmenu.data.JSONParse;
 import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
@@ -93,12 +95,12 @@ public class MainActivity extends Activity {
 
     private Controller controller;
     private Bundle savedInstanceState;
-    private LinearLayout mainLayout;
-    private LinearLayout loadLayout;
-    private TextView progressUpdate;
+    public LinearLayout mainLayout;
+    public LinearLayout loadLayout;
+    public TextView progressUpdate;
 
     public Context context;
-    private ProgressBar mProgressBar;
+    public ProgressBar mProgressBar;
     private Handler mHandler;
     private ActionBar actionBar;
     private Activity starterIntent;
@@ -361,16 +363,38 @@ public class MainActivity extends Activity {
     }
 
     public void checkClients(){
-       GetClients clients =  new GetClients();
+       GetClients clients =  new GetClients(context, this);
         clients.execute();
 
         if (Constants.userLogged){
-            new JSONParse(context).execute();
+            new JSONParse(context, this).execute();
         }
     }
 
     public void recieveData() {
-        new JSONParse(context).execute();
+        new JSONParse(context, this).execute();
+    }
+
+    public void setProgressUpdateText(String text){
+
+        progressUpdate.setText(text);
+    }
+
+    public void setProgressBarValues(Integer[] values){
+        mProgressBar.setIndeterminate(false);
+        mProgressBar.setMax(100);
+        mProgressBar.setProgress(values[0]);
+        mProgressBar.setProgress(0);
+        mProgressBar.setMax(100);
+        mProgressBar.setProgress(values[0]);
+    }
+
+    public void setMainlayoutVisible(){
+        mainLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void setLoadLayoutGone(){
+        loadLayout.setVisibility(View.GONE);
     }
 
     public void dialog() {
@@ -389,282 +413,7 @@ public class MainActivity extends Activity {
                 .show();
     }
 
-    public class GetClients extends AsyncTask<String, Integer, JSONArray>{
 
-        @Override
-        protected JSONArray doInBackground(String... strings) {
-
-            JSONParser jsonParser = new JSONParser();
-
-            JSONArray jsonArray = jsonParser.getJSONArrayFromUrl(Constants.getClients);
-
-            if(jsonArray != null)
-                return jsonArray;
-            else
-                return null;
-        }
-
-        @Override
-        protected void onPostExecute(JSONArray jsonArray) {
-            try{
-                JSONObject jsonObject = null;
-                if(jsonArray != null) {
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        jsonObject = jsonArray.getJSONObject(i);
-                        if (jsonObject.has("clientes")) {
-
-                            jsonObject.getJSONObject("clientes");
-                            String nif = jsonObject.getJSONObject("clientes").get("NIF").toString();
-                            String nombre = jsonObject.getJSONObject("clientes").get("nombre").toString();
-                            String apellidos = jsonObject.getJSONObject("clientes").get("apellidos").toString();
-                            String direccion = jsonObject.getJSONObject("clientes").get("direccion").toString();
-                            String codPost = jsonObject.getJSONObject("clientes").get("codPost").toString();
-                            String correo = jsonObject.getJSONObject("clientes").get("correo").toString();
-                            String telefono = jsonObject.getJSONObject("clientes").get("telefono").toString();
-                            String clave = jsonObject.getJSONObject("clientes").get("clave").toString();
-                            String logged = jsonObject.getJSONObject("clientes").get("logged").toString();
-
-                            if (Controller.getClient(nif) != null) {
-                                Constants.userLogged = true;
-                                recieveData();
-                                break;
-
-                            } else {
-                                Constants.userLogged = false;
-                                initLoggin();
-                                mainLayout.setVisibility(View.VISIBLE);
-                                loadLayout.setVisibility(View.GONE);
-                            }
-
-                        } else {
-
-                            Constants.userLogged = false;
-                            initLoggin();
-                            mainLayout.setVisibility(View.VISIBLE);
-                            loadLayout.setVisibility(View.GONE);
-                        }
-                    }
-                }else{
-                    Constants.userLogged = false;
-                    initLoggin();
-                    mainLayout.setVisibility(View.VISIBLE);
-                    loadLayout.setVisibility(View.GONE);
-                }
-            }catch (Exception e){
-                DebugUtilities.writeLog("GetClients:onPostExecute",e);
-            }
-        }
-    }
-
-
-    public class JSONParse extends AsyncTask<String, Integer, JSONArray> {
-
-        Context context;
-        public JSONParse(Context context){
-            this.context =context;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            mainLayout.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected JSONArray doInBackground(String... args) {
-            JSONParser jParser = new JSONParser();
-
-            // Getting JSON from URL
-            JSONArray json = jParser.getJSONArrayFromUrl(Constants.url);
-            if (json != null)
-                return json;
-            else {
-                dialog();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(JSONArray json) {
-            int id = 0;
-            try {
-                // Getting JSON Array
-                Constants.objects = new SparseArray<JSONObject>();
-                if (json != null) {
-
-                    JSONObject jsonObject = null;
-                    for (int i = 0; i < json.length(); i++) {
-                        jsonObject = json.getJSONObject(i);
-                            if (jsonObject.has("categoria")) {
-                            jsonObject.getJSONObject("categoria");
-                            String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
-                            String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
-                            String description_cat = jsonObject.getJSONObject("categoria").get("descripcion").toString();
-                            //String queryCat = "INSERT INTO categoria VALUES ('" + codCat + "', '" + category_name + "', '" + description_cat + "')";
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("codCat", codCat);
-                            initialValues.put("category_name", category_name);
-                            initialValues.put("descripcion", description_cat);
-                            id = Controller.insertOrUpdateCategory(initialValues);
-
-                        } else if (jsonObject.has("subcategoria")) {
-                            jsonObject.getJSONObject("subcategoria");
-                            String codSubCat = jsonObject.getJSONObject("subcategoria").get("codSubCat").toString();
-                            String codCat = jsonObject.getJSONObject("subcategoria").get("codCat").toString();
-                            String subcategory_name = jsonObject.getJSONObject("subcategoria").get("subcategory_name").toString();
-                            String description_subcat = jsonObject.getJSONObject("subcategoria").get("descripcion").toString();
-                            String deletedSub = jsonObject.getJSONObject("subcategoria").get("deleted").toString();
-                            //String querysubCat = "INSERT INTO subCategoria VALUES ('" + codSubCat + "', '" + codCat + "', '" + subcategory_name + "', '" + description_subcat + "')";
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("codSubCat", codSubCat);
-                            initialValues.put("codCat", codCat);
-                            initialValues.put("subcategory_name", subcategory_name);
-                            initialValues.put("descripcion", description_subcat);
-                            id = Controller.insertOrUpdateSubCategory(initialValues);
-                            if (deletedSub.equals("1")) {
-                                Constants.database.delete("subCategoria", "codSubCat=?", new String[]{(String) initialValues.get("codSubCat")});
-                            }
-
-                        } else if (jsonObject.has("articulo")) {
-                            jsonObject.getJSONObject("articulo");
-                            String cotArt = jsonObject.getJSONObject("articulo").get("codArticulo").toString();
-                            String codCat = jsonObject.getJSONObject("articulo").get("codCat").toString();
-                            String codSubCat = jsonObject.getJSONObject("articulo").get("codSubCat").toString();
-                            String articulo_name = jsonObject.getJSONObject("articulo").get("articulo_name").toString();
-                            String description_art = jsonObject.getJSONObject("articulo").get("descripcion").toString();
-                            String marca_art = jsonObject.getJSONObject("articulo").get("marca").toString();
-                            String idmarca_art = jsonObject.getJSONObject("articulo").get("idMarca").toString();
-                            String modelo_art = jsonObject.getJSONObject("articulo").get("modelo").toString();
-                            String precio_art = jsonObject.getJSONObject("articulo").get("precio").toString();
-                            String iva_art = jsonObject.getJSONObject("articulo").get("IVA").toString();
-                            String views_art = jsonObject.getJSONObject("articulo").get("views").toString();
-                            String deletedArt = jsonObject.getJSONObject("articulo").get("deletedArt").toString();
-
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("codArticulo", cotArt);
-                            initialValues.put("codSubCat", codSubCat);
-                            initialValues.put("codCat", codCat);
-                            initialValues.put("articulo_name", articulo_name);
-                            initialValues.put("marca", marca_art);
-                            initialValues.put("idMarca", idmarca_art);
-                            initialValues.put("modelo", modelo_art);
-                            initialValues.put("descripcion", description_art);
-                            initialValues.put("precio", precio_art);
-                            initialValues.put("IVA", iva_art);
-                            initialValues.put("views", views_art);
-                            id = Controller.insertOrUpdateProduct(initialValues);
-                            if (deletedArt.equals("1")) {
-                                Constants.database.delete("articulo", "codArticulo=?", new String[]{(String) initialValues.get("codArticulo")});
-                            }
-
-                        } else if (jsonObject.has("tiendas")) {
-                            jsonObject.getJSONObject("tiendas");
-                            String codTienda = jsonObject.getJSONObject("tiendas").get("idtienda").toString();
-                            String nombre = jsonObject.getJSONObject("tiendas").get("nombre").toString();
-                            String ciudad = jsonObject.getJSONObject("tiendas").get("ciudad").toString();
-                            String calle = jsonObject.getJSONObject("tiendas").get("calle").toString();
-                            String latitud = jsonObject.getJSONObject("tiendas").get("latitud").toString();
-                            String longitud = jsonObject.getJSONObject("tiendas").get("longitud").toString();
-                            String deletedTienda = jsonObject.getJSONObject("tiendas").get("deleted").toString();
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("idtienda", codTienda);
-                            initialValues.put("nombre", nombre);
-                            initialValues.put("ciudad", ciudad);
-                            initialValues.put("calle", calle);
-                            initialValues.put("latitud", latitud);
-                            initialValues.put("longitud", longitud);
-                            id = Controller.insertOrUpdateShops(initialValues);
-                            if (deletedTienda.equals("1")) {
-                                Constants.database.delete("tiendas", "idtienda=?", new String[]{(String) initialValues.get("idtienda")});
-                            }
-
-                        } else if (jsonObject.has("stock")) {
-                            jsonObject.getJSONObject("stock");
-                            String idStock = jsonObject.getJSONObject("stock").get("idStock").toString();
-                            String codTienda = jsonObject.getJSONObject("stock").get("idtienda").toString();
-                            String codarticulo = jsonObject.getJSONObject("stock").get("codArticulo").toString();
-                            String stock = jsonObject.getJSONObject("stock").get("stock").toString();
-                            String deletedStock = jsonObject.getJSONObject("stock").get("deleted").toString();
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("idStock", idStock);
-                            initialValues.put("idtienda", codTienda);
-                            initialValues.put("codArticulo", codarticulo);
-                            initialValues.put("stock", stock);
-                            id = Controller.insertOrUpdateStock(initialValues);
-                            if (deletedStock.equals("1")) {
-                                Constants.database.delete("stock", "idStock=?", new String[]{(String) initialValues.get("idStock")});
-                            }
-
-                        } else if (jsonObject.has("images")) {
-                            jsonObject.getJSONObject("images");
-                            String directory = jsonObject.getJSONObject("images").get("directory").toString();
-                            String codarticulo = jsonObject.getJSONObject("images").get("codArticulo").toString();
-                            String deletedimage = jsonObject.getJSONObject("images").get("deleted").toString();
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("directory", directory);
-                            initialValues.put("codArticulo", codarticulo);
-                            id = Controller.insertOrUpdateImages(initialValues);
-                            if (deletedimage.equals("1")) {
-                                Constants.database.delete("images", "directory=?", new String[]{(String) initialValues.get("directory")});
-                            }
-
-                        } else if (jsonObject.has("marcas")) {
-                            jsonObject.getJSONObject("marcas");
-                            String idmarcas = jsonObject.getJSONObject("marcas").get("idMarca").toString();
-                            String nombre = jsonObject.getJSONObject("marcas").get("nombre").toString();
-                            String deletedmarca = jsonObject.getJSONObject("marcas").get("deleted").toString();
-                            ContentValues initialValues = new ContentValues();
-                            initialValues.put("idMarca", idmarcas);
-                            initialValues.put("nombre", nombre);
-                            id = Controller.insertOrUpdateMarcas(initialValues);
-                            if (deletedmarca.equals("1")) {
-                                Constants.database.delete("marcas", "idMarca=?", new String[]{(String) initialValues.get("idMarca")});
-                            }
-
-                        }
-                        Constants.database.beginTransaction();
-                        Constants.database.endTransaction();
-                    }
-
-                    Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
-                    loadLayout.setVisibility(View.GONE);
-                    mainLayout.setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(context, "Download error", Toast.LENGTH_LONG).show();
-                    loadLayout.setVisibility(View.GONE);
-                    mainLayout.setVisibility(View.VISIBLE);
-                    dialog();
-                }
-
-
-                if (id != -1) {
-                    new connectFTPServer().execute();
-                }
-                initialize();
-            } catch (Exception e) {
-                loadLayout.setVisibility(View.GONE);
-                mainLayout.setVisibility(View.VISIBLE);
-                Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            // if we get here, length is known, now set indeterminate to false
-            mProgressBar.setIndeterminate(false);
-            mProgressBar.setMax(100);
-            mProgressBar.setProgress(values[0]);
-            mProgressBar.setProgress(0);
-            mProgressBar.setMax(100);
-            mProgressBar.setProgress(values[0]);
-
-
-// set the drawable as progress drawable
-            progressUpdate.setText(values[0] * 2 + "%");
-        }
-    }
 
     private class JSONReceive extends AsyncTask<String, Integer, JSONObject> {
 
@@ -831,20 +580,6 @@ public class MainActivity extends Activity {
         Constants.createNewFragment(R.id.frame_container, fragment, "product");
     }
 
-    private class connectFTPServer extends AsyncTask {
-
-        @Override
-        protected Object doInBackground(Object[] objects) {
-
-            try {
-                downloadAndSaveFile(Constants.IP, 21, "android", "android");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-    }
-
 
     private boolean connection() {
 
@@ -870,58 +605,7 @@ public class MainActivity extends Activity {
         return connectionBool;
     }
 
-    private Boolean downloadAndSaveFile(String server, int portNumber,
-                                        String user, String password)
-            throws IOException {
-        FTPClient ftp = null;
 
-        try {
-            ftp = new FTPClient();
-            ftp.connect(server, portNumber);
-            Log.d("", "Connected. Reply: " + ftp.getReplyString());
-
-            ftp.login(user, password);
-            Log.d("", "Logged in");
-            ftp.setFileType(FTP.BINARY_FILE_TYPE);
-            Log.d("", "Downloading");
-            ftp.enterLocalPassiveMode();
-
-            OutputStream outputStream = null;
-            String workingDir = ftp.printWorkingDirectory();
-            FTPFile[] files = ftp.listFiles();
-
-            boolean success = false;
-            File filePath = new File(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + "tiendamusica");
-            if (!filePath.exists()) {
-                filePath.mkdirs();
-            } else {
-                File file = null;
-                for (int i = 0; i < filePath.listFiles().length; i++) {
-                    file = filePath.listFiles()[i];
-                    file.delete();
-                }
-            }
-
-            try {
-                for (FTPFile file : files) {
-
-                    outputStream = new BufferedOutputStream(new FileOutputStream(filePath.getPath() + "/" + file.getName()));
-                    success = ftp.retrieveFile(file.getName(), outputStream);
-                    outputStream.close();
-                }
-
-            } finally {
-
-            }
-
-            return success;
-        } finally {
-            if (ftp != null) {
-                ftp.logout();
-                ftp.disconnect();
-            }
-        }
-    }
 
     public class JSONTransmitter extends AsyncTask<JSONObject, JSONObject, JSONObject> {
 
@@ -958,120 +642,4 @@ public class MainActivity extends Activity {
 
     }
 
-    public static class JSONUpdateProducts extends AsyncTask<JSONObject, JSONObject, JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(JSONObject... data) {
-
-            HttpClient client = new DefaultHttpClient();
-            HttpConnectionParams.setConnectionTimeout(client.getParams(), 100000);
-
-            JSONObject jsonResponse = new JSONObject();
-            ArrayList<JSONObject> jsonObjects = new ArrayList<JSONObject>();
-            JSONObject jsonObject = null;
-            try {
-                Producto producto = Constants.productSent;
-
-                jsonObject = new JSONObject();
-
-                jsonObject.put("codArticulo", producto.getCodArticulo());
-                jsonObject.put("codCat", producto.getCodCat());
-                jsonObject.put("codSubCat", producto.getCodSubCat());
-                jsonObject.put("articulo_name", producto.getArticulo());
-                jsonObject.put("descripcion", producto.getDescripcion());
-                jsonObject.put("marca", producto.getMarca());
-                jsonObject.put("idMarca", producto.getIdMarca());
-                jsonObject.put("modelo", producto.getModelo());
-                jsonObject.put("precio", producto.getPrecio());
-                jsonObject.put("IVA", producto.getIVA());
-                jsonObject.put("views", producto.getViews());
-                jsonObjects.add(jsonObject);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            HttpPost post = new HttpPost(Constants.recievedata);
-            try {
-
-                String jsonString = jsonObjects.toString();
-                StringEntity se = new StringEntity("json=" + jsonString);
-                post.addHeader("content-type", "application/x-www-form-urlencoded");
-                post.setEntity(se);
-
-                HttpResponse response;
-                response = client.execute(post);
-                String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
-
-                jsonResponse = new JSONObject(resFromServer);
-                Log.i("Response from server", jsonResponse.getString("msg"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return jsonResponse;
-        }
-
-    }
-
-    public static class JSONUpdateClients extends AsyncTask<JSONObject, JSONObject, JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(JSONObject... data) {
-
-            HttpClient client = new DefaultHttpClient();
-            HttpConnectionParams.setConnectionTimeout(client.getParams(), 100000);
-
-            JSONObject jsonResponse = new JSONObject();
-            ArrayList<JSONObject> jsonObjects = new ArrayList<JSONObject>();
-            JSONObject jsonObject = null;
-            try {
-                if (Constants.currentClient != null) {
-
-                    jsonObject = new JSONObject();
-                    jsonObject.put("NIF", Constants.currentClient.getNif());
-                    jsonObject.put("nombre", Constants.currentClient.getNombre());
-                    jsonObject.put("apellidos", Constants.currentClient.getApellidos());
-                    jsonObject.put("direccion", Constants.currentClient.getDireccion());
-                    jsonObject.put("codPost", Constants.currentClient.getCodPos());
-                    jsonObject.put("correo", Constants.currentClient.getCorreo());
-                    jsonObject.put("telefono", Constants.currentClient.getTelefono());
-                    jsonObject.put("clave", Constants.currentClient.getClave());
-                    jsonObject.put("logged", 1);
-
-                    jsonObjects.add(jsonObject);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            HttpPost post = new HttpPost(Constants.checkUser);
-            try {
-
-                String jsonString = jsonObjects.toString();
-                StringEntity se = new StringEntity("json=" + jsonString);
-                se.setContentType("Application/JSON");
-                post.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-                post.setEntity(se);
-
-                HttpResponse response;
-                response = client.execute(post);
-                String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
-
-//                resFromServer = resFromServer.replace("\\\\","");
-//                jsonResponse = new JSONObject("{\"msg\":\"ok\"}");
-//                jsonResponse = new JSONObject(resFromServer);
-                if (resFromServer.equals("ok")) {
-                    Constants.success = true;
-                } else if(resFromServer.equals("1062")){
-                    Constants.mysqlErrNo = Integer.parseInt(resFromServer);
-                    Constants.success = false;
-                }
-//                Log.i("Response from server", jsonResponse.getString("msg"));
-            } catch (Exception e) {
-                DebugUtilities.writeLog("Error: ", e);
-            }
-
-            return jsonResponse;
-        }
-
-    }
 }

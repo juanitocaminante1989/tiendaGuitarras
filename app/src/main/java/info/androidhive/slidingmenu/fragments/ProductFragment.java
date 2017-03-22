@@ -49,6 +49,7 @@ import info.androidhive.slidingmenu.adapter.CustomPagerAdapterMainProduct;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterProduct;
 import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
+import info.androidhive.slidingmenu.data.JSONUpdateProducts;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.GPSTracker;
 import info.androidhive.slidingmenu.entities.Images;
@@ -127,7 +128,7 @@ public class ProductFragment extends CustomFragment {
         Constants.productSent = producto;
 
         try {
-            new MainActivity.JSONUpdateProducts().execute();
+            new JSONUpdateProducts().execute();
             final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
             actionBar.setBackgroundDrawable(cd);
 
