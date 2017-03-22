@@ -60,6 +60,7 @@ public class GetClients extends AsyncTask<String, Integer, JSONArray> {
                         String logged = jsonObject.getJSONObject("clientes").get("logged").toString();
 
                         if (Controller.getClient(nif) != null) {
+                            Constants.currentClient =Controller.getClient(nif);
                             Constants.userLogged = true;
                             activity.recieveData();
                             break;

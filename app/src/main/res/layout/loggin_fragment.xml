@@ -211,6 +211,7 @@
         <Button
             android:id="@+id/logginButton"
             android:text="Iniciar Sesion"
+            android:background="@drawable/button"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

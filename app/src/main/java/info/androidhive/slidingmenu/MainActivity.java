@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
 
     }
 
-    public void initLoggin(){
+    public void initLoggin() {
         LogginFragment logginFragment = new LogginFragment(R.layout.loggin_fragment, null, context);
         Constants.createNewFragment(R.id.frame_container, logginFragment);
     }
@@ -362,11 +362,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void checkClients(){
-       GetClients clients =  new GetClients(context, this);
+    public void checkClients() {
+        GetClients clients = new GetClients(context, this);
         clients.execute();
 
-        if (Constants.userLogged){
+        if (Constants.userLogged) {
             new JSONParse(context, this).execute();
         }
     }
@@ -375,12 +375,12 @@ public class MainActivity extends Activity {
         new JSONParse(context, this).execute();
     }
 
-    public void setProgressUpdateText(String text){
+    public void setProgressUpdateText(String text) {
 
         progressUpdate.setText(text);
     }
 
-    public void setProgressBarValues(Integer[] values){
+    public void setProgressBarValues(Integer[] values) {
         mProgressBar.setIndeterminate(false);
         mProgressBar.setMax(100);
         mProgressBar.setProgress(values[0]);
@@ -389,11 +389,11 @@ public class MainActivity extends Activity {
         mProgressBar.setProgress(values[0]);
     }
 
-    public void setMainlayoutVisible(){
+    public void setMainlayoutVisible() {
         mainLayout.setVisibility(View.VISIBLE);
     }
 
-    public void setLoadLayoutGone(){
+    public void setLoadLayoutGone() {
         loadLayout.setVisibility(View.GONE);
     }
 
@@ -412,7 +412,6 @@ public class MainActivity extends Activity {
                 .setNegativeButton("No", null)
                 .show();
     }
-
 
 
     private class JSONReceive extends AsyncTask<String, Integer, JSONObject> {
@@ -528,7 +527,7 @@ public class MainActivity extends Activity {
             if (savedInstanceState == null) {
                 // on first time display view for first nav item
 
-                    displayView(0);
+                displayView(0);
 
 
             }
@@ -604,7 +603,6 @@ public class MainActivity extends Activity {
         }
         return connectionBool;
     }
-
 
 
     public class JSONTransmitter extends AsyncTask<JSONObject, JSONObject, JSONObject> {
