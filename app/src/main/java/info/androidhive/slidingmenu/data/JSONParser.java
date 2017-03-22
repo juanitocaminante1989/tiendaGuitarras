@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import info.androidhive.slidingmenu.util.DebugUtilities;
+
 /**
  * Created by Juan on 18/06/2016.
  */
@@ -54,7 +56,7 @@ public class JSONParser {
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    is, "iso-8859-1"), 8);
+                    is, "UTF-8"), 8);
             StringBuilder sb = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -63,7 +65,7 @@ public class JSONParser {
             is.close();
             jsonString = sb.toString();
         } catch (Exception e) {
-            Log.e("Buffer Error", "Error converting result " + e.toString());
+            DebugUtilities.writeLog("JSON Parser Error converting data " , e);
         }
 
         // try parse the string to a JSON object
@@ -71,11 +73,14 @@ public class JSONParser {
             if(jsonString != null) {
                 if(jsonString.length()>0) {
                     String newJson = jsonString.substring(0, jsonString.length() - 1);
-                    jArray = new JSONArray(newJson);
+                    if(newJson.equals("null"))
+                        return null;
+                    else
+                        jArray = new JSONArray(newJson);
                 }
             }
         } catch (JSONException e) {
-            Log.e("JSON Parser", "Error parsing data " + e.toString());
+            DebugUtilities.writeLog("JSON Parser Error parsing data " , e);
         }
 
         // return JSON String

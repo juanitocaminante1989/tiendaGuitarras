@@ -668,10 +668,10 @@ public class Controller {
                 initialValues.put("clave", client.getClave());
                 initialValues.put("logged", 1);
 
-                Constants.database.insert("clientes", "codCat=?", initialValues);
+                Constants.database.insert("clientes", "NIF=?", initialValues);
 
                 exists = false;
-                Constants.currentClient = client;
+
             }
         }
 //        Constants.database.insert();

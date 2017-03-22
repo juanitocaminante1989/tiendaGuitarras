@@ -53,11 +53,12 @@ public class Constants {
         }
     }
 
-    public final static String IP = "192.168.1.100";
+    public final static String IP = "192.168.1.103";
     public final static String url = "http://"+IP+":80/CarritoCompra/conexion.php";
     public final static String restService = "http://"+IP+":80/CarritoCompra/restservice.php";
     public final static String recievedata = "http://"+IP+":80/CarritoCompra/recievedata.php";
     public final static String checkUser = "http://"+IP+":80/CarritoCompra/checkUser.php";
+    public final static String getClients = "http://"+IP+":80/CarritoCompra/clientsRest.php";
 
     public static SparseArray<JSONObject> objects;
     public static boolean hasExecuted = false;
@@ -66,10 +67,11 @@ public class Constants {
     public static String subCategoryPosition = "";
     public static CustomFragment currentFrag = null;
     public static boolean userLogged = false;
+    public static boolean success = false;
     public static String currentFragmentStr = "";
     public static int idMarca = -1;
     public static Producto productSent = null;
     public static Client currentClient = null;
-
+    public static int mysqlErrNo = -1; //1062 duplicate for primary
 
 }

@@ -7,9 +7,13 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.concurrent.ExecutionException;
 
 import info.androidhive.slidingmenu.MainActivity;
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Client;
 
@@ -63,6 +67,9 @@ public class LogginFragment extends CustomFragment{
     }
 
     public void loggin(){
+
+
+
         String nombreStr = nombre.getText().toString();
         String apellidosStr = apellidos.getText().toString();
         String nifStr = nif.getText().toString();
@@ -73,27 +80,25 @@ public class LogginFragment extends CustomFragment{
         String passwordStr = password.getText().toString();
 
         Client cliente = new Client(nombreStr, apellidosStr, nifStr, correoStr, direccionStr, codPosStr, telefonoStr, passwordStr);
-        if(Controller.insertClients(cliente)){
-            new AlertDialog.Builder(getActivity())
-                    .setTitle("Cliente existe")
-                    .setMessage("El cliente o correo ya existe")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+        Constants.currentClient = cliente;
+        try {
+            new MainActivity.JSONUpdateClients().execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
-                        }
-                    })
-
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }else{
-
-            new MainActivity.JSONUpdateClients().execute();
+        if(Constants.success) {
+            Controller.insertClients(cliente);
             Intent intent = getActivity().getIntent();
-
             getActivity().finish();
             startActivity(intent);
-
+        }else{
+            if(Constants.mysqlErrNo == 1062)
+                Toast.makeText(context, "El NIF o correo ya están siendo utilizados", Toast.LENGTH_SHORT).show();
         }
+
 
     }
 }

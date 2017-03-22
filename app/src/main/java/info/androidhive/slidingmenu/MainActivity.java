@@ -15,6 +15,7 @@ import info.androidhive.slidingmenu.fragments.ProfileFragment;
 import info.androidhive.slidingmenu.fragments.SearchFragment;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 import info.androidhive.slidingmenu.services.NotificationBuilder;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -115,7 +116,7 @@ public class MainActivity extends Activity {
 //        usdbh.onCreate(Constants.database);
         Constants.manager = getFragmentManager();
 
-
+        navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -137,7 +138,8 @@ public class MainActivity extends Activity {
         mHandler.postDelayed(new Runnable() {
             public void run() {
                 if (connection() == true) {
-                    recieveData();
+                    checkClients();
+
                 } else {
                     mainLayout.setVisibility(View.VISIBLE);
                     loadLayout.setVisibility(View.GONE);
@@ -150,12 +152,17 @@ public class MainActivity extends Activity {
 
     }
 
+    public void initLoggin(){
+        LogginFragment logginFragment = new LogginFragment(R.layout.loggin_fragment, null, context);
+        Constants.createNewFragment(R.id.frame_container, logginFragment);
+    }
+
     Runnable mStatusChecker = new Runnable() {
         @Override
         public void run() {
             try {
                 //this function can change value of mInterval.
-                new JSONReceive().execute();
+//                new JSONReceive().execute();
             } finally {
                 // 100% guarantee that this always happens, even if
                 // your update method throws an exception
@@ -227,7 +234,7 @@ public class MainActivity extends Activity {
         String tag = "";
         for (int i = 0; i < categoryId.size(); i++) {
             if (position == 0) {
-                fragment = new HomeFragment(R.layout.fragment_home, null,context);
+                fragment = new HomeFragment(R.layout.fragment_home, null, context);
                 tag = "home";
                 Constants.currentFragment = 0;
                 Constants.currentFragmentStr = "home";
@@ -320,10 +327,10 @@ public class MainActivity extends Activity {
                 tag = "search";
             } else if (Constants.currentFragmentStr.equals("home")) {
                 tag = "home";
-                fragment = new HomeFragment(R.layout.fragment_home, null,context);
+                fragment = new HomeFragment(R.layout.fragment_home, null, context);
             } else {
                 tag = "home";
-                fragment = new HomeFragment(R.layout.fragment_home, null,context);
+                fragment = new HomeFragment(R.layout.fragment_home, null, context);
             }
             if (fragment != null) {
                 Constants.createNewFragment(R.id.frame_container, fragment, tag);
@@ -353,9 +360,17 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void checkClients(){
+       GetClients clients =  new GetClients();
+        clients.execute();
+
+        if (Constants.userLogged){
+            new JSONParse(context).execute();
+        }
+    }
 
     public void recieveData() {
-        new JSONParse().execute();
+        new JSONParse(context).execute();
     }
 
     public void dialog() {
@@ -374,7 +389,80 @@ public class MainActivity extends Activity {
                 .show();
     }
 
-    private class JSONParse extends AsyncTask<String, Integer, JSONArray> {
+    public class GetClients extends AsyncTask<String, Integer, JSONArray>{
+
+        @Override
+        protected JSONArray doInBackground(String... strings) {
+
+            JSONParser jsonParser = new JSONParser();
+
+            JSONArray jsonArray = jsonParser.getJSONArrayFromUrl(Constants.getClients);
+
+            if(jsonArray != null)
+                return jsonArray;
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(JSONArray jsonArray) {
+            try{
+                JSONObject jsonObject = null;
+                if(jsonArray != null) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject = jsonArray.getJSONObject(i);
+                        if (jsonObject.has("clientes")) {
+
+                            jsonObject.getJSONObject("clientes");
+                            String nif = jsonObject.getJSONObject("clientes").get("NIF").toString();
+                            String nombre = jsonObject.getJSONObject("clientes").get("nombre").toString();
+                            String apellidos = jsonObject.getJSONObject("clientes").get("apellidos").toString();
+                            String direccion = jsonObject.getJSONObject("clientes").get("direccion").toString();
+                            String codPost = jsonObject.getJSONObject("clientes").get("codPost").toString();
+                            String correo = jsonObject.getJSONObject("clientes").get("correo").toString();
+                            String telefono = jsonObject.getJSONObject("clientes").get("telefono").toString();
+                            String clave = jsonObject.getJSONObject("clientes").get("clave").toString();
+                            String logged = jsonObject.getJSONObject("clientes").get("logged").toString();
+
+                            if (Controller.getClient(nif) != null) {
+                                Constants.userLogged = true;
+                                recieveData();
+                                break;
+
+                            } else {
+                                Constants.userLogged = false;
+                                initLoggin();
+                                mainLayout.setVisibility(View.VISIBLE);
+                                loadLayout.setVisibility(View.GONE);
+                            }
+
+                        } else {
+
+                            Constants.userLogged = false;
+                            initLoggin();
+                            mainLayout.setVisibility(View.VISIBLE);
+                            loadLayout.setVisibility(View.GONE);
+                        }
+                    }
+                }else{
+                    Constants.userLogged = false;
+                    initLoggin();
+                    mainLayout.setVisibility(View.VISIBLE);
+                    loadLayout.setVisibility(View.GONE);
+                }
+            }catch (Exception e){
+                DebugUtilities.writeLog("GetClients:onPostExecute",e);
+            }
+        }
+    }
+
+
+    public class JSONParse extends AsyncTask<String, Integer, JSONArray> {
+
+        Context context;
+        public JSONParse(Context context){
+            this.context =context;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -408,26 +496,7 @@ public class MainActivity extends Activity {
                     JSONObject jsonObject = null;
                     for (int i = 0; i < json.length(); i++) {
                         jsonObject = json.getJSONObject(i);
-                        if (jsonObject.has("clientes")) {
-                            jsonObject.getJSONObject("clientes");
-                            String nif = jsonObject.getJSONObject("clientes").get("NIF").toString();
-                            String nombre= jsonObject.getJSONObject("clientes").get("nombre").toString();
-                            String apellidos = jsonObject.getJSONObject("clientes").get("apellidos").toString();
-                            String direccion = jsonObject.getJSONObject("clientes").get("direccion").toString();
-                            String codPost= jsonObject.getJSONObject("clientes").get("codPost").toString();
-                            String correo= jsonObject.getJSONObject("clientes").get("correo").toString();
-                            String telefono = jsonObject.getJSONObject("clientes").get("telefono").toString();
-                            String clave = jsonObject.getJSONObject("clientes").get("clave").toString();
-                            String logged = jsonObject.getJSONObject("clientes").get("logged").toString();
-
-                            if(Controller.getClient(nif) != null){
-                                Constants.userLogged = true;
-
-                            }else{
-                                Constants.userLogged = false;
-                            }
-
-                        } else if (jsonObject.has("categoria")) {
+                            if (jsonObject.has("categoria")) {
                             jsonObject.getJSONObject("categoria");
                             String codCat = jsonObject.getJSONObject("categoria").get("codCat").toString();
                             String category_name = jsonObject.getJSONObject("categoria").get("category_name").toString();
@@ -569,10 +638,10 @@ public class MainActivity extends Activity {
                 }
 
 
-            if (id != -1) {
-                new connectFTPServer().execute();
-            }
-            initialize();
+                if (id != -1) {
+                    new connectFTPServer().execute();
+                }
+                initialize();
             } catch (Exception e) {
                 loadLayout.setVisibility(View.GONE);
                 mainLayout.setVisibility(View.VISIBLE);
@@ -609,7 +678,7 @@ public class MainActivity extends Activity {
             JSONParser jParser = new JSONParser();
 
             // Getting JSON from URL
-            JSONObject json = jParser.getJSONFromUrl(Constants.restService);
+            JSONObject json = jParser.getJSONFromUrl(Constants.checkUser);
             if (json != null)
                 return json;
             else {
@@ -659,8 +728,7 @@ public class MainActivity extends Activity {
         navMenuTitles = controller.getCategoryNames();
 
         // nav drawer icons from resources
-        navMenuIcons = getResources()
-                .obtainTypedArray(R.array.nav_drawer_icons);
+
 
         navDrawerItems = new ArrayList<NavDrawerItem>();
 
@@ -710,12 +778,10 @@ public class MainActivity extends Activity {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
             if (savedInstanceState == null) {
                 // on first time display view for first nav item
-                if(Constants.userLogged) {
+
                     displayView(0);
-                }else{
-                    LogginFragment logginFragment = new LogginFragment(R.layout.loggin_fragment,null, context);
-                    Constants.createNewFragment(R.id.frame_container, logginFragment);
-                }
+
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -727,7 +793,7 @@ public class MainActivity extends Activity {
         try {
             ArrayList<NavDrawerItem> navDrawerItems = new ArrayList<NavDrawerItem>();
             for (int i = 0; i < controller.consultaSubCategorias(codCat).size(); i++) {
-                NavDrawerItem navDrawerItem = new NavDrawerItem(controller.consultaSubCategorias(codCat).get(i).getMessage(), navMenuIcons.getResourceId(i, -1));
+                NavDrawerItem navDrawerItem = new NavDrawerItem(controller.consultaSubCategorias(codCat).get(i).getMessage(), 0);
                 navDrawerItems.add(navDrawerItem);
             }
 
@@ -830,10 +896,10 @@ public class MainActivity extends Activity {
                 filePath.mkdirs();
             } else {
                 File file = null;
-               for(int i =0;i< filePath.listFiles().length;i++){
+                for (int i = 0; i < filePath.listFiles().length; i++) {
                     file = filePath.listFiles()[i];
-                   file.delete();
-               }
+                    file.delete();
+                }
             }
 
             try {
@@ -901,24 +967,24 @@ public class MainActivity extends Activity {
             HttpConnectionParams.setConnectionTimeout(client.getParams(), 100000);
 
             JSONObject jsonResponse = new JSONObject();
-            ArrayList<JSONObject> jsonObjects =new ArrayList<JSONObject>();
+            ArrayList<JSONObject> jsonObjects = new ArrayList<JSONObject>();
             JSONObject jsonObject = null;
             try {
                 Producto producto = Constants.productSent;
 
                 jsonObject = new JSONObject();
 
-                jsonObject.put("codArticulo",producto.getCodArticulo());
-                jsonObject.put("codCat",producto.getCodCat());
-                jsonObject.put("codSubCat",producto.getCodSubCat());
-                jsonObject.put("articulo_name",producto.getArticulo());
-                jsonObject.put("descripcion",producto.getDescripcion());
-                jsonObject.put("marca",producto.getMarca());
-                jsonObject.put("idMarca",producto.getIdMarca());
-                jsonObject.put("modelo",producto.getModelo());
-                jsonObject.put("precio",producto.getPrecio());
-                jsonObject.put("IVA",producto.getIVA());
-                jsonObject.put("views",producto.getViews());
+                jsonObject.put("codArticulo", producto.getCodArticulo());
+                jsonObject.put("codCat", producto.getCodCat());
+                jsonObject.put("codSubCat", producto.getCodSubCat());
+                jsonObject.put("articulo_name", producto.getArticulo());
+                jsonObject.put("descripcion", producto.getDescripcion());
+                jsonObject.put("marca", producto.getMarca());
+                jsonObject.put("idMarca", producto.getIdMarca());
+                jsonObject.put("modelo", producto.getModelo());
+                jsonObject.put("precio", producto.getPrecio());
+                jsonObject.put("IVA", producto.getIVA());
+                jsonObject.put("views", producto.getViews());
                 jsonObjects.add(jsonObject);
 
             } catch (JSONException e) {
@@ -946,6 +1012,7 @@ public class MainActivity extends Activity {
         }
 
     }
+
     public static class JSONUpdateClients extends AsyncTask<JSONObject, JSONObject, JSONObject> {
 
         @Override
@@ -955,10 +1022,10 @@ public class MainActivity extends Activity {
             HttpConnectionParams.setConnectionTimeout(client.getParams(), 100000);
 
             JSONObject jsonResponse = new JSONObject();
-            ArrayList<JSONObject> jsonObjects =new ArrayList<JSONObject>();
+            ArrayList<JSONObject> jsonObjects = new ArrayList<JSONObject>();
             JSONObject jsonObject = null;
             try {
-                if(Constants.currentClient!= null) {
+                if (Constants.currentClient != null) {
 
                     jsonObject = new JSONObject();
                     jsonObject.put("NIF", Constants.currentClient.getNif());
@@ -981,23 +1048,26 @@ public class MainActivity extends Activity {
 
                 String jsonString = jsonObjects.toString();
                 StringEntity se = new StringEntity("json=" + jsonString);
-                post.addHeader("content-type", "application/x-www-form-urlencoded");
+                se.setContentType("Application/JSON");
+                post.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
                 post.setEntity(se);
 
                 HttpResponse response;
                 response = client.execute(post);
                 String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
 
-                resFromServer = resFromServer.replace("\\\\","");
-                jsonResponse = new JSONObject(resFromServer);
-//                if(jsonResponse.getString("msg").equals("ok")){
-
-//                }else{
-//                    Constants.userLogged = false;
-//                }
-                Log.i("Response from server", jsonResponse.getString("msg"));
+//                resFromServer = resFromServer.replace("\\\\","");
+//                jsonResponse = new JSONObject("{\"msg\":\"ok\"}");
+//                jsonResponse = new JSONObject(resFromServer);
+                if (resFromServer.equals("ok")) {
+                    Constants.success = true;
+                } else if(resFromServer.equals("1062")){
+                    Constants.mysqlErrNo = Integer.parseInt(resFromServer);
+                    Constants.success = false;
+                }
+//                Log.i("Response from server", jsonResponse.getString("msg"));
             } catch (Exception e) {
-                e.printStackTrace();
+                DebugUtilities.writeLog("Error: ", e);
             }
 
             return jsonResponse;
