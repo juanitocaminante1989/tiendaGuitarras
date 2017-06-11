@@ -28,8 +28,8 @@ public class MarcasFragment extends CustomFragment{
 
 
 
-    public MarcasFragment(int layout,View view, Context context, int codSubCat ) {
-        super(layout, view, context, codSubCat);
+    public MarcasFragment(int layout,View view, Context context, int codSubCat, String title) {
+        super(layout, view, context, codSubCat, String.valueOf(codSubCat),title);
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
@@ -54,4 +54,9 @@ public class MarcasFragment extends CustomFragment{
         super.onDestroyView();
         rootView = null;
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }

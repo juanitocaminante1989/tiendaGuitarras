@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
     private CharSequence mTitle;
 
     // slide menu items
-    private SparseArray<String> navMenuTitles;
+    private HashMap<Integer, String> navMenuTitles;
     private TypedArray navMenuIcons;
 
     private ArrayList<NavDrawerItem> navDrawerItems;
@@ -104,6 +105,7 @@ public class MainActivity extends Activity {
     private Handler mHandler;
     private ActionBar actionBar;
     private Activity starterIntent;
+    private Thread.UncaughtExceptionHandler androidDefaultUEH;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,10 +133,13 @@ public class MainActivity extends Activity {
         progressUpdate = (TextView) findViewById(R.id.progressUpdate);
         actionBar = getActionBar();
 
+//        final ColorDrawable cd = new ColorDrawable(Color.rgb(46, 154, 254));
+//        actionBar.setBackgroundDrawable(cd);
         controller = new Controller();
         // load slide menu items
         this.savedInstanceState = savedInstanceState;
-
+        androidDefaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(handler);
         mHandler = new Handler();
 
         mHandler.postDelayed(new Runnable() {
@@ -153,6 +158,15 @@ public class MainActivity extends Activity {
         }, 3000);
 
     }
+
+
+    private Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+        public void uncaughtException(Thread thread, Throwable ex) {
+            Log.e("TestApplication", "Uncaught exception is: ", ex);
+            // log it & phone home.
+            androidDefaultUEH.uncaughtException(thread, ex);
+        }
+    };
 
     public void initLoggin() {
         LogginFragment logginFragment = new LogginFragment(R.layout.loggin_fragment, null, context);
@@ -206,6 +220,7 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -232,7 +247,7 @@ public class MainActivity extends Activity {
         CustomFragment fragment = null;
         int layout;
         Controller controller = new Controller();
-        SparseArray<String> categoryId = controller.getCategoryId();
+        HashMap<Integer, String> categoryId = controller.getCategoryId();
         String tag = "";
         for (int i = 0; i < categoryId.size(); i++) {
             if (position == 0) {
@@ -257,6 +272,7 @@ public class MainActivity extends Activity {
                 mDrawerLayout.openDrawer(SecondDrawerList);
             }
         }
+
         mDrawerList.setItemChecked(position, true);
         mDrawerList.setSelection(position);
         setTitle(navMenuTitles.get(position));
@@ -277,7 +293,7 @@ public class MainActivity extends Activity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        actionBar.setTitle(mTitle);
     }
 
     /**
@@ -304,9 +320,8 @@ public class MainActivity extends Activity {
 
 
     public void onBackPressed() {
-        final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
-        actionBar.setBackgroundDrawable(cd);
         String tag = "";
+        CustomFragment fragment = null;
         if (Constants.currentFragment == 0) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -322,7 +337,7 @@ public class MainActivity extends Activity {
                     .setNegativeButton("No", null)
                     .show();
         } else if (Constants.currentFragment == 1) {
-            CustomFragment fragment = null;
+
 
             if (Constants.currentFragmentStr.equals("srch")) {
                 fragment = new SearchFragment(R.layout.search_fragment, null, context);
@@ -352,10 +367,10 @@ public class MainActivity extends Activity {
 
         } else if (Constants.currentFragment == 3) {
             if (Constants.whichFragment == 1) {
-                CustomFragment fragment = new ProductList(R.layout.fragment_subcategory, null, context, Constants.subCategoryPosition);
+                fragment = new ProductList(R.layout.fragment_subcategory, null, context, Constants.subCategoryPosition, String.valueOf(mTitle));
                 Constants.createNewFragment(R.id.frame_container, fragment);
             } else if (Constants.whichFragment == 2) {
-                CustomFragment fragment = new MarcasFragment(R.layout.marcas_fragment, null, context, Constants.idMarca);
+                fragment = new MarcasFragment(R.layout.marcas_fragment, null, context, Constants.idMarca, "");
                 Constants.createNewFragment(R.id.frame_container, fragment);
             }
             Constants.currentFragment = 2;
@@ -472,6 +487,19 @@ public class MainActivity extends Activity {
     }
 
     public void initialize() {
+//        Constants.consultaSubCategorias
+//        Constants.getCategoryId
+//        Constants.getCategoryNames
+//        Constants.getImages
+//        Constants.busqueda
+//        Constants.getShopByProducts
+//        Constants.getStockShopByProduct
+//        Constants.getMarca
+//        Constants.consultaArticulos
+//        Constants.getProductByMarca
+//        Constants.
+//        Constants.
+//        Constants.
 
         navMenuTitles = controller.getCategoryNames();
 
@@ -499,8 +527,8 @@ public class MainActivity extends Activity {
         mDrawerList.setAdapter(adapter);
 
         // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         try {
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -509,16 +537,23 @@ public class MainActivity extends Activity {
                     R.string.app_name // nav drawer close - description for accessibility
             ) {
                 public void onDrawerClosed(View view) {
-                    getActionBar().setTitle(mTitle);
+                    actionBar.setTitle(mTitle);
                     // calling onPrepareOptionsMenu() to show action bar icons
                     invalidateOptionsMenu();
                     if (mDrawerLayout.isDrawerOpen(SecondDrawerList)) {
                         mDrawerLayout.closeDrawer(SecondDrawerList);
                     }
+
+                    if (mDrawerLayout.isDrawerOpen(mDrawerList) == false) {
+                        if (Constants.getCurrentFrag != null)
+                            setTitle(Constants.getCurrentFrag.getTitle());
+                        else
+                            setTitle("Tienda Musica");
+                    }
                 }
 
                 public void onDrawerOpened(View drawerView) {
-                    getActionBar().setTitle(mDrawerTitle);
+                    actionBar.setTitle(mDrawerTitle);
                     // calling onPrepareOptionsMenu() to hide action bar icons
                     invalidateOptionsMenu();
                 }
@@ -575,7 +610,7 @@ public class MainActivity extends Activity {
 
         CustomFragment fragment = null;
         Constants.subCategoryPosition = codSubCat;
-        fragment = new ProductList(R.layout.fragment_subcategory, null, context, codSubCat);
+        fragment = new ProductList(R.layout.fragment_subcategory, null, context, codSubCat,String.valueOf(mTitle));
         Constants.createNewFragment(R.id.frame_container, fragment, "product");
     }
 
@@ -584,26 +619,28 @@ public class MainActivity extends Activity {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-        int connection = info.getType();
-
         boolean connectionBool = false;
-        switch (connection) {
+        if (info != null) {
+            int connection = info.getType();
 
-            case TelephonyManager.NETWORK_TYPE_UMTS:
-                connectionBool = false;
-                break;
-            case ConnectivityManager.TYPE_MOBILE:
-                connectionBool = false;
-                break;
-            case ConnectivityManager.TYPE_WIFI:
-                connectionBool = true;
-                break;
-            default:
-                connectionBool = false;
+
+            switch (connection) {
+
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    connectionBool = false;
+                    break;
+                case ConnectivityManager.TYPE_MOBILE:
+                    connectionBool = false;
+                    break;
+                case ConnectivityManager.TYPE_WIFI:
+                    connectionBool = true;
+                    break;
+                default:
+                    connectionBool = false;
+            }
         }
         return connectionBool;
     }
-
 
     public class JSONTransmitter extends AsyncTask<JSONObject, JSONObject, JSONObject> {
 
@@ -639,5 +676,6 @@ public class MainActivity extends Activity {
         }
 
     }
+
 
 }

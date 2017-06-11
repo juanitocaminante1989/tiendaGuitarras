@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import info.androidhive.slidingmenu.entities.CategoryMessage;
 import info.androidhive.slidingmenu.chops.AssociatedShops;
@@ -92,9 +93,9 @@ public class Controller {
     }
 
 
-    public SparseArray<CategoryMessage> consultaSubCategorias(String query) {
+    public HashMap<Integer, CategoryMessage> consultaSubCategorias(String query) {
 
-        SparseArray<CategoryMessage> categoryMessages = new SparseArray<CategoryMessage>();
+        HashMap<Integer, CategoryMessage> categoryMessages = new HashMap<Integer, CategoryMessage>();
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codCat = '" + query + "'", null);
             //txtResultado.setText("");
@@ -117,9 +118,9 @@ public class Controller {
         return categoryMessages;
     }
 
-    public SparseArray<String> getCategoryId() {
+    public HashMap<Integer, String> getCategoryId() {
 
-        SparseArray<String> categoryMessages = new SparseArray<String>();
+        HashMap<Integer, String> categoryMessages = new HashMap<Integer, String>();
         categoryMessages.put(0,"");
         if (Constants.database != null) {
             Cursor c = Constants.database.rawQuery("SELECT codCat FROM Categoria order by codCat ASC", null);
@@ -136,9 +137,9 @@ public class Controller {
         return categoryMessages;
     }
 
-    public SparseArray<String> getCategoryNames() {
+    public HashMap<Integer,String> getCategoryNames() {
 
-        SparseArray<String> categoryMessages = new SparseArray<String>();
+        HashMap<Integer, String> categoryMessages = new HashMap<Integer, String>();
         categoryMessages.put(0,"Principal");
         categoryMessages.put(1,"Perfil");
         categoryMessages.put(2,"Búsqueda");
@@ -224,8 +225,8 @@ public class Controller {
     }
 
 
-    public SparseArray<Producto> busqueda(String buscar, Activity activity) {
-        SparseArray<Producto> productos = new SparseArray<Producto>();
+    public HashMap<Integer,Producto> busqueda(String buscar, Activity activity) {
+        HashMap<Integer, Producto> productos = new HashMap<Integer, Producto>();
         if ((buscar.equals("")) || (buscar == null) || (buscar.equals(" "))) {
             new AlertDialog.Builder(activity)
                     .setTitle("Campo vacío")
@@ -341,61 +342,61 @@ public class Controller {
         return producto;
     }
 
-    public static SparseArray<CategoryMessage> consultaSubCat(String query) {
+//    public static SparseArray<CategoryMessage> consultaSubCat(String query) {
+//
+//        SparseArray<CategoryMessage> categoryMessages = new SparseArray<CategoryMessage>();
+//        if (Constants.database != null) {
+//            Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codSubCat = '" + query + "'", null);
+//            //txtResultado.setText("");
+//            CategoryMessage categoryMessage = null;
+//            int i = 0;
+//            if (c.moveToFirst()) {
+//                do {
+//                    categoryMessage = new CategoryMessage();
+//
+//                    String codSubCat = c.getString(0);
+//                    String subCat = c.getString(1);
+//
+//                    categoryMessage.setTitle(codSubCat);
+//                    categoryMessage.setMessage(subCat);
+//
+//                    categoryMessages.put(i,categoryMessage);
+//                    i++;
+//                } while (c.moveToNext());
+//            }
+//        }
+//        return categoryMessages;
+//    }
 
-        SparseArray<CategoryMessage> categoryMessages = new SparseArray<CategoryMessage>();
-        if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT codSubCat, subcategory_name FROM subCategoria WHERE codSubCat = '" + query + "'", null);
-            //txtResultado.setText("");
-            CategoryMessage categoryMessage = null;
-            int i = 0;
-            if (c.moveToFirst()) {
-                do {
-                    categoryMessage = new CategoryMessage();
+//    public static SparseArray<AssociatedShops> getTiendas() {
+//        SparseArray<AssociatedShops> tiendas = new SparseArray<AssociatedShops>();
+//        if (Constants.database != null) {
+//            final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas", null);
+//            //txtResultado.setText("");
+//
+//            AssociatedShops tienda = null;
+//
+//            int i = 0;
+//            if (c.moveToFirst()) {
+//                do {
+//                    tienda = new AssociatedShops();
+//                    tienda.setId(Integer.parseInt(c.getString(0)));
+//                    tienda.setName(c.getString(1));
+//                    tienda.setCity(c.getString(2));
+//                    tienda.setStreet(c.getString(3));
+//                    tienda.setLongitude(Double.parseDouble(c.getString(4)));
+//                    tienda.setLatitude(Double.parseDouble(c.getString(5)));
+//
+//                    tiendas.put(i,tienda);
+//                    i++;
+//                } while (c.moveToNext());
+//            }
+//        }
+//        return tiendas;
+//    }
 
-                    String codSubCat = c.getString(0);
-                    String subCat = c.getString(1);
-
-                    categoryMessage.setTitle(codSubCat);
-                    categoryMessage.setMessage(subCat);
-
-                    categoryMessages.put(i,categoryMessage);
-                    i++;
-                } while (c.moveToNext());
-            }
-        }
-        return categoryMessages;
-    }
-
-    public static SparseArray<AssociatedShops> getTiendas() {
-        SparseArray<AssociatedShops> tiendas = new SparseArray<AssociatedShops>();
-        if (Constants.database != null) {
-            final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas", null);
-            //txtResultado.setText("");
-
-            AssociatedShops tienda = null;
-
-            int i = 0;
-            if (c.moveToFirst()) {
-                do {
-                    tienda = new AssociatedShops();
-                    tienda.setId(Integer.parseInt(c.getString(0)));
-                    tienda.setName(c.getString(1));
-                    tienda.setCity(c.getString(2));
-                    tienda.setStreet(c.getString(3));
-                    tienda.setLongitude(Double.parseDouble(c.getString(4)));
-                    tienda.setLatitude(Double.parseDouble(c.getString(5)));
-
-                    tiendas.put(i,tienda);
-                    i++;
-                } while (c.moveToNext());
-            }
-        }
-        return tiendas;
-    }
-
-    public static SparseArray<AssociatedShops> getShopByProduct(String codArticulo) {
-        SparseArray<AssociatedShops> tiendas = new SparseArray<AssociatedShops>();
+    public static HashMap<Integer, AssociatedShops> getShopByProduct(String codArticulo) {
+        HashMap<Integer, AssociatedShops> tiendas = new HashMap<Integer, AssociatedShops>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT * FROM tiendas WHERE tiendas.idtienda in (SELECT stock.idtienda from stock where stock.codArticulo = '"+codArticulo+"')", null);
             //txtResultado.setText("");
@@ -421,8 +422,8 @@ public class Controller {
         return tiendas;
     }
 
-    public static SparseArray<ShopStock> getStockShopByProduct(String codArticulo) {
-        SparseArray<ShopStock> shopStocks = new SparseArray<ShopStock>();
+    public static HashMap<Integer, ShopStock> getStockShopByProduct(String codArticulo) {
+        HashMap<Integer, ShopStock> shopStocks = new HashMap<Integer, ShopStock>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT tiendas.nombre, tiendas.ciudad, tiendas.calle, stock.stock FROM tiendas, stock WHERE stock.codArticulo ='"+codArticulo+"' AND tiendas.idtienda = stock.idtienda", null);
             //txtResultado.setText("");
@@ -446,8 +447,8 @@ public class Controller {
         return shopStocks;
     }
 
-    public static SparseArray<Marca> getMarcas() {
-        SparseArray<Marca> marcas = new SparseArray<Marca>();
+    public static HashMap<Integer, Marca> getMarcas() {
+        HashMap<Integer, Marca> marcas = new HashMap<Integer, Marca>();
         if (Constants.database != null) {
             final Cursor c = Constants.database.rawQuery("SELECT * FROM marcas", null);
             //txtResultado.setText("");
@@ -592,47 +593,47 @@ public class Controller {
         return productos;
     }
 
-    public static SparseArray<Producto> getAllProducts(){
-        SparseArray<Producto> productos = new SparseArray<Producto>();
-        Producto producto = null;
-        if (Constants.database != null) {
-            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo", null);
-            int i = 0;
-            if (c.moveToFirst()) {
-                do {
-                    producto = new Producto();
-
-                    final String codArticulo = c.getString(0);
-                    final String codSubCat = c.getString(1);
-                    final String codCat = c.getString(2);
-                    final String articulo = c.getString(3);
-                    final String marca = c.getString(4);
-                    final int idMarca = Integer.parseInt(c.getString(5));
-                    final String modelo = c.getString(6);
-                    final String descripcion = c.getString(7);
-                    final double precio = Double.parseDouble(c.getString(8));
-                    final double IVA = Double.parseDouble(c.getString(9));
-                    final int views = Integer.parseInt(c.getString(10));
-
-                    producto.setCodArticulo(codArticulo);
-                    producto.setCodSubCat(codSubCat);
-                    producto.setCodCat(codCat);
-                    producto.setArticulo(articulo);
-                    producto.setMarca(marca);
-                    producto.setIdMarca(idMarca);
-                    producto.setModelo(modelo);
-                    producto.setDescripcion(descripcion);
-                    producto.setPrecio(precio);
-                    producto.setIVA(IVA);
-                    producto.setViews(views);
-
-                    productos.put(i,producto);
-                    i++;
-                } while (c.moveToNext());
-            }
-        }
-        return productos;
-    }
+//    public static SparseArray<Producto> getAllProducts(){
+//        SparseArray<Producto> productos = new SparseArray<Producto>();
+//        Producto producto = null;
+//        if (Constants.database != null) {
+//            Cursor c = Constants.database.rawQuery("SELECT * FROM articulo", null);
+//            int i = 0;
+//            if (c.moveToFirst()) {
+//                do {
+//                    producto = new Producto();
+//
+//                    final String codArticulo = c.getString(0);
+//                    final String codSubCat = c.getString(1);
+//                    final String codCat = c.getString(2);
+//                    final String articulo = c.getString(3);
+//                    final String marca = c.getString(4);
+//                    final int idMarca = Integer.parseInt(c.getString(5));
+//                    final String modelo = c.getString(6);
+//                    final String descripcion = c.getString(7);
+//                    final double precio = Double.parseDouble(c.getString(8));
+//                    final double IVA = Double.parseDouble(c.getString(9));
+//                    final int views = Integer.parseInt(c.getString(10));
+//
+//                    producto.setCodArticulo(codArticulo);
+//                    producto.setCodSubCat(codSubCat);
+//                    producto.setCodCat(codCat);
+//                    producto.setArticulo(articulo);
+//                    producto.setMarca(marca);
+//                    producto.setIdMarca(idMarca);
+//                    producto.setModelo(modelo);
+//                    producto.setDescripcion(descripcion);
+//                    producto.setPrecio(precio);
+//                    producto.setIVA(IVA);
+//                    producto.setViews(views);
+//
+//                    productos.put(i,producto);
+//                    i++;
+//                } while (c.moveToNext());
+//            }
+//        }
+//        return productos;
+//    }
 
     public static boolean insertClients(Client client){
         boolean exists = false;

@@ -54,6 +54,7 @@
     <LinearLayout
         android:id="@+id/load_layout"
         android:visibility="visible"
+        android:background="@color/sky_blue"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

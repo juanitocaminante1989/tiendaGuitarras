@@ -1,6 +1,7 @@
 package info.androidhive.slidingmenu.fragments;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +38,7 @@ public class HomeFragment extends CustomFragment {
 
 
     public HomeFragment(int layout, View rootView, Context context) {
-        super(layout, rootView, context);
+        super(layout, rootView, context, "main", "Principal");
         this.layout = layout;
         this.context = context;
     }
@@ -57,7 +59,9 @@ public class HomeFragment extends CustomFragment {
             if (productos.size() != 0) {
 
                     final CustomPagerAdapterProduct adapter = new CustomPagerAdapterProduct(context, productos);
+
                     similarViewPager.setAdapter(adapter);
+
                     similarViewIndicator.setViewPager(similarViewPager);
 
                     swipeTimer = new Timer();
@@ -81,10 +85,22 @@ public class HomeFragment extends CustomFragment {
                         }
                     }, 500, 3000);
 
-
+//                similarViewPager.setOnDragListener(new View.OnDragListener() {
+//                    @Override
+//                    public boolean onDrag(View view, DragEvent dragEvent) {
+//                        int pos = similarViewPager.getCurrentItem();
+//
+//                        if(pos == productos.size()-1){
+//                            pos = -1;
+//                        }
+//                        pos++;
+//                        similarViewPager.setCurrentItem(pos, true);
+//                        return false;
+//                    }
+//                });
             }
 
-            SparseArray<Marca> marcas = controller.getMarcas();
+            HashMap<Integer, Marca> marcas = controller.getMarcas();
 
             if(marcas != null){
                 if(marcas.size()>0){
@@ -113,4 +129,9 @@ public class HomeFragment extends CustomFragment {
         }
 
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }

@@ -6,8 +6,10 @@
     </style>
 
     <style name="Theme.MyAppTheme.ActionBar" parent="android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@color/true_dark_blue</item>
+        <item name="android:background">@color/sky_blue</item>
         <item name="android:titleTextStyle">@style/Theme.MyAppTheme.ActionBar.TitleTextStyle</item>
+        <item name="android:icon">@drawable/ic_drawer</item>
+        <item name="android:height">60dp</item>
     </style>
 
     <style name="Theme.MyAppTheme.ActionBar.TitleTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title">
@@ -26,7 +28,7 @@
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingRight">2dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:background">@android:drawable/bottom_bar</item>
+
     </style>
 
     <style name="ButtonBarButton" />

@@ -90,7 +90,7 @@ public class ProductFragment extends CustomFragment {
 
 
     public ProductFragment(int layout, View view, Context context, Producto producto) {
-        super(layout, view, context, producto);
+        super(layout, view, context, producto, producto.getArticulo(), producto.getArticulo());
 
         this.context = context;
         productViews = new HashMap<Integer, View>();
@@ -129,7 +129,7 @@ public class ProductFragment extends CustomFragment {
 
         try {
             new JSONUpdateProducts().execute();
-            final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
+            final ColorDrawable cd = new ColorDrawable(Color.rgb(46, 154, 254));
             actionBar.setBackgroundDrawable(cd);
 
             cd.setAlpha(255);
@@ -140,7 +140,7 @@ public class ProductFragment extends CustomFragment {
                 @Override
                 public void onGlobalLayout() {
                     scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    scrollViewHeight = scrollView.getMeasuredHeight();
+                    scrollViewHeight = scrollView.getHeight();
 
                 }
             });
@@ -154,7 +154,7 @@ public class ProductFragment extends CustomFragment {
 
                 private int getAlphaforActionBar(int scrollY) {
                     int minDist = 0, maxDist = scrollViewHeight;
-                    if (scrollY > maxDist) {
+                    if (scrollY == maxDist) {
                         return 255;
                     } else if (scrollY < minDist) {
                         return 0;
@@ -207,7 +207,7 @@ public class ProductFragment extends CustomFragment {
                     // For dropping a marker at a point on the Map
                     GPSTracker gpsTracker = new GPSTracker(context);
                     LatLng sydney = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
-                    SparseArray<AssociatedShops> associatedShopsSparseArray = Controller.getShopByProduct(producto.codArticulo);
+                    HashMap<Integer, AssociatedShops> associatedShopsSparseArray = Controller.getShopByProduct(producto.codArticulo);
                     if (associatedShopsSparseArray.size() > 0) {
                         for (int i = 0; i < associatedShopsSparseArray.size(); i++) {
                             LatLng coords = new LatLng(associatedShopsSparseArray.get(i).getLatitude(), associatedShopsSparseArray.get(i).getLongitude());
@@ -222,7 +222,7 @@ public class ProductFragment extends CustomFragment {
 
             fillData();
 
-            SparseArray<ShopStock> shopStocks = Controller.getStockShopByProduct(producto.codArticulo);
+            HashMap<Integer, ShopStock> shopStocks = Controller.getStockShopByProduct(producto.codArticulo);
             if (shopStocks != null) {
                 if (shopStocks.size() > 0) {
                     listViewAdapter adapter = new listViewAdapter(context, 0, shopStocks);
@@ -267,6 +267,7 @@ public class ProductFragment extends CustomFragment {
 
     public void fillData() {
         if (producto != null) {
+            actionBar.setTitle(producto.getArticulo());
             articulo.setText(producto.getArticulo());
             precio.setText(producto.getPrecio() + "€ (IVA incluido)");
             descripcion.setText(" " + producto.getDescripcion());
@@ -316,11 +317,11 @@ public class ProductFragment extends CustomFragment {
 
     private class listViewAdapter extends ArrayAdapter {
 
-        private SparseArray<ShopStock> shopStocks;
+        private HashMap<Integer, ShopStock> shopStocks;
         private ShopStock shopStock;
         private Context context;
 
-        public listViewAdapter(Context context, int resourceLayout, SparseArray<ShopStock> shopStocks) {
+        public listViewAdapter(Context context, int resourceLayout, HashMap<Integer, ShopStock> shopStocks) {
             super(context, resourceLayout);
             this.context = context;
             this.shopStocks = shopStocks;
@@ -413,4 +414,9 @@ public class ProductFragment extends CustomFragment {
         super.onDestroy();
         mMapView.onDestroy();
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }

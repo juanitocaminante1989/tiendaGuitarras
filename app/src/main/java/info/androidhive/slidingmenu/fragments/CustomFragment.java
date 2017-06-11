@@ -8,12 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 
 /**
  * Created by Juan on 16/03/2017.
  */
 
-public abstract class CustomFragment extends Fragment  {
+public abstract class CustomFragment extends Fragment {
 
     private int layout = 0;
     private View rootView = null;
@@ -21,32 +22,42 @@ public abstract class CustomFragment extends Fragment  {
     private int codProd;
     private Producto producto;
     private String codSubCat;
+    private String tag;
+    private String title;
 
-    public CustomFragment(int layout, View rootView, Context context, String codSubCat) {
+    public CustomFragment(int layout, View rootView, Context context, String codSubCat, String tag, String title) {
         this.layout = layout;
         this.rootView = rootView;
         this.context = context;
         this.codSubCat = codSubCat;
+        this.tag = tag;
+        this.title = title;
     }
 
-    public CustomFragment(int layout, View rootView, Context context, Producto producto) {
+    public CustomFragment(int layout, View rootView, Context context, Producto producto, String tag, String title) {
         this.layout = layout;
         this.rootView = rootView;
         this.context = context;
         this.producto = producto;
+        this.tag = tag;
+        this.title = title;
     }
 
-    public CustomFragment(int layout, View rootView, Context context, int codProd) {
+    public CustomFragment(int layout, View rootView, Context context, int codProd, String tag, String title) {
         this.layout = layout;
         this.rootView = rootView;
         this.context = context;
         this.codProd = codProd;
+        this.tag = tag;
+        this.title = title;
     }
 
-    public CustomFragment(int layout, View rootView, Context context) {
+    public CustomFragment(int layout, View rootView, Context context, String tag, String title) {
         this.layout = layout;
         this.rootView = rootView;
         this.context = context;
+        this.tag = tag;
+        this.title = title;
     }
 
     public int getCodProd() {
@@ -110,9 +121,30 @@ public abstract class CustomFragment extends Fragment  {
     }
     public abstract View onCreateCustomView(View var1);
 
+    public String getFragmentTag(){
+        return this.tag;
+    }
+
+    public String getTitle(){
+        return this.title;
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.rootView = null;
     }
+
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler(){
+//
+//        Thread.UncaughtExceptionHandler thread = new Thread.UncaughtExceptionHandler(){
+//            @Override
+//            public void uncaughtException(Thread thread, Throwable throwable) {
+//                DebugUtilities.writeLog("Error: "+throwable.getMessage());
+//            }
+//        };
+//
+//        Thread.setDefaultUncaughtExceptionHandler(thread);
+//        return  thread;
+//    }
 }

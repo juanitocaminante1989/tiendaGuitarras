@@ -42,7 +42,7 @@ public class ProfileFragment extends CustomFragment {
     private TextView telefono;
 
     public ProfileFragment(int layout, View rootView, Context context) {
-        super(layout, rootView, context);
+        super(layout, rootView, context, "profile", "Profile");
         this.context = context;
         this.layout = layout;
     }
@@ -69,4 +69,9 @@ public class ProfileFragment extends CustomFragment {
 
         return generalView;
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }

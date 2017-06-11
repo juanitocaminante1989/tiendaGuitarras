@@ -11,8 +11,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import info.androidhive.slidingmenu.R;
+import info.androidhive.slidingmenu.chops.AssociatedShops;
+import info.androidhive.slidingmenu.entities.CategoryMessage;
 import info.androidhive.slidingmenu.entities.Client;
+import info.androidhive.slidingmenu.entities.Images;
+import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
+import info.androidhive.slidingmenu.entities.ShopStock;
 import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.util.DebugUtilities;
 
@@ -23,8 +28,10 @@ public class Constants {
 
     public static SQLiteDatabase database =null;
     public static FragmentManager manager = null;
+    public static CustomFragment getCurrentFrag;
 
     public static void createNewFragment(int layoutId, CustomFragment fragment){
+        getCurrentFrag = fragment;
         try {
             if (Constants.manager != null) {
                 FragmentTransaction e = Constants.manager.beginTransaction();
@@ -39,6 +46,7 @@ public class Constants {
     }
 
     public static void createNewFragment(int layoutId, CustomFragment fragment, String tag){
+        getCurrentFrag = fragment;
         try {
             if (Constants.manager != null) {
                 FragmentTransaction e = Constants.manager.beginTransaction();

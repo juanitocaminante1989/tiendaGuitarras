@@ -42,8 +42,8 @@ public class downloadAndSaveFile extends AsyncTask<Boolean, Boolean, Boolean> {
             Log.d("", "Connected. Reply: " + ftp.getReplyString());
 
             ftp.login(user, password);
-            Log.d("", "Logged in");
-            ftp.setFileType(FTP.BINARY_FILE_TYPE);
+//            Log.d("", "Logged in");
+//            ftp.setFileType(FTP.BINARY_FILE_TYPE);
             Log.d("", "Downloading");
             ftp.enterLocalPassiveMode();
 

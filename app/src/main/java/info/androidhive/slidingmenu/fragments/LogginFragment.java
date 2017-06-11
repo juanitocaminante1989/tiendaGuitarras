@@ -38,7 +38,7 @@ public class LogginFragment extends CustomFragment{
     private Button logginButton;
 
     public LogginFragment(int layout, View rootView, Context context) {
-        super(layout, rootView, context);
+        super(layout, rootView, context, "loggin", "Loggin");
         this.layout = layout;
         this.context = context;
     }
@@ -102,4 +102,10 @@ public class LogginFragment extends CustomFragment{
 
 
     }
+
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }

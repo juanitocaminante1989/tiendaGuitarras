@@ -1,6 +1,7 @@
 package info.androidhive.slidingmenu.adapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -22,10 +23,10 @@ public class BusquedaArrayAdapter extends ArrayAdapter {
 
     Button articulo;
     int layout;
-    private SparseArray<Producto> productos;
+    private HashMap<Integer, Producto> productos;
     Context context;
 
-    public BusquedaArrayAdapter(Context context, int textViewResourceId, int layout, SparseArray<Producto> productos) {
+    public BusquedaArrayAdapter(Context context, int textViewResourceId, int layout, HashMap<Integer, Producto> productos) {
         super(context, textViewResourceId);
         this.context = context;
         this.layout = layout;

@@ -23,8 +23,8 @@ public class ProductList extends CustomFragment {
 
 
 
-    public ProductList(int layout,View view, Context context, String codSubCat) {
-        super(layout, view, context, codSubCat);
+    public ProductList(int layout,View view, Context context, String codSubCat, String title) {
+        super(layout, view, context, codSubCat, title);
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
@@ -37,10 +37,15 @@ public class ProductList extends CustomFragment {
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        categoryArrayAdapter = new SubCategoryArrayAdapter(getActivity().getApplicationContext(), R.layout.activity_subcategory, R.layout.activity_subcategory, controller.consultaArticulos(codSubCat));
+        categoryArrayAdapter = new SubCategoryArrayAdapter(context, R.layout.activity_subcategory, R.layout.activity_subcategory, controller.consultaArticulos(codSubCat));
         listView.setAdapter(categoryArrayAdapter);
 
         return rootView;
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }
 

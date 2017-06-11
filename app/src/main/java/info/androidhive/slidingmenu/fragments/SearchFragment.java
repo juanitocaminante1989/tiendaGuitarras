@@ -43,7 +43,7 @@ public class SearchFragment extends CustomFragment {
     private View generalView;
 
     public SearchFragment(int layout, View rootView, Context context) {
-        super(layout, rootView, context);
+        super(layout, rootView, context, "search", "Search");
         this.layout = layout;
         this.context = context;
     }
@@ -108,4 +108,9 @@ public class SearchFragment extends CustomFragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }
