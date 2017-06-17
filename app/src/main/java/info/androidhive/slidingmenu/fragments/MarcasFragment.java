@@ -1,7 +1,9 @@
 package info.androidhive.slidingmenu.fragments;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.ListView;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 
 /**
  * Created by Juan on 16/03/2017.
@@ -33,6 +36,9 @@ public class MarcasFragment extends CustomFragment{
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
+
+
+
     }
 
     @Override
@@ -43,6 +49,7 @@ public class MarcasFragment extends CustomFragment{
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         categoryArrayAdapter = new SubCategoryArrayAdapter(context, R.layout.activity_subcategory, R.layout.activity_subcategory, controller.getProductsByMarcaId(codSubCat));
         listView.setAdapter(categoryArrayAdapter);
+
 
         return var1;
     }

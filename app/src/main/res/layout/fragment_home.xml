@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
+
     <LinearLayout
+
         android:layout_weight="0.2"
         android:layout_width="match_parent"
         android:layout_height="0dp">
@@ -20,6 +22,8 @@
         android:layout_weight="0.4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:elevation="4dp"
+        android:clipToPadding="false"
         android:orientation="horizontal">
 
         <RelativeLayout
@@ -27,10 +31,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
+            android:background="@android:color/transparent"
             android:orientation="horizontal">
             <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/pager_similar_product"
                 android:layout_width="match_parent"
+                android:background="@color/white"
                 android:layout_height="150dp">
             </android.support.v4.view.ViewPager>
             <com.viewpagerindicator.CirclePageIndicator
@@ -60,7 +66,8 @@
             android:id="@+id/marcaGridHome"
             android:layout_weight="0.3"
             android:numColumns="3"
-
+            android:drawSelectorOnTop="true"
+            android:foreground="?android:attr/selectableItemBackground"
             android:layout_width="match_parent"
             android:layout_height="0dp">
 

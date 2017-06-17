@@ -1,7 +1,9 @@
 package info.androidhive.slidingmenu.fragments;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.ListView;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 
 public class ProductList extends CustomFragment {
     View rootView;
@@ -28,6 +31,7 @@ public class ProductList extends CustomFragment {
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
+
     }
 
     @Override

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyAppTheme" parent="android:Theme.Material">
+        <item name="android:actionBarStyle">@style/Theme.MyAppTheme.ActionBar</item>
+        <item name="android:statusBarColor">@color/true_blue</item>
+        <item name="android:navigationBarColor">@color/true_blue</item>
+        <item name="android:fragmentEnterTransition">@animator/slide_left</item>
+        <item name="android:fragmentExitTransition">@animator/slide_right</item>
+        <item name="android:windowActionBarOverlay">false</item>
+    </style>
+
+    <style name="Theme.MyAppTheme.ActionBar" parent="@style/MyAppTheme">
+        <item name="android:background">@color/sky_blue</item>
+        <item name="android:titleTextStyle">@style/Theme.MyAppTheme.ActionBar.TitleTextStyle</item>
+        <item name="android:icon">@drawable/ic_drawer</item>
+        <item name="android:height">60dp</item>
+    </style>
+
+    <style name="Theme.MyAppTheme.ActionBar.TitleTextStyle" parent="@style/MyAppTheme">
+        <item name="android:textColor">#DCDCDC</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="FullscreenTheme" parent="@style/MyAppTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="metaButtonBarStyle">@style/ButtonBar</item>
+        <item name="metaButtonBarButtonStyle">@style/ButtonBarButton</item>
+    </style>
+
+    <style name="ButtonBar">
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingBottom">0dp</item>
+
+    </style>
+
+    <style name="ButtonBarButton" />
+</resources>

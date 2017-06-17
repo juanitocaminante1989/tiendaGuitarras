@@ -38,7 +38,8 @@ public class Constants {
                 e.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 e.setCustomAnimations(R.animator.slide_left, R.animator.slide_right);
 
-                e.replace(layoutId, fragment).commit();
+                e.replace(layoutId, fragment);
+                e.commit();
             }
         }catch (Exception e){
             DebugUtilities.writeLog("Error",e);

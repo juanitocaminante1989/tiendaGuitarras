@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 16
+    compileSdkVersion 21
     buildToolsVersion '25.0.0'
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
         applicationId "info.androidhive.slidingmenu"
         minSdkVersion 14
-        targetSdkVersion 17
+        targetSdkVersion 21
         versionName "v1.0.0.0"
     }
 
@@ -21,7 +21,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.0.0'
     compile 'org.apache:apache:18'
     compile files('D:/Documentos/Proyectos_Android/TiendaMusica/libs/commons-net-3.5.jar')
     compile 'com.google.android.gms:play-services-location:7.+'
