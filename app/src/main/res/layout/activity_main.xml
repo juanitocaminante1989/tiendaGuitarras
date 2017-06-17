@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/general_background">
 
     <LinearLayout
         android:id="@+id/main_layout"
@@ -34,9 +35,8 @@
                 android:layout_width="200dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:background="@color/sky_blue"
                 android:choiceMode="singleChoice"
-                android:divider="@color/list_divider"
+                android:divider="@color/yellow_gold"
                 android:listSelector="@drawable/list_selector" />
 
 
@@ -45,15 +45,15 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:background="@color/sky_blue"
                 android:choiceMode="singleChoice"
-                android:divider="@color/list_divider"
+                android:divider="@color/yellow_gold"
                 android:listSelector="@drawable/list_selector" />
         </android.support.v4.widget.DrawerLayout>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/load_layout"
         android:visibility="visible"
+        android:background="@drawable/general_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

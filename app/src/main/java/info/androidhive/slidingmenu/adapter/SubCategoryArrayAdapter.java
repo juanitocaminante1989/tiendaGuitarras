@@ -85,7 +85,7 @@ public class SubCategoryArrayAdapter extends ArrayAdapter {
 
                 producto(MessageObj.getCodArticulo(), layout, context);
 
-                Constants.currentFragment = 3;
+                Constants.currentFragment = 2;
             }
         });
 

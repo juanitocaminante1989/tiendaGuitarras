@@ -7,6 +7,7 @@ import info.androidhive.slidingmenu.data.JSONParse;
 import info.androidhive.slidingmenu.data.JSONParser;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.database.SlideSQLHelper;
+import info.androidhive.slidingmenu.entities.CategoryMessage;
 import info.androidhive.slidingmenu.entities.Producto;
 import info.androidhive.slidingmenu.fragments.CustomFragment;
 import info.androidhive.slidingmenu.fragments.HomeFragment;
@@ -25,7 +26,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,6 +44,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -51,6 +55,7 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -80,6 +85,7 @@ public class MainActivity extends Activity {
     private ListView mDrawerList;
     private ListView SecondDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+
     // nav drawer title
     private CharSequence mDrawerTitle;
 
@@ -87,7 +93,7 @@ public class MainActivity extends Activity {
     private CharSequence mTitle;
 
     // slide menu items
-    private SparseArray<String> navMenuTitles;
+    private HashMap<Integer, String> navMenuTitles;
     private TypedArray navMenuIcons;
 
     private ArrayList<NavDrawerItem> navDrawerItems;
@@ -104,6 +110,9 @@ public class MainActivity extends Activity {
     private Handler mHandler;
     private ActionBar actionBar;
     private Activity starterIntent;
+    private Thread.UncaughtExceptionHandler androidDefaultUEH;
+    private String title = "";
+    private String subTitle = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,9 +140,14 @@ public class MainActivity extends Activity {
         progressUpdate = (TextView) findViewById(R.id.progressUpdate);
         actionBar = getActionBar();
 
+
+//        final ColorDrawable cd = new ColorDrawable(Color.rgb(46, 154, 254));
+//        actionBar.setBackgroundDrawable(cd);
         controller = new Controller();
         // load slide menu items
         this.savedInstanceState = savedInstanceState;
+        androidDefaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(handler);
 
         mHandler = new Handler();
 
@@ -153,6 +167,15 @@ public class MainActivity extends Activity {
         }, 3000);
 
     }
+
+
+    private Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+        public void uncaughtException(Thread thread, Throwable ex) {
+            Log.e("TestApplication", "Uncaught exception is: ", ex);
+            // log it & phone home.
+            androidDefaultUEH.uncaughtException(thread, ex);
+        }
+    };
 
     public void initLoggin() {
         LogginFragment logginFragment = new LogginFragment(R.layout.loggin_fragment, null, context);
@@ -199,13 +222,18 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // toggle nav drawer on selecting action bar app icon/title
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
+        if(Constants.currentFragment == 0) {
+            if (mDrawerToggle.onOptionsItemSelected(item)) {
+                return true;
+            }
+        }else{
+            onBackPressed();
         }
         // Handle action bar actions click
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -232,9 +260,11 @@ public class MainActivity extends Activity {
         CustomFragment fragment = null;
         int layout;
         Controller controller = new Controller();
-        SparseArray<String> categoryId = controller.getCategoryId();
+        HashMap<Integer, String> categoryId = controller.getCategoryId();
         String tag = "";
         for (int i = 0; i < categoryId.size(); i++) {
+
+            title = navMenuTitles.get(position);
             if (position == 0) {
                 fragment = new HomeFragment(R.layout.fragment_home, null, context);
                 tag = "home";
@@ -257,9 +287,9 @@ public class MainActivity extends Activity {
                 mDrawerLayout.openDrawer(SecondDrawerList);
             }
         }
+
         mDrawerList.setItemChecked(position, true);
         mDrawerList.setSelection(position);
-        setTitle(navMenuTitles.get(position));
         if (fragment != null) {
             Constants.currentFrag = fragment;
             Constants.createNewFragment(R.id.frame_container, fragment, tag);
@@ -277,7 +307,7 @@ public class MainActivity extends Activity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        actionBar.setTitle(mTitle);
     }
 
     /**
@@ -304,9 +334,8 @@ public class MainActivity extends Activity {
 
 
     public void onBackPressed() {
-        final ColorDrawable cd = new ColorDrawable(Color.rgb(0, 0, 255));
-        actionBar.setBackgroundDrawable(cd);
         String tag = "";
+        CustomFragment fragment = null;
         if (Constants.currentFragment == 0) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -322,7 +351,7 @@ public class MainActivity extends Activity {
                     .setNegativeButton("No", null)
                     .show();
         } else if (Constants.currentFragment == 1) {
-            CustomFragment fragment = null;
+
 
             if (Constants.currentFragmentStr.equals("srch")) {
                 fragment = new SearchFragment(R.layout.search_fragment, null, context);
@@ -338,28 +367,29 @@ public class MainActivity extends Activity {
                 Constants.createNewFragment(R.id.frame_container, fragment, tag);
                 mDrawerList.setItemChecked(0, true);
                 mDrawerList.setSelection(0);
-                setTitle(navMenuTitles.get(0));
+//                setTitle(navMenuTitles.get(0));
                 mDrawerLayout.closeDrawer(mDrawerList);
 
             }
             Constants.currentFragment = 0;
 
         } else if (Constants.currentFragment == 2) {
-            if (Constants.currentFrag != null)
-                Constants.createNewFragment(R.id.frame_container, Constants.currentFrag);
 
-            Constants.currentFragment = 1;
-
-        } else if (Constants.currentFragment == 3) {
             if (Constants.whichFragment == 1) {
-                CustomFragment fragment = new ProductList(R.layout.fragment_subcategory, null, context, Constants.subCategoryPosition);
+                actionBar.setTitle(title + "/" +subTitle);
+                fragment = new ProductList(R.layout.fragment_subcategory, null, context, Constants.subCategoryPosition, String.valueOf(mTitle));
                 Constants.createNewFragment(R.id.frame_container, fragment);
             } else if (Constants.whichFragment == 2) {
-                CustomFragment fragment = new MarcasFragment(R.layout.marcas_fragment, null, context, Constants.idMarca);
+                fragment = new MarcasFragment(R.layout.marcas_fragment, null, context, Constants.idMarca, "");
                 Constants.createNewFragment(R.id.frame_container, fragment);
+            }else{
+                if (Constants.currentFrag != null)
+                    Constants.createNewFragment(R.id.frame_container, Constants.currentFrag);
             }
-            Constants.currentFragment = 2;
+            Constants.currentFragment = 1;
+
         }
+
     }
 
     public void checkClients() {
@@ -471,7 +501,21 @@ public class MainActivity extends Activity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void initialize() {
+//        Constants.consultaSubCategorias
+//        Constants.getCategoryId
+//        Constants.getCategoryNames
+//        Constants.getImages
+//        Constants.busqueda
+//        Constants.getShopByProducts
+//        Constants.getStockShopByProduct
+//        Constants.getMarca
+//        Constants.consultaArticulos
+//        Constants.getProductByMarca
+//        Constants.
+//        Constants.
+//        Constants.
 
         navMenuTitles = controller.getCategoryNames();
 
@@ -499,8 +543,10 @@ public class MainActivity extends Activity {
         mDrawerList.setAdapter(adapter);
 
         // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
+        actionBar.setDisplayShowTitleEnabled(true);
 
         try {
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -509,16 +555,23 @@ public class MainActivity extends Activity {
                     R.string.app_name // nav drawer close - description for accessibility
             ) {
                 public void onDrawerClosed(View view) {
-                    getActionBar().setTitle(mTitle);
+//                    actionBar.setTitle(mTitle);
                     // calling onPrepareOptionsMenu() to show action bar icons
                     invalidateOptionsMenu();
-                    if (mDrawerLayout.isDrawerOpen(SecondDrawerList)) {
+
                         mDrawerLayout.closeDrawer(SecondDrawerList);
+
+
+                    if (mDrawerLayout.isDrawerOpen(mDrawerList) == false) {
+//                        if (Constants.getCurrentFrag != null)
+//                            setTitle(Constants.getCurrentFrag.getTitle());
+//                        else
+//                            setTitle("Tienda Musica");
                     }
                 }
 
                 public void onDrawerOpened(View drawerView) {
-                    getActionBar().setTitle(mDrawerTitle);
+                    actionBar.setTitle(mDrawerTitle);
                     // calling onPrepareOptionsMenu() to hide action bar icons
                     invalidateOptionsMenu();
                 }
@@ -529,7 +582,7 @@ public class MainActivity extends Activity {
 
                 displayView(0);
 
-
+                Constants.currentFragment=0;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -551,14 +604,16 @@ public class MainActivity extends Activity {
             NavDrawerListAdapter adapter = new NavDrawerListAdapter(getApplicationContext(),
                     navDrawerItems);
             SecondDrawerList.setAdapter(adapter);
-
             SecondDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    subCategory(controller.consultaSubCategorias(codCat).get(i).title, context);
 
+                    CategoryMessage categoryMessage = controller.consultaSubCategorias(codCat).get(i);
+                    subCategory(categoryMessage.title, context);
+                    subTitle = categoryMessage.getMessage();
+                    setTitle(title + "/" +subTitle);
                     Constants.whichFragment = 1;
-                    Constants.currentFragment = 2;
+                    Constants.currentFragment = 1;
 
                     mDrawerLayout.closeDrawer(SecondDrawerList);
                     mDrawerLayout.closeDrawer(mDrawerList);
@@ -575,7 +630,7 @@ public class MainActivity extends Activity {
 
         CustomFragment fragment = null;
         Constants.subCategoryPosition = codSubCat;
-        fragment = new ProductList(R.layout.fragment_subcategory, null, context, codSubCat);
+        fragment = new ProductList(R.layout.fragment_subcategory, null, context, codSubCat,String.valueOf(mTitle));
         Constants.createNewFragment(R.id.frame_container, fragment, "product");
     }
 
@@ -584,26 +639,28 @@ public class MainActivity extends Activity {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-        int connection = info.getType();
-
         boolean connectionBool = false;
-        switch (connection) {
+        if (info != null) {
+            int connection = info.getType();
 
-            case TelephonyManager.NETWORK_TYPE_UMTS:
-                connectionBool = false;
-                break;
-            case ConnectivityManager.TYPE_MOBILE:
-                connectionBool = false;
-                break;
-            case ConnectivityManager.TYPE_WIFI:
-                connectionBool = true;
-                break;
-            default:
-                connectionBool = false;
+
+            switch (connection) {
+
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    connectionBool = false;
+                    break;
+                case ConnectivityManager.TYPE_MOBILE:
+                    connectionBool = false;
+                    break;
+                case ConnectivityManager.TYPE_WIFI:
+                    connectionBool = true;
+                    break;
+                default:
+                    connectionBool = false;
+            }
         }
         return connectionBool;
     }
-
 
     public class JSONTransmitter extends AsyncTask<JSONObject, JSONObject, JSONObject> {
 
@@ -639,5 +696,6 @@ public class MainActivity extends Activity {
         }
 
     }
+
 
 }

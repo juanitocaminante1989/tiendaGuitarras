@@ -65,8 +65,8 @@ public class JSONUpdateProducts extends AsyncTask<JSONObject, JSONObject, JSONOb
             response = client.execute(post);
             String resFromServer = org.apache.http.util.EntityUtils.toString(response.getEntity());
 
-            jsonResponse = new JSONObject(resFromServer);
-            Log.i("Response from server", jsonResponse.getString("msg"));
+//            jsonResponse = new JSONObject(resFromServer);
+//            Log.i("Response from server", jsonResponse.getString("msg"));
         } catch (Exception e) {
             e.printStackTrace();
         }

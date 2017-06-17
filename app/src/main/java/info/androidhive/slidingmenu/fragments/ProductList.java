@@ -1,7 +1,9 @@
 package info.androidhive.slidingmenu.fragments;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.ListView;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.SubCategoryArrayAdapter;
 import info.androidhive.slidingmenu.database.Controller;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 
 public class ProductList extends CustomFragment {
     View rootView;
@@ -23,11 +26,12 @@ public class ProductList extends CustomFragment {
 
 
 
-    public ProductList(int layout,View view, Context context, String codSubCat) {
-        super(layout, view, context, codSubCat);
+    public ProductList(int layout,View view, Context context, String codSubCat, String title) {
+        super(layout, view, context, codSubCat, title);
         this.context = context;
         this.layout = layout;
         this.codSubCat = codSubCat;
+
     }
 
     @Override
@@ -37,10 +41,15 @@ public class ProductList extends CustomFragment {
         //txtResultado = (TextView)rootView.findViewById(R.id.resultado);
         listView = (ListView) rootView.findViewById(R.id.listView1);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        categoryArrayAdapter = new SubCategoryArrayAdapter(getActivity().getApplicationContext(), R.layout.activity_subcategory, R.layout.activity_subcategory, controller.consultaArticulos(codSubCat));
+        categoryArrayAdapter = new SubCategoryArrayAdapter(context, R.layout.activity_subcategory, R.layout.activity_subcategory, controller.consultaArticulos(codSubCat));
         listView.setAdapter(categoryArrayAdapter);
 
         return rootView;
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }
 

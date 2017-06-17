@@ -1,14 +1,19 @@
 package info.androidhive.slidingmenu.fragments;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 import info.androidhive.slidingmenu.R;
 import info.androidhive.slidingmenu.adapter.CustomPagerAdapterProduct;
 import info.androidhive.slidingmenu.adapter.MarcaGridViewAdapter;
+import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.Marca;
 import info.androidhive.slidingmenu.entities.Producto;
@@ -33,10 +39,11 @@ public class HomeFragment extends CustomFragment {
     GridView marcasGridView;
     View generalView;
     int layout;
+    Activity activity;
 
 
     public HomeFragment(int layout, View rootView, Context context) {
-        super(layout, rootView, context);
+        super(layout, rootView, context, "main", "Principal");
         this.layout = layout;
         this.context = context;
     }
@@ -48,16 +55,17 @@ public class HomeFragment extends CustomFragment {
         similarViewPager = (ViewPager) var1.findViewById(R.id.pager_similar_product);
         similarViewIndicator = (CirclePageIndicator) var1.findViewById(R.id.indicator_similar_product);
         marcasGridView = (GridView) var1.findViewById(R.id.marcaGridHome);
-
         try {
-
+            activity = getActivity();
 
             productos = controller.getMostViewedProducts();
 
             if (productos.size() != 0) {
 
                     final CustomPagerAdapterProduct adapter = new CustomPagerAdapterProduct(context, productos);
+
                     similarViewPager.setAdapter(adapter);
+
                     similarViewIndicator.setViewPager(similarViewPager);
 
                     swipeTimer = new Timer();
@@ -81,15 +89,27 @@ public class HomeFragment extends CustomFragment {
                         }
                     }, 500, 3000);
 
-
+//                similarViewPager.setOnDragListener(new View.OnDragListener() {
+//                    @Override
+//                    public boolean onDrag(View view, DragEvent dragEvent) {
+//                        int pos = similarViewPager.getCurrentItem();
+//
+//                        if(pos == productos.size()-1){
+//                            pos = -1;
+//                        }
+//                        pos++;
+//                        similarViewPager.setCurrentItem(pos, true);
+//                        return false;
+//                    }
+//                });
             }
 
-            SparseArray<Marca> marcas = controller.getMarcas();
+            HashMap<Integer, Marca> marcas = controller.getMarcas();
 
             if(marcas != null){
                 if(marcas.size()>0){
 
-                    MarcaGridViewAdapter adapter = new MarcaGridViewAdapter(context, 0, marcas);
+                    MarcaGridViewAdapter adapter = new MarcaGridViewAdapter(context, 0, marcas,activity);
                     marcasGridView.setAdapter(adapter);
 
                 }
@@ -113,4 +133,9 @@ public class HomeFragment extends CustomFragment {
         }
 
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }

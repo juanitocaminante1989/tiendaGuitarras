@@ -9,8 +9,7 @@
     <info.androidhive.slidingmenu.util.ScrollViewX
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:backgroundTint="@color/light_yellow">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/singleMessageContainer"

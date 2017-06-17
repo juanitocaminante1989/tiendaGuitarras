@@ -1,8 +1,10 @@
 package info.androidhive.slidingmenu.fragments;
 
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,7 @@ import info.androidhive.slidingmenu.chops.AssociatedShops;
 import info.androidhive.slidingmenu.constants.Constants;
 import info.androidhive.slidingmenu.database.Controller;
 import info.androidhive.slidingmenu.entities.GPSTracker;
+import info.androidhive.slidingmenu.util.DebugUtilities;
 
 /**
  * Created by Juan on 26/01/2017.
@@ -42,9 +45,10 @@ public class ProfileFragment extends CustomFragment {
     private TextView telefono;
 
     public ProfileFragment(int layout, View rootView, Context context) {
-        super(layout, rootView, context);
+        super(layout, rootView, context, "profile", "Profile");
         this.context = context;
         this.layout = layout;
+
     }
 
     @Override
@@ -69,4 +73,9 @@ public class ProfileFragment extends CustomFragment {
 
         return generalView;
     }
+
+//    @Override
+//    public Thread.UncaughtExceptionHandler UnCaughtExceptionHandler() {
+//        return super.UnCaughtExceptionHandler();
+//    }
 }
